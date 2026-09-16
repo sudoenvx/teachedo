@@ -1,0 +1,15 @@
+model Attendance {
+  id         Int          @id @default(autoincrement())
+  sessionId  Int          @map("session_id")
+  session    ClassSession @relation(fields: [sessionId], references: [id])
+  studentId  Int          @map("student_id")
+  student    Student      @relation(fields: [studentId], references: [id])
+  teacherId  Int          @map("teacher_id")
+  teacher    Teacher      @relation(fields: [teacherId], references: [id])
+  status     String?      @db.VarChar(20) // present, absent, late, excused...
+  recordedAt DateTime     @default(now()) @map("recorded_at")
+
+  @@unique([sessionId, studentId], map: "uq_session_student")
+  @@index([teacherId])
+  @@map("attendance")
+}

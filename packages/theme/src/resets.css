@@ -1,0 +1,16 @@
+@layer base {
+    @supports((font-variation-settings: normal) or (-webkit-font-variation-settings: normal) or (-moz-font-variation-settings: normal)) {
+
+        input,
+        textarea,
+        select,
+        button {
+            font-family: inherit !important;
+        }
+    }
+
+    a {
+        transform: none !important;
+        position: static;
+    }
+}

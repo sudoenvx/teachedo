@@ -1,0 +1,16 @@
+{
+  "extends": "@teachedo/tsconfig/node.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "dist"
+  },
+  "include": [
+    "src/**/*",
+    "prisma/**/*",
+    "./prisma.config.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

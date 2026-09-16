@@ -1,0 +1,64 @@
+{
+  "name": "@teachedo/api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/server.ts",
+  "scripts": {
+    "start": "node dist/server.js",
+    "dev": "tsx watch src/server.ts",
+    "type-check": "tsc --noEmit",
+    "build": "tsc --noEmit && esbuild src/server.ts --bundle --platform=node --format=esm --packages=external --outdir=dist",
+
+    "db:generate": "prisma generate",
+    "db:reset": "prisma migrate reset --force",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "tsx src/core/database/prisma.seeder.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "11.22.0",
+      "onFail": "download"
+    }
+  },
+  "type": "module",
+  "devDependencies": {
+    "@types/compression": "^1.8.1",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.2.0",
+    "@types/node": "^26.4.1",
+    "esbuild": "^0.28.2",
+    "prisma": "7.10.0",
+    "tsup": "^8.5.1",
+    "typescript": "^7.0.2",
+    "winston-transport": "^4.9.0"
+  },
+  "dependencies": {
+    "@teachedo/utils": "workspace:*",
+    "@teachedo/tsconfig": "workspace:*",
+    "@prisma/adapter-mariadb": "^7.10.0",
+    "@prisma/client": "7.10.0",
+    "argon2": "^0.45.1",
+    "body-parser": "^2.3.0",
+    "bullmq": "^6.3.4",
+    "compression": "^1.8.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "helmet": "^8.3.0",
+    "ioredis": "^6.0.0",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.3.0",
+    "socket.io": "^4.8.3",
+    "tsx": "^4.23.13",
+    "winston": "^3.19.0",
+    "zod": "^4.5.4"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "extends": "@teachedo/tsconfig/vite.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@teachedo/ui": ["../../packages/ui/src/index.ts"],
+      "@teachedo/theme": ["../../packages/theme/src/index.ts"],
+      // "@teachedo/utils": ["../../packages/utils/src/index.ts"],
+      // "@teachedo/network/api": ["../../packages/network/src/api/index.ts"],
+      // "@teachedo/network/query": ["../../packages/network/src/query/index.ts"],
+      // "@teachedo/network/realtime": ["../../packages/network/src/realtime/index.ts"]
+    }
+  },
+  "include": ["src"]
+}

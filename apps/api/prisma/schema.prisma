@@ -1,0 +1,42 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+
+enum DayOfWeek {
+  saturday
+  sunday
+  monday
+  tuesday
+  wednesday
+  thursday
+  friday
+}
+
+// Who performed/logged an action — used for polymorphic "recorded by" /
+// "created by" columns. These stay as (type, id) pairs rather than Prisma
+// relations because the id can point at either `teachers` or
+// `teacher_assistants` depending on the type — Prisma can't express a
+// relation that targets two different models conditionally, so the
+// integrity check for these lives in application code, not the DB layer.
+enum ActorType {
+  teacher
+  assistant
+}
+
+// Who a student/parent-facing record targets — used the same
+// polymorphic way for notification recipients.
+enum RecipientType {
+  student
+  parent
+}

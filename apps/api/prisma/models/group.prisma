@@ -1,0 +1,66 @@
+model StudentGroup {
+  id                 Int       @id @default(autoincrement())
+  teacherId          Int       @map("teacher_id")
+  teacher            Teacher   @relation(fields: [teacherId], references: [id])
+  groupName          String    @map("group_name") @db.VarChar(100)
+  studyStageId       Int?      @map("study_stage_id")
+  studyStage         StudyStage? @relation(fields: [studyStageId], references: [id])
+  standardMonthlyFee Decimal?  @map("standard_monthly_fee") @db.Decimal(10, 2)
+  scheduleDescription String?   @map("schedule_description") @db.VarChar(255)
+  maxCapacity        Int?      @map("max_capacity")
+  deletedAt          DateTime? @map("deleted_at") // soft delete
+  createdAt          DateTime  @default(now()) @map("created_at")
+
+  enrollments     GroupEnrollment[]
+  schedules       GroupSchedule[]
+  classSessions   ClassSession[]
+  lessons         Lesson[]
+//   quizzes         Quiz[]
+  studentInvoices StudentInvoice[]
+
+  @@map("student_groups")
+}
+
+model GroupEnrollment {
+  groupId        Int          @map("group_id")
+  group          StudentGroup @relation(fields: [groupId], references: [id])
+  studentId      Int          @map("student_id")
+  student        Student      @relation(fields: [studentId], references: [id])
+  enrollmentDate DateTime?    @map("enrollment_date") @db.Date
+  status         String       @default("active") @db.VarChar(20) // active, left, paused
+  leftAt         DateTime?    @map("left_at") @db.Date
+  customPrice    Decimal?     @map("custom_price") @db.Decimal(10, 2) // NULL => pays group.standardMonthlyFee
+
+  @@id([groupId, studentId])
+  @@map("group_enrollments")
+}
+
+model GroupSchedule {
+  id              Int          @id @default(autoincrement())
+  groupId         Int          @map("group_id")
+  group           StudentGroup @relation(fields: [groupId], references: [id])
+  dayOfWeek       DayOfWeek    @map("day_of_week")
+  startTime       DateTime     @map("start_time") @db.Time()
+  durationMinutes Int          @default(60) @map("duration_minutes")
+
+  @@map("group_schedules")
+}
+
+model ClassSession {
+  id                 Int          @id @default(autoincrement())
+  groupId            Int          @map("group_id")
+  group              StudentGroup @relation(fields: [groupId], references: [id])
+  teacherId          Int          @map("teacher_id")
+  teacher            Teacher      @relation(fields: [teacherId], references: [id])
+  sessionDate        DateTime     @map("session_date") @db.Date
+  startTime          DateTime?    @map("start_time") @db.Time()
+  topic              String?      @db.VarChar(255)
+  status             String?      @db.VarChar(20) // scheduled, completed, cancelled, postponed...
+  cancellationReason String?      @map("cancellation_reason") @db.VarChar(255)
+  isCompleted        Boolean      @default(false) @map("is_completed")
+
+  attendance Attendance[]
+
+  @@index([teacherId])
+  @@map("class_sessions")
+}

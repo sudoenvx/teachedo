@@ -1,0 +1,5 @@
+@import "@teachedo/theme/index.css";
+@import "shadcn/tailwind.css";
+
+@source "../**/*.{js,ts,jsx,tsx}";
+@source "../../../packages/theme/src/**/*.{js,ts,jsx,tsx}";

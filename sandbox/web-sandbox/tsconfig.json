@@ -1,0 +1,11 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" },
+    { "path": "../../packages/ui" },
+    { "path": "../../packages/theme" },
+    { "path": "../../packages/utils" },
+    { "path": "../../packages/network" }
+  ]
+}

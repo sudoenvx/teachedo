@@ -1,0 +1,17 @@
+.turbo
+node_modules
+build
+dist
+
+.env
+.env.test
+
+.vscode/*
+!.vscode/extensions.json
+.idea
+
+pnpm-debug.log*
+logs
+*.log
+
+*.tsbuildinfo

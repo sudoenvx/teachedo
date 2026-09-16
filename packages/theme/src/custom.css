@@ -1,0 +1,38 @@
+/* Custom scrollbars and utility classes */
+@layer utilities {
+
+  *::-webkit-scrollbar-button {
+    display: none;
+  }
+
+  *::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  *::-webkit-scrollbar-track {
+    /* background: var(--background); */
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    border: 0px solid var(--background);
+    border-radius: 999px;
+    background: var(--neutral-400);
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-hover);
+  }
+
+  *::-webkit-scrollbar-corner {
+    background: var(--background);
+  }
+
+  @supports not selector(::-webkit-scrollbar) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--secondary) var(--background);
+    }
+  }
+}

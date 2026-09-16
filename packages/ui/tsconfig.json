@@ -1,0 +1,29 @@
+{
+  "extends": "@teachedo/tsconfig/react-library.json",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "dist",
+    "rootDir": "./src",
+    "declaration": true,
+    "declarationMap": true,
+    "resolvePackageJsonImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+    "paths": {
+      "@teachedo/ui/src/*": ["./src/*"],
+      "@teachedo/theme": ["../theme/src/index.ts"],
+      "@teachedo/utils": ["../utils/src/index.ts"]
+    }
+  },
+  "references": [
+    { "path": "../theme" },
+    { "path": "../utils" }
+  ],
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "dist"
+  ]
+}

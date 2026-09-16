@@ -1,0 +1,14 @@
+@import "@teachedo/theme/index.css";
+
+@source "../**/*.{js,ts,jsx,tsx}";
+@source "../../../packages/ui/src/**/*.{js,ts,jsx,tsx}";
+
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  font-family: 'Tajawal', sans-serif;
+  background: var(--color-background);
+  color: var(--color-foreground, #212121);
+  direction: rtl;
+}

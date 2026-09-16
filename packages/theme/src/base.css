@@ -1,0 +1,85 @@
+@layer base {
+
+  *,
+  ::after,
+  ::before {
+    @apply box-border;
+  }
+
+  html {
+    @apply antialiased scroll-smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground min-h-screen;
+  }
+
+  ::selection {
+    background: #686970;
+    color: #fff;
+  }
+
+  @layer base {
+    @font-face {
+      font-family: 'Tajawal';
+      src: url('./fonts/Tajawal/Tajawal-ExtraLight.ttf') format('truetype');
+      font-weight: 200;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Tajawal';
+      src: url('./fonts/Tajawal/Tajawal-Light.ttf') format('truetype');
+      font-weight: 300;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Tajawal';
+      src: url('./fonts/Tajawal/Tajawal-Regular.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Tajawal';
+      src: url('./fonts/Tajawal/Tajawal-Medium.ttf') format('truetype');
+      font-weight: 500;
+      font-style: normal;
+    }
+
+    /* Since you don't have a specific SemiBold file, we map it to Bold */
+    @font-face {
+      font-family: 'Tajawal';
+      src: url('./fonts/Tajawal/Tajawal-Bold.ttf') format('truetype');
+      font-weight: 600;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Tajawal';
+      src: url('./fonts/Tajawal/Tajawal-Bold.ttf') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Tajawal';
+      src: url('./fonts/Tajawal/Tajawal-ExtraBold.ttf') format('truetype');
+      font-weight: 800;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Tajawal';
+      src: url('./fonts/Tajawal/Tajawal-Black.ttf') format('truetype');
+      font-weight: 900;
+      font-style: normal;
+    }
+  }
+
+  @font-face {
+    font-family: 'Inter';
+    src: url('./fonts/Inter.ttf') format('truetype');
+  }
+}

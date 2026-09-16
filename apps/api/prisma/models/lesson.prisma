@@ -1,0 +1,17 @@
+model Lesson {
+  id            Int          @id @default(autoincrement())
+  groupId       Int          @map("group_id")
+  group         StudentGroup @relation(fields: [groupId], references: [id])
+  teacherId     Int      @map("teacher_id")
+  teacher       Teacher  @relation(fields: [teacherId], references: [id])
+  title         String   @db.VarChar(255)
+  contentBody   String?  @map("content_body") @db.Text
+  videoUrl      String?  @map("video_url") @db.VarChar(255)
+  attachmentUrl String?  @map("attachment_url") @db.VarChar(255)
+  orderingIndex Int      @default(0) @map("ordering_index") // sequencing within the group/module
+  isPublished   Boolean  @default(true) @map("is_published")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@index([teacherId])
+  @@map("lessons")
+}

@@ -1,0 +1,35 @@
+{
+    "name": "@teachedo/database-sandbox",
+    "version": "0.0.0",
+    "private": true,
+    "description": "shared database package",
+    "type": "module",
+    "types": "./src/index.ts",
+    "exports": {
+        ".": "./src/index.ts"
+    },
+    "scripts": {
+        "typecheck": "tsc --noEmit",
+        "db:generate": "prisma generate",
+        "db:migrate": "prisma migrate dev",
+        "db:deploy": "prisma migrate deploy",
+        "db:push": "prisma db push",
+        "db:reset": "prisma migrate reset",
+        "db:seed": "prisma db seed",
+        "db:studio": "prisma studio"
+    },
+    "devDependencies": {
+        "@teachedo/tsconfig": "workspace:*",
+        "@types/pg": "^8.23.1",
+        "prisma": "7.10.0",
+        "tsx": "^4.23.13",
+        "typescript": "^6.0.2"
+    },
+    "dependencies": {
+        "@prisma/adapter-mariadb": "^7.10.0",
+        "@prisma/client": "^7.10.0",
+        "dotenv": "^17.4.2",
+        "pg": "^8.23.0",
+        "rimraf": "^6.1.3"
+    }
+}

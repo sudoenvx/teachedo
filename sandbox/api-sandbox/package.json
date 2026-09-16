@@ -1,0 +1,32 @@
+{
+  "name": "@teachedo/api-sandbox",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Express Node.js TS API sandbox server testing integration with database-sandbox",
+  "type": "module",
+  "main": "src/server.ts",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc --noEmit && node esbuild.config.js",
+    "start": "node dist/server.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@prisma/adapter-mariadb": "^7.10.0",
+    "@prisma/client": "7.10.0",
+    "@teachedo/database-sandbox": "workspace:*",
+    "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
+    "express": "^5.0.1",
+    "pg": "^8.23.0"
+  },
+  "devDependencies": {
+    "@teachedo/tsconfig": "workspace:*",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.0",
+    "@types/node": "^24.13.4",
+    "esbuild": "^0.28.2",
+    "tsx": "^4.23.13",
+    "typescript": "^6.0.3"
+  }
+}

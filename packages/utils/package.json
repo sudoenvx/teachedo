@@ -1,0 +1,51 @@
+{
+  "name": "@teachedo/utils",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    "./tenant": "./src/tenant/index.ts",
+    "./rbac": "./src/rbac/index.ts",
+    "./course": "./src/course/index.ts",
+    "./date": "./src/date/index.ts",
+    "./format": "./src/format/index.ts",
+    "./validation": "./src/validation/index.ts",
+    "./file": "./src/file/index.ts",
+    "./storage": "./src/storage/index.ts",
+    "./string": "./src/string/index.ts",
+    "./array": "./src/array/index.ts",
+    "./id": "./src/id/index.ts",
+    "./url": "./src/url/index.ts",
+    "./logger": "./src/logger/index.ts"
+  },
+  "typesVersions": {
+    "*": {
+      ".": ["./src/index.ts"],
+      "./tenant": ["./src/tenant/index.ts"],
+      "./rbac": ["./src/rbac/index.ts"],
+      "./course": ["./src/course/index.ts"],
+      "./date": ["./src/date/index.ts"],
+      "./format": ["./src/format/index.ts"],
+      "./validation": ["./src/validation/index.ts"],
+      "./file": ["./src/file/index.ts"],
+      "./storage": ["./src/storage/index.ts"],
+      "./string": ["./src/string/index.ts"],
+      "./array": ["./src/array/index.ts"],
+      "./id": ["./src/id/index.ts"],
+      "./url": ["./src/url/index.ts"],
+      "./logger": ["./src/logger/index.ts"]
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.0.2"
+  },
+  "devDependencies": {
+    "@teachedo/tsconfig": "workspace:*",
+    "typescript": "^6.0.2"
+  }
+}

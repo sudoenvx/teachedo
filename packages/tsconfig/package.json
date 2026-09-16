@@ -1,0 +1,16 @@
+{
+  "name": "@teachedo/tsconfig",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Shared TypeScript configurations for Teachedo monorepo",
+  "license": "ISC",
+  "files": [
+    "base.json",
+    "tsconfig.base.json",
+    "node.json",
+    "vite.json",
+    "vite-node.json",
+    "library.json",
+    "react-library.json"
+  ]
+}

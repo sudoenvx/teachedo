@@ -1,0 +1,12 @@
+model GlobalSettings {
+  id           Int      @id @default(autoincrement())
+  settingGroup String?  @map("setting_group") @db.VarChar(50) // e.g. 'billing', 'system_limits', 'notifications'
+  key   String   @unique @map("setting_key") @db.VarChar(100) // e.g. 'price_per_student', 'trial_days'
+  value String?  @map("setting_value") @db.Text
+  isEncrypted  Boolean  @default(false) @map("is_encrypted")
+  // NOTE: isEncrypted is a display flag ("don't send to frontend"), not real encryption.
+  // Encrypt/decrypt sensitive values at the application layer before writing/after reading.
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("global_settings")
+}

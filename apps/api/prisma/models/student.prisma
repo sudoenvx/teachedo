@@ -1,0 +1,43 @@
+model StudyStage {
+  id            Int      @id @default(autoincrement())
+  teacherId     Int      @map("teacher_id")
+  teacher       Teacher  @relation(fields: [teacherId], references: [id])
+  stageName     String   @map("stage_name") @db.VarChar(100)
+  stageGroup    String   @map("stage_group") @db.VarChar(30)
+  gradeNumber   Int      @map("grade_number")
+  orderingIndex Int?     @map("ordering_index")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  groups   StudentGroup[]
+  students Student[]
+
+  @@map("study_stages")
+}
+
+model Student {
+  id           Int       @id @default(autoincrement())
+  parentId     Int?      @map("parent_id")
+  parent       Parent?   @relation(fields: [parentId], references: [id])
+  teacherId    Int       @map("teacher_id")
+  teacher      Teacher   @relation(fields: [teacherId], references: [id])
+  fullName     String    @map("full_name") @db.VarChar(100)
+  studentCode  String?   @unique @map("student_code") @db.VarChar(50)
+  password     String?   @db.VarChar(255)
+  plainPassword String?  @map("plain_password") @db.VarChar(255)
+  phoneNumber  String?   @map("phone_number") @db.VarChar(20)
+  profilePictureUrl String? @map("profile_picture_url") @db.VarChar(500)
+  studyStageId Int?      @map("study_stage_id")
+  studyStage   StudyStage? @relation(fields: [studyStageId], references: [id])
+  status       String?   @db.VarChar(20) // active, inactive...
+  deletedAt    DateTime? @map("deleted_at") // soft delete — keeps historical attendance/billing rows intact
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  groupEnrollments GroupEnrollment[]
+  attendance       Attendance[]
+//   quizSubmissions  QuizSubmission[]
+  invoices         StudentInvoice[]
+  payments         StudentPayment[]
+
+  @@index([teacherId])
+  @@map("students")
+}

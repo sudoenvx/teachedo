@@ -1,0 +1,28 @@
+model QuestionBank {
+  id                Int      @id @default(autoincrement())
+  teacherId         Int      @map("teacher_id")
+  teacher           Teacher  @relation(fields: [teacherId], references: [id])
+  category          String?  @db.VarChar(100)
+  questionType      String?  @map("question_type") @db.VarChar(20) // mcq, essay, true_false, short_answer...
+  questionText      String?  @map("question_text") @db.Text
+  essayModelAnswer  String?  @map("essay_model_answer") @db.Text
+  mediaUrl          String?  @map("media_url") @db.VarChar(255)
+  correctAnswerJson Json?    @map("correct_answer_json")
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  choices QuestionChoice[]
+
+  @@map("question_bank")
+}
+
+// Used for MCQ and True/False — the authoritative answer source for those types.
+model QuestionChoice {
+  id            Int          @id @default(autoincrement())
+  questionId    Int          @map("question_id")
+  question      QuestionBank @relation(fields: [questionId], references: [id])
+  choiceText    String?      @map("choice_text") @db.VarChar(255)
+  isCorrect     Boolean      @default(false) @map("is_correct")
+  orderingIndex Int          @default(0) @map("ordering_index")
+
+  @@map("question_choices")
+}

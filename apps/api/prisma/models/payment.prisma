@@ -1,0 +1,80 @@
+model PlatformBillingCycle {
+  id                     Int       @id @default(autoincrement())
+  teacherId              Int       @map("teacher_id")
+  teacher                Teacher   @relation(fields: [teacherId], references: [id])
+  billingMonth           String    @map("billing_month") @db.VarChar(7) // '2026-10'
+  activeStudentsSnapshot Int?      @map("active_students_snapshot")
+  rateApplied            Decimal   @map("rate_applied") @db.Decimal(10, 2)
+  totalDue               Decimal   @map("total_due") @db.Decimal(10, 2)
+  amountPaid             Decimal   @default(0) @map("amount_paid") @db.Decimal(10, 2) // cached SUM of confirmed platform_payments
+  status                 String    @default("unpaid") @db.VarChar(20) // dynamic enum: unpaid, paid, overdue, suspended...
+  generatedAt            DateTime  @default(now()) @map("generated_at")
+  paidAt                 DateTime? @map("paid_at")
+
+  payments PlatformPayment[]
+
+  @@unique([teacherId, billingMonth], map: "uq_teacher_month")
+  @@map("platform_billing_cycles")
+}
+
+model PlatformPayment {
+  id                   Int       @id @default(autoincrement())
+  teacherId            Int       @map("teacher_id")
+  teacher              Teacher   @relation(fields: [teacherId], references: [id])
+  billingCycleId       Int?      @map("billing_cycle_id") // nullable: allows an advance payment before a cycle exists
+  billingCycle         PlatformBillingCycle? @relation(fields: [billingCycleId], references: [id])
+  amount               Decimal   @db.Decimal(10, 2)
+  paymentMethod        String    @map("payment_method") @db.VarChar(30) // instapay, vodafone_cash, bank_transfer, cash, card...
+  transactionReference String?   @map("transaction_reference") @db.VarChar(100)
+  receiptUrl           String?   @map("receipt_url") @db.VarChar(255)
+  status               String    @default("pending") @db.VarChar(20) // pending, confirmed, rejected
+  confirmedByAdminId   Int?      @map("confirmed_by_admin_id")
+  confirmedByAdmin     Admin?    @relation(fields: [confirmedByAdminId], references: [id])
+  paidAt               DateTime  @default(now()) @map("paid_at")
+  confirmedAt          DateTime? @map("confirmed_at")
+
+  @@index([teacherId])
+  @@map("platform_payments")
+}
+
+
+model StudentInvoice {
+  id           Int      @id @default(autoincrement())
+  studentId    Int      @map("student_id")
+  student      Student  @relation(fields: [studentId], references: [id])
+  teacherId    Int      @map("teacher_id")
+  teacher      Teacher  @relation(fields: [teacherId], references: [id])
+  groupId      Int          @map("group_id")
+  group        StudentGroup @relation(fields: [groupId], references: [id])
+  billingMonth String   @map("billing_month") @db.VarChar(7) // '2026-10'
+  amountDue    Decimal  @map("amount_due") @db.Decimal(10, 2) // from groups.standardMonthlyFee or groupStudent.customPrice
+  amountPaid   Decimal  @default(0) @map("amount_paid") @db.Decimal(10, 2) // cached SUM of student_payments against this invoice
+  status       String   @default("unpaid") @db.VarChar(20) // unpaid, partial, paid, overdue, waived
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  payments StudentPayment[]
+
+  @@unique([studentId, groupId, billingMonth], map: "uq_student_group_month")
+  @@map("student_invoices")
+}
+
+// The actual tuition payment events — this is where real payment details/history live.
+model StudentPayment {
+  id             Int             @id @default(autoincrement())
+  invoiceId      Int?            @map("invoice_id") // nullable: allows recording an advance/misc payment
+  invoice        StudentInvoice? @relation(fields: [invoiceId], references: [id])
+  studentId      Int             @map("student_id") // denormalized so "all payments by this student" needs no join
+  student        Student         @relation(fields: [studentId], references: [id])
+  teacherId      Int             @map("teacher_id")
+  teacher        Teacher         @relation(fields: [teacherId], references: [id])
+  amount         Decimal         @db.Decimal(10, 2)
+  paymentMethod  String?         @map("payment_method") @db.VarChar(30) // cash, instapay, vodafone_cash, bank_transfer...
+  recordedByType ActorType       @map("recorded_by_type") // who collected/logged it
+  recordedById   Int             @map("recorded_by_id") // polymorphic: teachers.id or teacher_assistants.id depending on recordedByType — enforced in app code, not a DB relation
+  receiptNote    String?         @map("receipt_note") @db.VarChar(255)
+  paidAt         DateTime        @default(now()) @map("paid_at")
+
+  @@index([teacherId])
+  @@index([studentId])
+  @@map("student_payments")
+}

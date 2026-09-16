@@ -1,0 +1,1 @@
+export { DatabaseConfig } from './server.config'

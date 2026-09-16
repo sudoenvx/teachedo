@@ -1,0 +1,2 @@
+ALTER TABLE `students`
+  MODIFY COLUMN `parent_id` INTEGER NULL;

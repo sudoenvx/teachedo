@@ -1,0 +1,54 @@
+// // =============================================================
+// // Module G: Notifications
+// // =============================================================
+// // Targeting collapses into two independent dimensions instead of a long
+// // enum list: WHO receives it (student or parent) and HOW the audience is
+// // selected (everyone, by group(s), or an explicit list). The audience is
+// // then resolved into concrete NotificationRecipient rows at send time, so
+// // if a student later leaves a group, the historical record of who was
+// // actually notified doesn't silently change.
+// //
+// // Mapping of your five scenarios (same shape for recipientType = parent):
+// //   Specific group      -> audienceScope = groups,       audienceFilter = {"groupIds":[15]}
+// //   All groups          -> audienceScope = all,           audienceFilter = null
+// //   N specific students -> audienceScope = individuals,   audienceFilter = {"ids":[45,46,47]}
+// //   All students         -> audienceScope = all,           audienceFilter = null
+// //   One specific student -> audienceScope = individuals,   audienceFilter = {"ids":[45]}
+
+// model Notification {
+//   id             Int           @id @default(autoincrement())
+//   teacherId      Int           @map("teacher_id")
+//   teacher        Teacher       @relation(fields: [teacherId], references: [id])
+//   createdByType  ActorType     @map("created_by_type")
+//   createdById    Int           @map("created_by_id") // polymorphic: teachers.id or teacher_assistants.id — app-level, not a DB relation
+//   title          String?       @db.VarChar(150)
+//   body           String?       @db.Text
+//   recipientType  RecipientType @map("recipient_type") // who this notification is addressed to
+//   audienceScope  String        @map("audience_scope") @db.VarChar(20) // dynamic enum: all, groups, individuals
+//   audienceFilter Json?         @map("audience_filter") // {"groupIds":[..]} for groups, {"ids":[..]} for individuals; null for all
+//   channel        String        @default("in_app") @map("channel") @db.VarChar(20) // in_app, sms, whatsapp, email
+//   createdAt      DateTime      @default(now()) @map("created_at")
+
+//   recipients NotificationRecipient[]
+
+//   @@index([teacherId])
+//   @@map("notifications")
+// }
+
+// // The resolved, concrete list of who actually got it — computed once at
+// // send time by expanding audienceScope/audienceFilter (e.g. looking up
+// // GroupEnrollment for the 'groups' scope). Also tracks per-recipient
+// // delivery/read state.
+// model NotificationRecipient {
+//   id             Int           @id @default(autoincrement())
+//   notificationId Int           @map("notification_id")
+//   notification   Notification  @relation(fields: [notificationId], references: [id])
+//   recipientType  RecipientType @map("recipient_type")
+//   recipientId    Int           @map("recipient_id") // polymorphic: students.id or parents.id depending on recipientType — app-level, not a DB relation
+//   deliveredAt    DateTime?     @map("delivered_at")
+//   isRead         Boolean       @default(false) @map("is_read")
+//   readAt         DateTime?     @map("read_at")
+
+//   @@unique([notificationId, recipientType, recipientId], map: "uq_notif_recipient")
+//   @@map("notification_recipients")
+// }

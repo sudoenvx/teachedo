@@ -1,0 +1,54 @@
+{
+  "name": "@teachedo/theme",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./index.css": "./src/index.css",
+    "./tokens.css": "./src/tokens.css",
+    "./theme.css": "./src/theme.css",
+    "./base.css": "./src/base.css",
+    "./custom.css": "./src/custom.css"
+  },
+  "types": "./dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      ".": [
+        "./dist/index.d.ts"
+      ],
+      "./index.css": [
+        "./src/index.css"
+      ],
+      "./globals.css": [
+        "./src/index.css"
+      ],
+      "./tokens.css": [
+        "./src/tokens.css"
+      ],
+      "./theme.css": [
+        "./src/theme.css"
+      ],
+      "./base.css": [
+        "./src/base.css"
+      ],
+      "./custom.css": [
+        "./src/custom.css"
+      ]
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "tailwindcss": "^4.3.3",
+    "tw-animate-css": "^1.4.0"
+  },
+  "devDependencies": {
+    "@teachedo/tsconfig": "workspace:*",
+    "shadcn": "^4.21.0",
+    "typescript": "^6.0.2"
+  }
+}
