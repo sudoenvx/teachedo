@@ -1,11 +1,11 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    "target": "ES2024",
+    "target": "es2025",
     "module": "esnext",
+    "strict": true,
     "moduleResolution": "bundler",
     "incremental": true,
-    "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
@@ -15,6 +15,18 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "erasableSyntaxOnly": true,
-    "composite": true
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+
+    "alwaysStrict": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "noImplicitOverride": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "allowUnreachableCode": false,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUncheckedIndexedAccess": true,
   }
 }

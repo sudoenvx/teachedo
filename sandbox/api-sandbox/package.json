@@ -7,14 +7,12 @@
   "main": "src/server.ts",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc --noEmit && node esbuild.config.js",
+    "build": "tsc",
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@prisma/adapter-mariadb": "^7.10.0",
-    "@prisma/client": "7.10.0",
-    "@teachedo/database-sandbox": "workspace:*",
+    "@teachedo/database": "workspace:*",
     "cors": "^2.8.5",
     "dotenv": "^17.4.2",
     "express": "^5.0.1",
@@ -26,6 +24,7 @@
     "@types/express": "^5.0.0",
     "@types/node": "^24.13.4",
     "esbuild": "^0.28.2",
+    "tsup": "^8.5.1",
     "tsx": "^4.23.13",
     "typescript": "^6.0.3"
   }

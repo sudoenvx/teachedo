@@ -53,3 +53,17 @@ async function main() {
 }
 
 main();
+
+
+function test() {
+  const x = 6
+  if(x == 6) {
+    return console.log('yes');
+  } else{
+    return console.log('no');
+    
+  }
+
+  console.log('done');
+  
+}

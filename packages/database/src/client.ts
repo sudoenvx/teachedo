@@ -28,7 +28,7 @@ const globalForPrisma = globalThis as unknown as { __prisma?: PrismaClient };
 /** Process-wide PrismaClient bound to the PostgreSQL driver adapter. */
 export const db = globalForPrisma.__prisma ?? createPrismaClient();
 
-if (process.env.NODE_ENV !== "production") {
+if (process.env['NODE_ENV'] !== "production") {
     globalForPrisma.__prisma = db;
 }
 

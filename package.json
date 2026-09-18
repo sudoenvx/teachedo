@@ -8,7 +8,7 @@
     "lint": "turbo run lint --parallel",
 
     "sandbox:build": "turbo run build --filter=@teachedo/api-sandbox",
-    "sandbox:start": "pnpm --filter api-sandbox start"
+    "sandbox:start": "turbo run start --filter=@teachedo/api-sandbox"
   },
   "keywords": [],
   "author": "",

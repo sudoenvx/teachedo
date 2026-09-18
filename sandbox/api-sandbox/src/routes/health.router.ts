@@ -1,5 +1,5 @@
 import { Router, type Request, type Response } from "express";
-import { db } from "@teachedo/database-sandbox";
+import { db } from "@teachedo/database";
 
 export const healthRouter: Router = Router();
 

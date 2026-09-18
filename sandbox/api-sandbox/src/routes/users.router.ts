@@ -1,5 +1,5 @@
 import { Router, type Request, type Response } from "express";
-import { db } from "@teachedo/database-sandbox";
+import { db } from "@teachedo/database";
 
 export const usersRouter: Router = Router();
 
@@ -21,7 +21,7 @@ usersRouter.get("/", async (_req: Request, res: Response) => {
 // GET /api/users/:id - Get a user by ID
 usersRouter.get("/:id", async (req: Request, res: Response) => {
   try {
-    const id = Number(req.params.id);
+    const id = Number(req.params['id']);
     if (isNaN(id)) {
       res.status(400).json({ success: false, error: "Invalid user ID" });
       return;
@@ -67,7 +67,7 @@ usersRouter.post("/", async (req: Request, res: Response) => {
 // DELETE /api/users/:id - Delete a user
 usersRouter.delete("/:id", async (req: Request, res: Response) => {
   try {
-    const id = Number(req.params.id);
+    const id = Number(req.params['id']);
     if (isNaN(id)) {
       res.status(400).json({ success: false, error: "Invalid user ID" });
       return;

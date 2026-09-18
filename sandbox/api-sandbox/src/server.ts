@@ -1,11 +1,12 @@
 import "dotenv/config";
 import { app } from "./app.ts";
-import { disconnect } from "@teachedo/database-sandbox";
+import { db, disconnect } from "@teachedo/database";
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env['PORT'] || 3001;
 
 const server = app.listen(PORT, () => {
   console.log(`🚀 API Sandbox server running at http://localhost:${PORT}`);
+  db.user.findMany({})
 });
 
 async function shutdown(signal: string) {

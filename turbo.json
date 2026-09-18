@@ -1,15 +1,30 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
-  "globalEnv": ["DATABASE_URL", "NODE_ENV", "PORT"],
+  "globalEnv": [
+    "DATABASE_URL",
+    "NODE_ENV"
+  ],
   "tasks": {
     "build": {
-      "dependsOn": ["^build", "^db:generate"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "env": ["DATABASE_URL"],
+      "dependsOn": [
+        "^build",
+        "^db:build",
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env*"
+      ],
+      "env": [
+        "DATABASE_URL"
+      ],
       "outputs": [
         "dist/**",
         "build/**"
       ]
+    },
+    "start": {
+      "persistent": true,
+      "cache": false
     },
     "db:generate": {
       "cache": false
@@ -18,16 +33,28 @@
       "cache": false
     },
     "db:migrate": {
+      "cache": false,
+      "persistent": true
+    },
+    "db:build": {
       "cache": false
     },
     "db:seed": {
       "cache": false
     },
     "typecheck": {
-      "dependsOn": ["^typecheck"],
-      "inputs": ["src/**/*", "tsconfig*.json"]
+      "dependsOn": [
+        "^typecheck"
+      ],
+      "inputs": [
+        "src/**/*",
+        "tsconfig*.json"
+      ]
     },
     "dev": {
+      "dependsOn": [
+        "^db:generate"
+      ],
       "persistent": true,
       "cache": false
     }
