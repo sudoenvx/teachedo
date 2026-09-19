@@ -1,7 +1,7 @@
 {
   "extends": "@teachedo/tsconfig/node.json",
   "compilerOptions": {
-    "rootDir": ".",
+    "rootDir": "./",
     "outDir": "dist"
   },
   "include": [
@@ -12,5 +12,11 @@
   "exclude": [
     "node_modules",
     "dist"
+  ],
+  
+  "references": [
+    {
+      "path": "../utils"
+    }
   ]
 }

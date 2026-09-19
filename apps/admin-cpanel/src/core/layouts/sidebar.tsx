@@ -8,7 +8,7 @@ import {
   Popover,
   type LayoutNavigationItem,
   type LayoutNavigationSection,
-} from '@teachedo/ui'
+} from '@teachedo/ui/legacy'
 import { cn } from '@/core/utils'
 import { useLayoutSettings } from './layout_settings'
 import { AVATAR_PLACEHOLDER, LOGO } from '@/core/assets'

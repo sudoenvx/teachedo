@@ -13,7 +13,7 @@ import {
   Wallet,
   Settings
 } from 'lucide-react'
-import { StatisticCard, DataTable, Badge, Card, IconButton, Button } from '@teachedo/ui'
+import { StatisticCard, DataTable, Badge, Card, IconButton, Button } from '@teachedo/ui/legacy'
 import { useAdminStats, useLatestTeachers } from '../api/dashboard.queries'
 import type { LatestTeacher } from '../types/dashboard.types'
 import { cn } from '@/core/utils'
@@ -127,7 +127,7 @@ export default function AdminDashboard() {
           // value={statsLoading ? '...' : stats?.overdueTeachers.toLocaleString() || '0'}
           value={statsLoading ? '...' : '0'}
           icon={AlertOctagon}
-          iconClassName="bg-danger-subtle text-danger"
+          iconClassName="bg-destructive-subtle text-destructive"
         />
       </div>
 
@@ -222,19 +222,19 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
         {/* صندوق التنبيه المالي بستايل نظامك (Danger colors) */}
-        <Card className="hidden rounded-sm border-danger/30 bg-danger-subtle" bodyClassName="p-4 flex flex-col justify-between relative overflow-hidden group cursor-pointer">
-          <div className="absolute -left-6 -top-6 text-danger/20">
+        <Card className="hidden rounded-sm border-destructive/30 bg-destructive-subtle" bodyClassName="p-4 flex flex-col justify-between relative overflow-hidden group cursor-pointer">
+          <div className="absolute -left-6 -top-6 text-destructive/20">
             <AlertOctagon size={100} strokeWidth={1} />
           </div>
           <div className="relative z-10 flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2 text-danger-subtle-text">
-              <AlertOctagon size={18} className="text-danger" />
+            <div className="flex items-center gap-2 text-destructive-subtle-text">
+              <AlertOctagon size={18} className="text-destructive" />
               <h3 className="text-[14px] font-bold">تنبيه تأخر السداد</h3>
             </div>
           </div>
           <div className="relative z-10 flex flex-col mt-2">
-            <span className="text-[11px] font-medium text-danger-subtle-text">مستحقات متأخرة من 4 مدرسين</span>
-            <span className="text-3xl font-black text-danger font-inter mt-1 tracking-tight">
+            <span className="text-[11px] font-medium text-destructive-subtle-text">مستحقات متأخرة من 4 مدرسين</span>
+            <span className="text-3xl font-black text-destructive font-inter mt-1 tracking-tight">
               3,400 <span className="text-sm font-bold">EGP</span>
             </span>
           </div>

@@ -256,7 +256,7 @@ export default function GroupFormPage() {
             إضافة موعد
           </Button>
           {errors.schedules?.message && (
-            <p className="mt-2 text-[11px] text-danger">{errors.schedules.message}</p>
+            <p className="mt-2 text-[11px] text-destructive">{errors.schedules.message}</p>
           )}
         </div>
       </Card>

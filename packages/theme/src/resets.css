@@ -5,12 +5,12 @@
         textarea,
         select,
         button {
-            font-family: inherit !important;
+            font-family: inherit;
         }
     }
 
     a {
-        transform: none !important;
+        transform: none;
         position: static;
     }
 }

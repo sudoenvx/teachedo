@@ -30,7 +30,8 @@
       "cache": false
     },
     "db:push": {
-      "cache": false
+      "cache": false,
+      "persistent": true
     },
     "db:migrate": {
       "cache": false,
@@ -53,7 +54,8 @@
     },
     "dev": {
       "dependsOn": [
-        "^db:generate"
+        "^db:generate",
+        "^db:seed",
       ],
       "persistent": true,
       "cache": false

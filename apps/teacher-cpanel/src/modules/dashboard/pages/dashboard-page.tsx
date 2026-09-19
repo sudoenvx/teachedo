@@ -91,7 +91,7 @@ export default function TeacherDashboardPage() {
           <TeacherWelcomeHeader />
 
           {isError && (
-            <div className="bg-danger-subtle p-2 rounded-sm text-[13px] font-medium text-danger">
+            <div className="bg-destructive-subtle p-2 rounded-sm text-[13px] font-medium text-destructive">
               تعذر تحميل إحصائيات المنصة حالياً.
             </div>
           )}
@@ -309,8 +309,8 @@ function DayTab({
       type="button"
       onClick={onClick}
       className={`flex h-16 w-14 shrink-0 snap-start flex-col items-center justify-center gap-0.5 rounded-sm px-1.5 py-1 text-center transition-all ${selected
-          ? 'bg-primary text-primary-foreground shadow-sm'
-          : 'text-secondary-foreground/70 hover:bg-white/10 hover:text-white'
+        ? 'bg-primary text-primary-foreground shadow-sm'
+        : 'text-secondary-foreground/70 hover:bg-white/10 hover:text-white'
         }`}
     >
       <span
@@ -352,8 +352,8 @@ function SessionCard({
   return (
     <article
       className={`flex min-w-65 snap-start flex-1 flex-col gap-3 rounded-sm border p-4 transition-colors ${highlighted
-          ? 'bg-primary-subtle border-primary/20'
-          : 'bg-neutral-100 border-border hover:border-border-hover hover:bg-neutral-200'
+        ? 'bg-primary-subtle border-primary/20'
+        : 'bg-neutral-100 border-border hover:border-border-hover hover:bg-neutral-200'
         }`}
     >
       <div className="flex items-start justify-between gap-3">
@@ -361,10 +361,10 @@ function SessionCard({
           <div className="flex items-center gap-2 mb-1">
             <span
               className={`h-2 w-2 rounded-full shadow-sm ${state === 'current'
-                  ? 'bg-success animate-pulse'
-                  : state === 'next'
-                    ? 'bg-primary'
-                    : 'bg-border-strong'
+                ? 'bg-success animate-pulse'
+                : state === 'next'
+                  ? 'bg-primary'
+                  : 'bg-border-strong'
                 }`}
             />
             <h4 className="truncate text-[14px] font-bold text-text">{session.group.groupName}</h4>

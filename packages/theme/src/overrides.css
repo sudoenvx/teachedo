@@ -1,0 +1,436 @@
+/* ==========================================================================
+   DESIGN TOKENS — OKLCH + CSS Relative Color Syntax
+   ==========================================================================
+   - Every "role" color (primary, secondary, accent, danger, warning,
+     success, info) is a single SEED value. Everything else about that
+     role — hover, active, subtle bg, subtle foreground — is DERIVED from
+     the seed with oklch(from var(--seed) calc(...) calc(...) h). Change
+     the seed, everything built on it recalculates.
+   - Dark mode (bottom of file) only overrides seeds. Because states/
+     subtles/borders/surfaces are all relative formulas, most of them
+     recompute correctly for dark mode automatically — see the comments
+     down there for the couple of cases where direction has to flip
+     manually (text scale, neutral scale).
+   ========================================================================== */
+
+:root {
+   color-scheme: light;
+
+   /* ------------------------------------------------------------------
+     ROLE COLORS — seeds
+  ------------------------------------------------------------------ */
+   --primary: oklch(55.4% 0.139 245.7);
+   --secondary: oklch(36.768% 0.00004 271.152);
+   /* --secondary: oklch(33.6% 0.012 285.7); */
+   --accent: oklch(57.763% 0.15032 296.128);
+   --destructive: oklch(58.9% 0.117 12.9);
+   --warning: oklch(75.3% 0.137 75.2);
+   --success: oklch(60.5% 0.11 163.5);
+   --info: oklch(59.882% 0.11679 231.816);
+   /* new — no equivalent existed before */
+
+   /* ------------------------------------------------------------------
+     ROLE COLORS — interaction states (derived)
+     Same idea as your old "-dark" tokens, renamed to what they actually
+     mean. -active pushes further in the same direction as -hover.
+  ------------------------------------------------------------------ */
+   --primary-hover: oklch(from var(--primary) calc(l - 0.075) c h);
+   --primary-active: oklch(from var(--primary) calc(l - 0.15) c h);
+
+   --secondary-hover: oklch(from var(--secondary) calc(l - 0.10) c h);
+   --secondary-active: oklch(from var(--secondary) calc(l - 0.18) c h);
+
+   /* kept faithful to your original relationship: this role gets LIGHTER
+     on hover/active, not darker */
+   --accent-hover: oklch(from var(--accent) calc(l - 0.062) calc(c * 0.87) h);
+   --accent-active: oklch(from var(--accent) calc(l + 0.12) calc(c * 0.75) h);
+
+   --destructive-hover: oklch(from var(--destructive) calc(l - 0.052) calc(c * 1.08) h);
+   --destructive-active: oklch(from var(--destructive) calc(l - 0.10) calc(c * 1.15) h);
+
+   --warning-hover: oklch(from var(--warning) calc(l - 0.08) c h);
+   --warning-active: oklch(from var(--warning) calc(l - 0.15) c h);
+
+   --success-hover: oklch(from var(--success) calc(l - 0.08) c h);
+   --success-active: oklch(from var(--success) calc(l - 0.15) c h);
+
+   --info-hover: oklch(from var(--info) calc(l - 0.08) c h);
+   --info-active: oklch(from var(--info) calc(l - 0.15) c h);
+
+   /* ------------------------------------------------------------------
+     ROLE COLORS — foreground (text/icon placed ON TOP of the solid role color)
+  ------------------------------------------------------------------ */
+   --primary-foreground: oklch(97.4% 0.001 17.2);
+   --secondary-foreground: oklch(90% 0 0);
+   --accent-foreground: oklch(100% 0 0);
+   --destructive-foreground: oklch(100% 0 0);
+   /* --warning-foreground: oklch(18% 0.01 285); */
+   --warning-foreground: oklch(25% 0.05 75);
+   --success-foreground: oklch(100% 0 0);
+   --info-foreground: oklch(100% 0 0);
+   /* Note: warning/success/info foregrounds are a reasonable starting
+     guess (light role → dark text, dark/saturated role → light text).
+     Worth a quick contrast check (WCAG AA) once you see them rendered. */
+
+   /* ------------------------------------------------------------------
+     ROLE COLORS — subtle (bg for badges/labels/chips) + subtle-foreground
+     Renamed from "tint". No --secondary-subtle — see neutral scale below,
+     that's what secondary's tint use-case became.
+  ------------------------------------------------------------------ */
+   --primary-subtle: oklch(from var(--primary) calc(l + 0.35) calc(c * 0.22) h);
+   --primary-subtle-foreground: oklch(18.1% 0.014 284.9);
+
+   --accent-subtle: oklch(from var(--accent) calc(l + 0.35) calc(c * 0.22) h);
+   --accent-subtle-foreground: oklch(18.1% 0.014 284.9);
+
+   --destructive-subtle: oklch(from var(--destructive) calc(l + 0.30) calc(c * 0.17) h);
+   --destructive-subtle-foreground: oklch(30.8% 0.012 285.6);
+
+   --warning-subtle: oklch(from var(--warning) calc(l + 0.18) calc(c * 0.30) h);
+   --warning-subtle-foreground: oklch(30% 0.05 75);
+
+   --success-subtle: oklch(from var(--success) calc(l + 0.30) calc(c * 0.25) h);
+   --success-subtle-foreground: oklch(25% 0.05 163);
+
+   --info-subtle: oklch(from var(--info) calc(l + 0.30) calc(c * 0.20) h);
+   --info-subtle-foreground: oklch(25% 0.05 230);
+
+   /* ------------------------------------------------------------------
+     NEUTRAL GRAY SCALE — derived from --secondary
+     This replaces the old "secondary-tint": a real stepped gray scale
+     for neutral badges/dividers/backgrounds, sharing secondary's hue.
+     500 = --secondary itself. 600/700 reuse the hover/active you
+     already have so there's only one source of truth.
+  ------------------------------------------------------------------ */
+   /* --neutral-100: oklch(92.2% 0 none);
+  --neutral-200: oklch(89% 0 none);
+  --neutral-300: oklch(70.8% 0 none);
+  --neutral-400: oklch(55.6% 0 none);
+  --neutral-500: var(--secondary);
+  --neutral-600: var(--secondary-hover);
+  --neutral-700: var(--secondary-active); */
+
+  --neutral-50: oklch(96% 0 0);
+  --neutral-100: oklch(92.191% 0.0001 271.152);
+  --neutral-200: oklch(87.302% 0.0001 271.152);
+  --neutral-300: oklch(85% 0 0);
+  --neutral-400: oklch(70% 0 0);
+  --neutral-500: oklch(55% 0 0);
+  --neutral-600: oklch(40% 0 0);
+  --neutral-700: oklch(25% 0 0);
+   /* Usage idea: a neutral badge = background var(--neutral-100), text
+     var(--text) or var(--text-muted) — exactly the "gray badge with
+     standalone text color" pattern you described. */
+
+   /* ------------------------------------------------------------------
+     STANDALONE TEXT SCALE — one shared oklch base, only lightness steps
+  ------------------------------------------------------------------ */
+   --text: oklch(34.458% 0.00004 271.152);
+   --text-muted: oklch(from var(--text) calc(l + 0.180) c h);
+   --text-faint: oklch(from var(--text) calc(l + 0.370) c h);
+
+   /* ------------------------------------------------------------------
+     CANVAS — the root app background (was the ambiguous "--background")
+  ------------------------------------------------------------------ */
+   --canvas: oklch(95.213% 0.00011 271.152);
+   /* --canvas: oklch(95.213% 0.00011 271.152); */
+
+   /* ------------------------------------------------------------------
+     SURFACES — all derived from --canvas, so elevation stays consistent
+     automatically in dark mode too (see below).
+       surface           = default card/panel, one step up from canvas
+       surface-raised    = elevated further (modal, dropdown, popover)
+       surface-secondary = nested content INSIDE a surface (an inset
+                            panel, code block, table stripe — "two levels")
+  ------------------------------------------------------------------ */
+   --surface: oklch(100% 0 0);
+   --surface-raised: oklch(98% 0 0);
+   /* --surface-secondary: oklch(95% 0.003 270); */
+   --surface-secondary: var(--color-neutral-50);
+   /* Inner panels */
+
+   /* ------------------------------------------------------------------
+     BORDER — seed + derived states
+  ------------------------------------------------------------------ */
+   --border: oklch(78.6% 0.003 286.3);
+   --border-subtle: oklch(from var(--border) calc(l + 0.10) c h);
+   --border-strong: oklch(from var(--border) calc(l - 0.20) c h);
+   --border-hover: oklch(from var(--border) calc(l - 0.12) c h);
+
+   /* ------------------------------------------------------------------
+     FOCUS RING & OVERLAY
+  ------------------------------------------------------------------ */
+   --focus-ring: oklch(from var(--secondary) calc(l + 0.10) calc(c * 0.9) h);
+   --overlay: oklch(from var(--neutral-700) l c h / 0.5);
+
+   /* ------------------------------------------------------------------
+     DISABLED STATE — generic, reusable by any component
+  ------------------------------------------------------------------ */
+   --disabled-background: oklch(from var(--canvas) calc(l - 0.03) calc(c * 0.5) h);
+   --disabled-foreground: var(--text-faint);
+   --disabled-border: var(--border-subtle);
+
+   /* ------------------------------------------------------------------
+     INPUT TOKENS
+  ------------------------------------------------------------------ */
+   --input-background: var(--surface);
+   --input-foreground: var(--text);
+   --input-placeholder: var(--text-faint);
+   --input-border: var(--border);
+   --input-border-hover: var(--border-hover);
+   --input-border-focus: var(--focus-ring);
+   --input-disabled-background: var(--disabled-background);
+   --input-disabled-foreground: var(--disabled-foreground);
+   --input-disabled-border: var(--disabled-border);
+
+   /* ------------------------------------------------------------------
+     ALPHA UTILITIES — a couple of examples of the pattern; extend to
+     any other role the same way (oklch(from var(--x) l c h / N))
+  ------------------------------------------------------------------ */
+   --primary-alpha-10: oklch(from var(--primary) l c h / 0.1);
+   --primary-alpha-20: oklch(from var(--primary) l c h / 0.2);
+
+   /* ------------------------------------------------------------------
+     SHADOWS
+  ------------------------------------------------------------------ */
+   /* --shadow-card: 0 1px 1px 0 color-mix(in srgb, var(--color-neutral-400) 30%, transparent), 0 2px 5px 0 color-mix(in srgb, var(--color-neutral-400) 30%, transparent); */
+   --shadow-card: 0 1px 1px 0 color-mix(in srgb, var(--color-neutral-300) 30%, transparent), 0 2px 5px 0 color-mix(in srgb, var(--color-neutral-300) 30%, transparent);
+   /* --shadow-card: none; */
+   --shadow-elevated: 0 4px 20px 0 color-mix(in srgb, var(--color-neutral-400) 40%, transparent), 0 1px 3px 0 color-mix(in srgb, var(--color-neutral-400) 40%, transparent);
+
+   /* ------------------------------------------------------------------
+     NON-COLOR TOKENS — starter set, expand as needed
+  ------------------------------------------------------------------ */
+   --radius-xs: 2px;
+   --radius-sm: 4px;
+   --radius-md: 8px;
+   --radius-lg: 12px;
+   --radius-xl: 16px;
+   --radius-2xl: 20px;
+   --radius-3xl: 24px;
+
+   --radius-full: 9999px;
+
+   --space-1: 4px;
+   --space-2: 8px;
+   --space-3: 12px;
+   --space-4: 16px;
+   --space-5: 24px;
+   --space-6: 32px;
+
+   --font-size-sm: 0.875rem;
+   --font-size-base: 1rem;
+   --font-size-lg: 1.125rem;
+   --font-size-xl: 1.5rem;
+
+   --font-tajwal: "tajwal", "sans-serif";
+
+   /* ------------------------------------------------------------------
+     CUSTOM / STANDALONE COLORS — reserved space for one-off colors that
+     should NOT be derived from a role color: chart series, data-viz
+     categories, brand marks, illustration palettes, etc. These need to
+     be visually distinct from each other, so relative derivation from
+     one seed usually works against you here — pick independent hues.
+     Uncomment and fill in as needed:
+
+     --chart-1: oklch(65% 0.15 40);   /* warm orange */
+   --chart-2: oklch(60% 0.14 293);
+   /* your accent purple */
+   --chart-3: oklch(58% 0.11 230);
+   /* your info blue */
+   --chart-4: oklch(60.5% 0.11 163);
+   /* your success green */
+   --chart-5: oklch(65% 0.15 20);
+   /* rose */
+
+}
+
+/* ==========================================================================
+   DARK MODE
+   ==========================================================================
+   Toggle by adding data-theme="dark" to <html> (or swap the selector for
+   @media (prefers-color-scheme: dark) if you want it automatic).
+
+   What's overridden below is ONLY seed colors. Because hover/active/
+   subtle/surfaces/border variants/input tokens/focus-ring/overlay are
+   all relative formulas built on these seeds, they recompute correctly
+   the moment the seed changes — you don't have to touch them again.
+
+   Two things do NOT invert automatically and are redeclared here on
+   purpose: the text scale and the neutral scale. In light mode "muted/
+   faint" means "lighter than the base text", because the base is near-
+   black. In dark mode the base is near-white, so "muted/faint" has to
+   mean "darker than the base" instead — the sign of the offset flips.
+   Same underlying problem with the neutral scale's step order. Everything
+   else in this block is a plain seed swap.
+   ========================================================================== */
+
+:root[data-theme="dark"] {
+   color-scheme: dark;
+
+   /* role color seeds, nudged for contrast/vibrancy against a dark canvas */
+   --primary: oklch(60% 0.11 245.7);
+   --secondary: oklch(40.912% 0.00005 271.152);
+   --accent: oklch(60% 0.125 293.7);
+   --destructive: oklch(66% 0.12 12.9);
+   --warning: oklch(80% 0.13 75.2);
+   --success: oklch(66% 0.11 163.5);
+   --info: oklch(68% 0.11 230);
+
+   /* root background: this is your OLD --canvas value (#1e1e24) — turns
+     out it was already the correct dark-theme background all along */
+   /* --canvas: oklch(23.8% 0.011 285.5); */
+   --canvas: #171717;
+
+   /* text scale — direction flipped (see note above), same magnitude offsets */
+   --text: oklch(85% 0.005 285.8);
+   --text-muted: oklch(from var(--text) calc(l - 0.226) c h);
+   --text-faint: oklch(from var(--text) calc(l - 0.464) c h);
+
+   /* border needs its own dark-appropriate seed; states below it still
+     derive automatically once this is set */
+   --border: oklch(40% 0.006 285.7);
+
+   --shadow-elevated: 0 4px 20px 0 color-mix(in srgb, #000 50%, transparent), 0 1px 3px 0 color-mix(in srgb, var(--color-neutral-700) 50%, transparent);
+
+   /* neutral scale — redeclared with flipped offsets around the new,
+     lighter dark-mode --secondary seed so steps stay in-range */
+
+  --neutral-100: oklch(18% 0 0);
+   /* Darkest */
+  --neutral-200: oklch(24% 0 0);
+  --neutral-300: oklch(34.86% 0 0);
+  --neutral-400: oklch(50% 0 0);
+  --neutral-500: oklch(65% 0 0);
+  --neutral-600: oklch(80% 0 0);
+  --neutral-700: oklch(95% 0 0);
+   /* Lightest */
+
+   /* --surface: oklch(15% 0.005 285.8); */
+   --surface: #252525;
+
+   /* everything below this line needs NO changes — it's already relative:
+     --primary-hover/-active/-foreground/-subtle/-subtle-foreground,
+     same for secondary/accent/danger/warning/success/info,
+     --surface/-raised/-secondary (derive from the new --canvas),
+     --border-subtle/-strong/-hover (derive from the new --border),
+     --focus-ring, --overlay, --disabled-*, --input-*, --primary-alpha-* */
+}
+
+@theme inline {
+   --color-primary: var(--primary);
+   --color-primary-hover: var(--primary-hover);
+   --color-primary-active: var(--primary-active);
+   --color-primary-foreground: var(--primary-foreground);
+   --color-primary-subtle: var(--primary-subtle);
+   --color-primary-subtle-foreground: var(--primary-subtle-foreground);
+
+   --color-secondary: var(--secondary);
+   --color-secondary-hover: var(--secondary-hover);
+   --color-secondary-active: var(--secondary-active);
+   --color-secondary-foreground: var(--secondary-foreground);
+
+   --color-accent: var(--accent);
+   --color-accent-hover: var(--accent-hover);
+   --color-accent-active: var(--accent-active);
+   --color-accent-foreground: var(--accent-foreground);
+   --color-accent-subtle: var(--accent-subtle);
+   --color-accent-subtle-foreground: var(--accent-subtle-foreground);
+
+   --color-destructive: var(--destructive);
+   --color-destructive-hover: var(--destructive-hover);
+   --color-destructive-active: var(--destructive-active);
+   --color-destructive-foreground: var(--destructive-foreground);
+   --color-destructive-subtle: var(--destructive-subtle);
+   --color-destructive-subtle-foreground: var(--destructive-subtle-foreground);
+
+   --color-warning: var(--warning);
+   --color-warning-hover: var(--warning-hover);
+   --color-warning-active: var(--warning-active);
+   --color-warning-foreground: var(--warning-foreground);
+   --color-warning-subtle: var(--warning-subtle);
+   --color-warning-subtle-foreground: var(--warning-subtle-foreground);
+
+   --color-success: var(--success);
+   --color-success-hover: var(--success-hover);
+   --color-success-active: var(--success-active);
+   --color-success-foreground: var(--success-foreground);
+   --color-success-subtle: var(--success-subtle);
+   --color-success-subtle-foreground: var(--success-subtle-foreground);
+
+   --color-info: var(--info);
+   --color-info-hover: var(--info-hover);
+   --color-info-active: var(--info-active);
+   --color-info-foreground: var(--info-foreground);
+   --color-info-subtle: var(--info-subtle);
+   --color-info-subtle-foreground: var(--info-subtle-foreground);
+
+   --color-neutral-50: var(--neutral-50);
+   --color-neutral-100: var(--neutral-100);
+   --color-neutral-200: var(--neutral-200);
+   --color-neutral-300: var(--neutral-300);
+   --color-neutral-400: var(--neutral-400);
+   --color-neutral-500: var(--neutral-500);
+   --color-neutral-600: var(--neutral-600);
+   --color-neutral-700: var(--neutral-700);
+
+   --color-text: var(--text);
+   --color-text-muted: var(--text-muted);
+   --color-text-faint: var(--text-faint);
+
+   --color-canvas: var(--canvas);
+   --color-surface: var(--surface);
+   --color-surface-raised: var(--surface-raised);
+   --color-surface-secondary: var(--surface-secondary);
+
+   --color-border: var(--border);
+   --color-border-subtle: var(--border-subtle);
+   --color-border-strong: var(--border-strong);
+   --color-border-hover: var(--border-hover);
+
+   --color-focus-ring: var(--focus-ring);
+   --color-overlay: var(--overlay);
+
+   --color-disabled-background: var(--disabled-background);
+   --color-disabled-foreground: var(--disabled-foreground);
+   --color-disabled-border: var(--disabled-border);
+
+   --color-input-background: var(--input-background);
+   --color-input-foreground: var(--input-foreground);
+   --color-input-placeholder: var(--input-placeholder);
+   --color-input-border: var(--input-border);
+   --color-input-border-hover: var(--input-border-hover);
+   --color-input-border-focus: var(--input-border-focus);
+   --color-input-disabled-background: var(--input-disabled-background);
+   --color-input-disabled-foreground: var(--input-disabled-foreground);
+   --color-input-disabled-border: var(--input-disabled-border);
+
+
+   --color-chart-1: var(--chart-1);
+   --color-chart-2: var(--chart-2);
+   --color-chart-3: var(--chart-3);
+   --color-chart-4: var(--chart-4);
+   --color-chart-5: var(--chart-5);
+
+   --shadow-card: var(--shadow-card);
+   --shadow-elevated: var(--shadow-elevated);
+
+   --radius-sm: var(--radius-sm);
+   --radius-md: var(--radius-md);
+   --radius-lg: var(--radius-lg);
+   --radius-full: var(--radius-full);
+
+   /* --spacing-1: var(--space-1);
+  --spacing-2: var(--space-2);
+  --spacing-3: var(--space-3);
+  --spacing-4: var(--space-4);
+  --spacing-5: var(--space-5);
+  --spacing-6: var(--space-6); */
+
+   --font-size-sm: var(--font-size-sm);
+   --font-size-base: var(--font-size-base);
+   --font-size-lg: var(--font-size-lg);
+   --font-size-xl: var(--font-size-xl);
+
+   --font-tajwal: "tajwal", "sans-serif";
+}

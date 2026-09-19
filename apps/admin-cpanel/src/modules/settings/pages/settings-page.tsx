@@ -29,7 +29,7 @@ import {
   PageHeader,
   Breadcrumb,
   Card
-} from '@teachedo/ui'
+} from '@teachedo/ui/legacy'
 
 import type { SystemSettings } from '../types/settings.types'
 import { useGetSettings } from '../api/settings.queries'

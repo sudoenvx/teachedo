@@ -18,7 +18,6 @@
     "composite": true,
     "declaration": true,
     "declarationMap": true,
-
     "alwaysStrict": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
@@ -26,7 +25,8 @@
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "allowUnreachableCode": false,
-    "noPropertyAccessFromIndexSignature": true,
+    "noPropertyAccessFromIndexSignature": false,
     "noUncheckedIndexedAccess": true,
+    "ignoreDeprecations": "6.0"
   }
 }

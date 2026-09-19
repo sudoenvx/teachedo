@@ -32,7 +32,7 @@ import {
   IconButton,
   Tabs,
   useToast,
-} from '@teachedo/ui'
+} from '@teachedo/ui/legacy'
 import { useTeacherProfile } from '@/modules/teacher/api/teacher-profiles.queries'
 import { useUpdateTeacher, useDeleteTeacher } from '@/modules/teacher/api/teachers.mutations'
 import { useNotification } from '@/core/hooks/use_notification'
@@ -275,7 +275,7 @@ export default function TeacherManagePage() {
             {/* Profile Hero Box */}
             <div className="flex items-center gap-3.5 p-2 bg-background/50">
               <div className="flex h-12 w-12 shrink-0 items-center p-1 justify-center rounded-xl bg-accent-subtle text-primary-foreground font-bold text-lg">
-                <img src={AVATAR_PLACEHOLDER} className='bg-cover' style={{
+                <img alt='User Avatar Placeholder' src={AVATAR_PLACEHOLDER} className='bg-cover' style={{
                   mixBlendMode: 'multiply',
                   filter: 'contrast(1)'
                 }} />
@@ -460,7 +460,7 @@ export default function TeacherManagePage() {
               <Card>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex items-start gap-2.5">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-danger/10 text-danger">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-destructive/10 text-destructive">
                       <ShieldAlert size={16} />
                     </div>
                     <div>

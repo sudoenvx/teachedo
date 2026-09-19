@@ -7,10 +7,9 @@
     "start": "node dist/server.js",
     "dev": "tsx watch src/server.ts",
     "typecheck": "tsc --noEmit",
-    "build": "tsc --noEmit && esbuild src/server.ts --bundle --platform=node --format=esm --packages=external --outdir=dist"
+    "build": "tsup"
   },
   "license": "ISC",
-
   "type": "module",
   "devDependencies": {
     "@types/compression": "^1.8.1",
@@ -22,7 +21,8 @@
     "@types/node": "^26.4.1",
     "esbuild": "^0.28.2",
     "typescript": "^7.0.2",
-    "winston-transport": "^4.9.0"
+    "winston-transport": "^4.9.0",
+    "tsup": "^8.5.1"
   },
   "dependencies": {
     "@teachedo/utils": "workspace:*",

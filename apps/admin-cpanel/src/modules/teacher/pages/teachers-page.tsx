@@ -22,7 +22,7 @@ import {
   IconButton,
   Breadcrumb,
   PageHeader,
-} from '@teachedo/ui'
+} from '@teachedo/ui/legacy'
 import { useDebounce } from '@/core/hooks/use_debounce'
 import { useTeachersList, type TeacherListItem } from '../api/teachers.queries'
 import { useAdminStats } from '@/modules/dashboard/api/dashboard.queries'

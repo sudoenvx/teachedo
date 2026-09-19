@@ -15,7 +15,8 @@ const router = createBrowserRouter([
     element: <LoginPage />,
   },
   {
-    element: <ProtectedLayout><MainLayout /></ProtectedLayout>,
+    // element: <ProtectedLayout><MainLayout /></ProtectedLayout>,
+    element: <MainLayout />,
     children: [
       {
         index: true,

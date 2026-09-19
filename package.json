@@ -2,13 +2,23 @@
   "name": "teachedo",
   "version": "1.0.0",
   "scripts": {
-    "build": "turbo run build --parallel",
-    "typecheck": "turbo run typecheck --parallel",
-    "dev": "turbo run dev --parallel",
-    "lint": "turbo run lint --parallel",
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
 
-    "sandbox:build": "turbo run build --filter=@teachedo/api-sandbox",
-    "sandbox:start": "turbo run start --filter=@teachedo/api-sandbox"
+    "db:push": "turbo run db:push --filter=@teachedo/database",
+    "db:migrate": "turbo run db:migrate --filter=@teachedo/database",
+    "db:generate": "turbo run db:generate --filter=@teachedo/database",
+    "db:build": "turbo run build --filter=@teachedo/database",
+    "db:seed": "turbo run db:seed --filter=@teachedo/database",
+
+    "api:start": "turbo run start --filter=@teachedo/api",
+    "api:build": "turbo run build --filter=@teachedo/api",
+    "api:dev": "turbo run dev --filter=@teachedo/api",
+
+    "sandbox:start": "turbo run start --filter=@teachedo/api-sandbox",
+    "sandbox:build": "turbo run build --filter=@teachedo/api-sandbox"
   },
   "keywords": [],
   "author": "",

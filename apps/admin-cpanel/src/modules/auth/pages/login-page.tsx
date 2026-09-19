@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Mail, LockKeyhole, ShieldCheck, Lock } from 'lucide-react'
 
-import { Button, Input } from '@teachedo/ui'
+import { Button, Input } from '@teachedo/ui/legacy'
 import { useNotification } from '@/core/hooks/use_notification'
 import { useAdminLogin } from '../api/auth.mutations'
 import { LOGO } from '@/core/assets'

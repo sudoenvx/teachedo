@@ -1,7 +1,7 @@
 import "dotenv/config";
 
-import { runSeeders } from "./seeders/index.ts";
-import { disconnect, db } from "../src/index.ts";
+import { runSeeders } from "./seeders/index";
+import { disconnect, db } from "../src/index";
 
 async function main() {
     await runSeeders(db);

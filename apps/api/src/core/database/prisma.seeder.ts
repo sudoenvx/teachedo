@@ -11,7 +11,7 @@ const seedDatabase = async () => {
     await seedPermissions();
 
     // Conditionally seed development demo data
-    const isDev = process.env.NODE_ENV !== 'production';
+    const isDev = process.env['NODE_ENV'] !== 'production';
     const forceDemo = process.argv.includes('--demo');
 
     if (isDev || forceDemo) {

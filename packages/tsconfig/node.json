@@ -5,10 +5,11 @@
     "types": [
       "node"
     ],
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
-    "allowImportingTsExtensions": true,
-    "rewriteRelativeImportExtensions": true,
-    "allowSyntheticDefaultImports": true
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+
+    "declaration": true,
+    "declarationMap": true
   }
 }

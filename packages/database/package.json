@@ -4,34 +4,35 @@
     "private": true,
     "description": "shared database package",
     "type": "module",
-    "types": "./src/index.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/src/index.js",
-      "require": "./dist/src/index.js",
-      "types": "./src/index.ts"
-    }
-  },
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "require": "./dist/index.js"
+        }
+    },
     "scripts": {
         "typecheck": "tsc --noEmit",
-        "db:generate": "prisma generate",
+        "db:generate": "prisma generate && tsx ./prisma/seeders/index.ts",
         "db:migrate": "prisma migrate dev",
         "db:deploy": "prisma migrate deploy",
         "db:push": "prisma db push",
         "db:reset": "prisma migrate reset",
         "db:seed": "prisma db seed",
         "db:studio": "prisma studio",
-        "build": "prisma generate && tsc"
+        "build": "npx db:generate && tsup"
     },
     "devDependencies": {
         "@teachedo/tsconfig": "workspace:*",
         "@types/pg": "^8.23.1",
         "prisma": "7.10.0",
+        "tsup": "^8.5.1",
         "tsx": "^4.23.13",
         "typescript": "^6.0.2"
     },
     "dependencies": {
         "@prisma/adapter-mariadb": "^7.10.0",
+        "@teachedo/utils": "workspace:*",
         "@prisma/client": "^7.10.0",
         "dotenv": "^17.4.2",
         "pg": "^8.23.0",

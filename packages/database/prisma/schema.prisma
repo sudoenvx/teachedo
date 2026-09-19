@@ -1,17 +1,38 @@
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
+  runtime = "nodejs"
 }
 
 datasource db {
   provider = "mysql"
 }
 
-model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+
+enum DayOfWeek {
+  saturday
+  sunday
+  monday
+  tuesday
+  wednesday
+  thursday
+  friday
 }
 
+// Who performed/logged an action — used for polymorphic "recorded by" /
+// "created by" columns. These stay as (type, id) pairs rather than Prisma
+// relations because the id can point at either `teachers` or
+// `teacher_assistants` depending on the type — Prisma can't express a
+// relation that targets two different models conditionally, so the
+// integrity check for these lives in application code, not the DB layer.
+enum ActorType {
+  teacher
+  assistant
+}
+
+// Who a student/parent-facing record targets — used the same
+// polymorphic way for notification recipients.
+enum RecipientType {
+  student
+  parent
+}

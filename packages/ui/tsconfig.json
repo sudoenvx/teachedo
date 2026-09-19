@@ -4,14 +4,12 @@
     "composite": true,
     "outDir": "dist",
     "rootDir": "./src",
-    "declaration": true,
-    "declarationMap": true,
     "resolvePackageJsonImports": true,
     "forceConsistentCasingInFileNames": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,
     "paths": {
-      "@teachedo/ui/src/*": ["./src/*"],
+      "@teachedo/ui": ["./src/index.ts"],
       "@teachedo/theme": ["../theme/src/index.ts"],
       "@teachedo/utils": ["../utils/src/index.ts"]
     }

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { DataTable, DropdownMenu, DropdownMenuItem, IconButton, Pagination } from '@teachedo/ui'
+import { DataTable, DropdownMenu, DropdownMenuItem, IconButton, Pagination } from '@teachedo/ui/legacy'
 // import { useDeleteTeacher } from '../../api/teachers.mutations'
 // import { useNotification } from '@/core/hooks/use_notification'
 import { useTeachersList, type TeacherListItem } from '@/modules/teacher/api/teachers.queries'

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { LayoutNavbar, type NotificationItemProps } from '@teachedo/ui'
+import { LayoutNavbar, type NotificationItemProps } from '@teachedo/ui/legacy'
 import { useAdminLogout } from '@/modules/auth/api/auth.mutations'
 import Cookies from 'js-cookie'
 

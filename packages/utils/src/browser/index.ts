@@ -1,5 +1,5 @@
 export function isBrowser(): boolean {
-  return typeof window !== "undefined";
+  return typeof window !== "undefined" && typeof window.document !== "undefined";;
 }
 
 export function isMobileDevice(): boolean {

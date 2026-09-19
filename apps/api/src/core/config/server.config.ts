@@ -6,7 +6,6 @@ const envSchema = z.object({
     NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
     PORT: z.coerce.number().default(3003), // coerce converts string "3000" to number 3000
     
-    // Required in all environments (No defaults!)
     DATABASE_URL: z.string().url("DATABASE_URL must be a valid URL"),
     JWT_SECRET: z.string().min(10, "JWT_SECRET must be at least 10 characters long"),
     

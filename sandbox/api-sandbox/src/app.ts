@@ -1,16 +1,10 @@
 import express, { Application, type Request, type Response } from "express";
 import cors from "cors";
-import { healthRouter } from "./routes/health.router.ts";
-import { usersRouter } from "./routes/users.router.ts";
 
 export const app:Application = express();
 
 app.use(cors());
 app.use(express.json());
-
-// Routes
-app.use("/health", healthRouter);
-app.use("/api/users", usersRouter);
 
 // Root route
 app.get("/", (_req: Request, res: Response) => {

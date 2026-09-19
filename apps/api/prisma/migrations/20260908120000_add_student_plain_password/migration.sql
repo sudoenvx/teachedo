@@ -1,1 +1,0 @@
-ALTER TABLE `students` ADD COLUMN `plain_password` VARCHAR(255) NULL;

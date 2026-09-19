@@ -6,7 +6,7 @@ import cookieParser from 'cookie-parser'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { CorsConfig } from './core/config/server.config';
+import { AppConfig, CorsConfig } from './core/config/server.config';
 import { notFoundMiddleware } from './core/middlewares/not-found.mw';
 import { globalErrorHandler } from './core/middlewares/global-error-handler.mw';
 import { AppRouter } from './modules';
@@ -20,6 +20,8 @@ const whitelist = CorsConfig.whitelist
 
 const corsMiddleware = cors({
   origin: function (origin, callback) {
+    if (AppConfig.environment == 'development') return callback(null, true)
+
     if (whitelist.indexOf(origin as string) !== -1 || !origin) {
       callback(null, true)
     } else {

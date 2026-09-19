@@ -92,7 +92,7 @@ export default function GroupManagementPage() {
   if (isError || !group) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] animate-in fade-in zoom-in-95">
-        <AlertTriangle size={48} className="text-danger mb-4 opacity-80" strokeWidth={1.5} />
+        <AlertTriangle size={48} className="text-destructive mb-4 opacity-80" strokeWidth={1.5} />
         <Heading level={2} size="small" className="text-text font-bold mb-2">عذراً، تعذر تحميل المجموعة</Heading>
         <Body size="medium" className="text-text-muted mb-6 text-center max-w-md">
           قد تكون المجموعة محذوفة أو لا تملك صلاحيات الوصول إليها. يرجى التحقق من الرابط والمحاولة مجدداً.
@@ -324,13 +324,13 @@ function AttendanceTab({ enrollments, sessions }: { enrollments: GroupEnrollment
     { header: 'الطالب', render: ({ enrollment }) => <span className="font-bold text-[13px] text-text">{enrollment.student.fullName}</span> },
     { header: 'إجمالي الحصص', accessor: 'records', cellClassName: 'text-[13px] font-inter text-text-muted' },
     { header: 'حاضر', accessor: 'present', cellClassName: 'text-[13px] font-bold font-inter text-success' },
-    { header: 'غائب', accessor: 'absent', cellClassName: 'text-[13px] font-bold font-inter text-danger' },
+    { header: 'غائب', accessor: 'absent', cellClassName: 'text-[13px] font-bold font-inter text-destructive' },
     {
       header: 'نسبة الحضور',
       render: ({ records, present }) => {
         if (!records) return <span className="text-text-faint">--</span>
         const percentage = Math.round((present / records) * 100)
-        return <span className={percentage >= 50 ? 'text-success font-bold font-inter text-[13px]' : 'text-danger font-bold font-inter text-[13px]'}>{percentage}%</span>
+        return <span className={percentage >= 50 ? 'text-success font-bold font-inter text-[13px]' : 'text-destructive font-bold font-inter text-[13px]'}>{percentage}%</span>
       }
     },
   ]

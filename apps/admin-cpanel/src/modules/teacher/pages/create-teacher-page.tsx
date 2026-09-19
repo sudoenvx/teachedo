@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowLeft, Home, IdCard, KeyRound, LockKeyhole, Save, User, Key } from 'lucide-react'
-import { Breadcrumb, Button, Card, Input, Select, Title } from '@teachedo/ui'
+import { Breadcrumb, Button, Card, Input, Select, Title } from '@teachedo/ui/legacy'
 import { useNotification } from '@/core/hooks/use_notification'
 import { createTeacherSchema, type CreateTeacherFormValues } from '../schemas/teachers.schemas'
 import { useAddTeacher } from '../api/teachers.mutations'
@@ -31,13 +31,15 @@ export default function CreateTeacherPage() {
   const accountStatus = watch('accountStatus')
 
   const onSubmit = async (data: CreateTeacherFormValues) => {
-    try {
-      await addMutation.mutateAsync(data)
-      notify.success('تم إنشاء حساب المدرس بنجاح')
-      navigate('/teachers')
-    } catch (error: any) {
-      notify.error(error.message || 'حدث خطأ أثناء الإنشاء')
-    }
+    await addMutation.mutateAsync(data, {
+      onError(error) {
+        notify.error(error.message)
+      },
+      onSuccess() {
+        notify.success('تم إنشاء حساب المدرس بنجاح')
+        navigate('/teachers')
+      }
+    })
   }
 
   return (
@@ -132,7 +134,7 @@ export default function CreateTeacherPage() {
                 options={STATUS_OPTIONS}
               />
               {errors.accountStatus && (
-                <p className="mt-1 text-[11px] text-danger">{errors.accountStatus.message}</p>
+                <p className="mt-1 text-[11px] text-destructive">{errors.accountStatus.message}</p>
               )}
             </div>
           </div>

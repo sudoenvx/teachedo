@@ -7,7 +7,8 @@
   "main": "src/server.ts",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc",
+    "build": "tsup",
+    "buildx": "tsc",
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit"
   },
