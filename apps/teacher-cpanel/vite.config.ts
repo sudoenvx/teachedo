@@ -20,6 +20,6 @@ export default defineConfig({
   },
 
   optimizeDeps: {
-    exclude: ["@teachedo/ui"]
+    exclude: ["@teachedo/ui", "@teachedo/theme"]
   }
 })

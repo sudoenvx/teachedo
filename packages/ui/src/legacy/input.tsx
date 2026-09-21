@@ -42,8 +42,8 @@ const VARIANT_CLASSES: Record<InputVariant, string> = {
   ),
   outstanding: cn(
     'rounded-sm bg-input-background transition-colors',
-    'border border-b-3 border-border',
-    'focus-within:border-secondary/50 focus-within:border-b-secondary focus-within:bg-input-focus',
+    'border border-b-3 border-neutral-300',
+    'focus-within:border-neutral-300 focus-within:border-b-neutral-500 focus-within:bg-input-focus',
     '[&_input]:placeholder:text-text-muted!',
   ),
 }

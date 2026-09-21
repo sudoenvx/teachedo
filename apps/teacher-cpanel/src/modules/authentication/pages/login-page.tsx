@@ -18,7 +18,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 
-import { Button, Input } from '@teachedo/ui'
+import { Button, Input } from '@teachedo/ui/components'
 import { useNotification } from '@/core/hooks/use_notification'
 import { teacherLoginSchema, type TeacherLoginFormValues } from '@/modules/authentication/schema/teacher.schema'
 import { useTeacherLogin } from '../api/auth.mutations'

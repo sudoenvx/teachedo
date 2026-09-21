@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ArrowRight, KeyRound, Mail, Phone, Save, UserRound } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { Breadcrumb, Button, Card, Input, PageHeader } from '@teachedo/ui'
+import { Breadcrumb, Button, Card, Input, PageHeader } from '@teachedo/ui/legacy'
 import { useNotification } from '@/core/hooks/use_notification'
 import { useAssistant, usePermissionCatalog, useUpdateAssistant } from '../api/assistants'
 import { PermissionPicker } from '../components/permission-picker'

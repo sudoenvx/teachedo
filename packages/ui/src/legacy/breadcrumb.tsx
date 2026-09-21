@@ -43,9 +43,13 @@ const Crumb = forwardRef<HTMLElement, { item: BreadcrumbItem; isCurrent: boolean
             {item.icon}
           </span>
         )}
-        <span className={cn(item.hideLabel ? 'sr-only' : 'truncate', 'text-[13px]')}>
-          {item.label}
-        </span>
+        {
+          !item.hideLabel && (
+            <span className={cn(item.hideLabel ? 'sr-only' : 'truncate', 'text-[14px]')}>
+            {item.label}
+          </span>
+          )
+        }
       </span>
     )
 
@@ -55,7 +59,7 @@ const Crumb = forwardRef<HTMLElement, { item: BreadcrumbItem; isCurrent: boolean
           ref={ref as React.Ref<HTMLSpanElement>}
           aria-current={isCurrent ? 'page' : undefined}
           className={cn(
-            'max-w-40 truncate text-[12px]',
+            'max-w-40 truncate text-[13px]',
             isCurrent ? 'font-semibold text-primary-hover' : 'text-text-muted',
           )}
         >

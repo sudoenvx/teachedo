@@ -1,6 +1,6 @@
-import { prisma } from '../prisma.client'
+import { PrismaClient } from "../../src"
 
-export async function seedSettingsData() {
+export async function seedSettingsData(prisma: PrismaClient) {
   const settings = [
     ['price_per_student', '10', 'billing'], ['currency', 'EGP', 'billing'], ['trial_days', '14', 'billing'],
     ['billing_cycle_days', '30', 'billing'], ['grace_period_days', '5', 'billing'], ['auto_suspend_unpaid', 'true', 'billing'],

@@ -1,6 +1,6 @@
-import { prisma } from '../prisma.client'
+import { PrismaClient } from "../../src"
 
-export async function seedPolicyData() {
+export async function seedPolicyData(prisma: PrismaClient) {
   await prisma.policy.upsert({
     where: { key: 'teacher_onboarding_terms' },
     update: {},

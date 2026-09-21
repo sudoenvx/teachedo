@@ -1,182 +1,43 @@
-import { NavLink, useNavigate } from 'react-router-dom'
-import {
-  GraduationCap,
-  LayoutDashboard,
-  LogOut,
-  UserCheck,
-  Users,
-} from 'lucide-react'
-import {
-  DropdownMenu,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  LayoutSidebar,
-  Popover,
-  type LayoutNavigationItem,
-  type LayoutNavigationSection,
-} from '@teachedo/ui'
-import { cn } from 'cn'
-import { useLayoutSettings } from './layout_settings'
+import { useNavigate } from 'react-router-dom'
+import { GraduationCap, LayoutDashboard, LogOut, UserCheck, Users, X } from 'lucide-react'
+import { Avatar, AvatarFallback, AvatarImage, DropdownMenu, DropdownMenuItem, DropdownMenuSeparator, LayoutSidebar, LayoutSidebarContent, LayoutSidebarFooter, LayoutSidebarHeader, LayoutSidebarItem, LayoutSidebarSection, LayoutSidebarTrigger, useLayout } from '@teachedo/ui'
 import { AVATAR_PLACEHOLDER, LOGO } from '@/core/assets'
 import { BASE_URL } from '@/core/config'
 import { useTeacherLogout } from '@/modules/authentication/api/auth.mutations'
 import { useTeacherMe } from '@/modules/authentication/api/auth.queries'
 
-const navigation: LayoutNavigationSection[] = [
-  {
-    title: 'مساحة العمل (WORKSPACE)',
-    items: [
-      { label: 'لوحة المتابعة', href: '/', icon: LayoutDashboard, end: true },
-      // { label: 'الجدول والحصص', href: '/schedule', icon: CalendarDays },
-    ],
-  },
-  {
-    title: 'الطلاب والمجموعات (ACADEMICS)',
-    items: [
-      { label: 'إدارة الطلاب', href: '/students', icon: GraduationCap },
-      { label: 'المجموعات', href: '/groups', icon: Users },
-      { label: 'المساعدون', href: '/assistants', icon: UserCheck },
-      // { label: 'الحضور والغياب', href: '/attendance', icon: CheckSquare },
-    ],
-  },
-  {
-    title: 'المحتوى والتقييم (CONTENT)',
-    items: [
-      // { label: 'المذكرات والدروس', href: '/materials', icon: BookOpen },
-      // { label: 'الواجبات والامتحانات', href: '/assignments', icon: FileText },
-    ],
-  },
-  {
-    title: 'حسابي (ACCOUNT)',
-    items: [
-      // { label: 'الاشتراك والفواتير', href: '/billing', icon: CreditCard },
-      // { label: 'إعدادات المنصة', href: '/settings', icon: Settings },
-    ],
-  },
-]
-
-function renderNavigationItem(item: LayoutNavigationItem, collapsed: boolean) {
-  const Icon = item.icon
-  const link = (
-    <NavLink
-      to={item.href}
-      end={item.end}
-      className={({ isActive }) =>
-        cn(
-          'group flex items-center transition-colors duration-200',
-          collapsed
-            ? 'mx-auto h-9 w-9 justify-center rounded-sm'
-            : 'mx-3 h-8 gap-3 rounded-sm px-3.5 text-[13px] font-semibold',
-          isActive
-            ? 'bg-surface text-text'
-            : 'text-secondary-foreground/70 hover:bg-surface/10 hover:text-secondary-foreground/90'
-        )
-      }
-    >
-      <Icon className="h-5 w-5 shrink-0" strokeWidth={2} />
-      {!collapsed && <span className="flex-1 truncate">{item.label}</span>}
-    </NavLink>
-  )
-  return collapsed ? (
-    <Popover
-      side="left"
-      align="center"
-      offset={10}
-      triggerType="hover"
-      contentClassName="rounded-xs bg-surface px-3 py-1 text-[12px] font-medium whitespace-nowrap text-text shadow-sm"
-      trigger={link}
-    >
-      {item.label}
-    </Popover>
-  ) : (
-    link
-  )
-}
-
-type SidebarProps = { mobileOpen: boolean; onMobileClose: () => void }
-
-export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
+export function Sidebar() {
   const navigate = useNavigate()
-  const { isSidebarCollapsed, toggleSidebar } = useLayoutSettings()
+  const { sidebarCompact } = useLayout()
   const { data: teacher, isLoading } = useTeacherMe()
   const logoutMutation = useTeacherLogout()
   const name = teacher?.fullName || 'المدرس'
   const email = teacher?.email || '...'
-  const avatar = teacher?.profilePictureUrl
-    ? teacher.profilePictureUrl.startsWith('http')
-      ? teacher.profilePictureUrl
-      : `${BASE_URL}${teacher.profilePictureUrl}`
-    : AVATAR_PLACEHOLDER
+  const avatar = teacher?.profilePictureUrl ? (teacher.profilePictureUrl.startsWith('http') ? teacher.profilePictureUrl : `${BASE_URL}${teacher.profilePictureUrl}`) : AVATAR_PLACEHOLDER
   const handleLogout = async () => {
-    try {
-      await logoutMutation.mutateAsync()
-    } finally {
-      localStorage.removeItem('teacher-cpanel-role')
-      navigate('/login', { replace: true })
-    }
+    try { await logoutMutation.mutateAsync() } finally { localStorage.removeItem('teacher-cpanel-role'); navigate('/login', { replace: true }) }
   }
-  const userMenu = (
-    <DropdownMenu
-      align="end"
-      side="left"
-      offset={8}
-      trigger={
-        <div
-          className={cn(
-            'flex w-full items-center rounded-sm transition-colors duration-200',
-            isSidebarCollapsed
-              ? 'justify-center'
-              : 'cursor-pointer bg-white/5 px-1.5 py-1 hover:bg-white/10'
-          )}
-        >
-          <img src={avatar} className="h-8 w-8 shrink-0 rounded-sm object-cover" alt="" />
-          {!isSidebarCollapsed && (
-            <div className="ms-3 min-w-0 text-start">
-              <span className="block truncate text-[13px] font-bold text-white">
-                {isLoading ? 'جاري التحميل...' : name}
-              </span>
-              <span className="block truncate font-inter text-[11px] text-white/50" dir="ltr">
-                {email}
-              </span>
-            </div>
-          )}
-        </div>
-      }
-    >
-      <div className="mb-1 flex items-center gap-2.5 rounded-sm bg-neutral-100 px-1.5 py-1.5">
-        <div className="bg-surface-secondary">
-          <img src={AVATAR_PLACEHOLDER} className="h-9 w-9 rounded-sm object-cover" alt="" />
-        </div>
-        <div className="min-w-0">
-          <p className="truncate text-[12px] font-bold text-text">{name}</p>
-          <p className="truncate font-inter text-[10px] text-text-muted" dir="ltr">
-            {email}
-          </p>
-        </div>
-      </div>
-      {/* Profile and settings routes are not implemented yet. */}
-      <DropdownMenuSeparator />
-      <DropdownMenuItem variant="danger" icon={<LogOut />} onSelect={handleLogout}>
-        تسجيل الخروج
-      </DropdownMenuItem>
-    </DropdownMenu>
-  )
+
   return (
-    <LayoutSidebar
-      mobileOpen={mobileOpen}
-      onMobileClose={onMobileClose}
-      isCollapsed={isSidebarCollapsed}
-      onToggleCollapsed={toggleSidebar}
-      logo={
-        <>
-          <img src={LOGO} alt="Logo" className="h-8 w-8 object-contain invert" />
-          <span className="text-[18px] font-bold tracking-tight text-white">EDU-HUB</span>
-        </>
-      }
-      navigation={navigation}
-      renderNavigationItem={renderNavigationItem}
-      user={{ name, email, avatarSrc: avatar }}
-      userMenu={userMenu}
-    />
+    <LayoutSidebar aria-label="القائمة الرئيسية">
+      <LayoutSidebarHeader className="bg-neutral-800 text-white">
+        <div className="flex min-w-0 flex-1 items-center gap-2.5 group-data-[state=compact]/sidebar:justify-center">
+          <Avatar className="size-8 rounded-sm bg-primary"><AvatarImage src={LOGO} alt="Teachedo" /><AvatarFallback><GraduationCap className="size-4 text-white" /></AvatarFallback></Avatar>
+          <div className="min-w-0 group-data-[state=compact]/sidebar:hidden"><p className="truncate text-[15px] font-bold leading-5 text-white">EDU-HUB</p><p className="truncate text-[10px] text-white/55">مساحة المدرس</p></div>
+        </div>
+        <LayoutSidebarTrigger aria-label="تبديل القائمة الجانبية" className="text-white hover:bg-white/10 lg:flex" />
+        <LayoutSidebarTrigger aria-label="إغلاق القائمة الجانبية" className="text-white hover:bg-white/10 lg:hidden"><X className="size-4" /></LayoutSidebarTrigger>
+      </LayoutSidebarHeader>
+      <LayoutSidebarContent aria-label="التنقل" className="bg-neutral-800">
+        <LayoutSidebarSection title="مساحة العمل (WORKSPACE)"><LayoutSidebarItem href="/" icon={LayoutDashboard} end>لوحة المتابعة</LayoutSidebarItem></LayoutSidebarSection>
+        <LayoutSidebarSection title="الطلاب والمجموعات (ACADEMICS)"><LayoutSidebarItem href="/students" icon={GraduationCap}>إدارة الطلاب</LayoutSidebarItem><LayoutSidebarItem href="/groups" icon={Users}>المجموعات</LayoutSidebarItem><LayoutSidebarItem href="/assistants" icon={UserCheck}>المساعدون</LayoutSidebarItem></LayoutSidebarSection>
+      </LayoutSidebarContent>
+      <LayoutSidebarFooter className="bg-neutral-800">
+        <DropdownMenu align="end" side="left" trigger={<button type="button" className="flex w-full items-center gap-2.5 rounded-sm p-1.5 text-start text-white transition-colors hover:bg-white/10 group-data-[state=compact]/sidebar:justify-center"><Avatar className="size-8 rounded-sm"><AvatarImage src={avatar} alt="" /><AvatarFallback>{name.slice(0, 1)}</AvatarFallback></Avatar><span className="min-w-0 flex-1 group-data-[state=compact]/sidebar:hidden"><span className="block truncate text-[12px] font-semibold">{isLoading ? 'جاري التحميل...' : name}</span><span className="block truncate text-[10px] text-white/50" dir="ltr">{email}</span></span></button>}>
+          <div className="mb-1 flex items-center gap-2.5 rounded-sm bg-neutral-100 p-1.5 text-text"><img src={avatar} className="size-8 rounded-sm object-cover" alt="" /><div className="min-w-0"><p className="truncate text-[12px] font-bold">{name}</p><p className="truncate text-[10px] text-text-muted" dir="ltr">{email}</p></div></div>
+          <DropdownMenuSeparator /><DropdownMenuItem variant="danger" icon={<LogOut />} onSelect={handleLogout}>تسجيل الخروج</DropdownMenuItem>
+        </DropdownMenu>
+      </LayoutSidebarFooter>
+    </LayoutSidebar>
   )
 }

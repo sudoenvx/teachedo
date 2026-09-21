@@ -11,13 +11,9 @@ type NotificationAction = { label: string; onClick: () => void }
 export type NotificationItemProps = {
   variant?: NotificationVariant
   icon?: ReactNode
-  /** Image avatar — takes priority over `icon` when provided. */
   avatarSrc?: string
   title: ReactNode
   description?: ReactNode
-  /** Already-formatted display string (e.g. "منذ 5 دقائق"). This
-   *  component doesn't do relative-time math itself, to stay decoupled
-   *  from whatever i18n/date library you use. */
   timestamp?: string
   read?: boolean
   actions?: NotificationAction[]
@@ -43,7 +39,7 @@ export function NotificationItem({
   read = true, actions, onClick, href, onDismiss, className,
 }: NotificationItemProps) {
   const isInteractive = !!(onClick || href)
-  const Wrapper = (href ? 'a' : 'div') as any // single dynamic wrapper — see note below
+  const Wrapper = (href ? 'a' : 'div') as any
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (isInteractive && (e.key === 'Enter' || e.key === ' ')) {
@@ -60,15 +56,13 @@ export function NotificationItem({
       role={isInteractive ? 'button' : undefined}
       tabIndex={isInteractive ? 0 : undefined}
       className={cn(
-        'group relative flex w-full items-start gap-2.5 rounded-sm p-2.5 text-start transition-colors',
-        'hover:bg-neutral-100 hover:shadow-sm',
+        'group relative flex w-full items-start gap-2.5 rounded-md  border-transparent p-2.5 text-start transition-colors',
+        'hover:bg-neutral-100',
         isInteractive && 'cursor-pointer',
-        !read && 'bg-primary-subtle/40',
+        !read && 'border-s-primary bg-neutral-100',
         className,
       )}
     >
-      {!read && <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" aria-hidden="true" />}
-
       {avatarSrc ? (
         <img src={avatarSrc} alt="" className="h-8 w-8 shrink-0 rounded-full object-cover" />
       ) : (
@@ -79,7 +73,7 @@ export function NotificationItem({
 
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2">
-          <p className={cn('m-0 text-[12px] leading-snug', read ? 'font-medium text-text' : 'font-semibold text-text')}>{title}</p>
+          <p className={cn('m-0 line-clamp-1 text-[12px] leading-snug', read ? 'font-medium text-text' : 'font-semibold text-text')}>{title}</p>
           {onDismiss && (
             <IconButton
               icon={<X size={12} />}
@@ -93,7 +87,7 @@ export function NotificationItem({
           )}
         </div>
 
-        {description && <p className="m-0 mt-0.5 line-clamp-2 text-[11px] leading-snug text-text-muted">{description}</p>}
+        {description && <p className="m-0 mt-0.5 line-clamp-2 text-[11px] leading-relaxed text-text-muted">{description}</p>}
 
         {(timestamp || (actions && actions.length > 0)) && (
           <div className="mt-1 flex items-center gap-3">

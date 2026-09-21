@@ -7,13 +7,35 @@ export const THEME_MODES = ['light', 'dark', 'system'] as const;
 export type ThemeMode = (typeof THEME_MODES)[number];
 
 export const RADII = {
-  sm: '0.375rem',
-  md: '0.5rem',
-  lg: '0.625rem',
-  xl: '0.875rem',
-  '2xl': '1.125rem',
-  '3xl': '1.375rem',
-  '4xl': '1.625rem',
+  xs: 'var(--radius-xs)',
+  sm: 'var(--radius-sm)',
+  md: 'var(--radius-md)',
+  lg: 'var(--radius-lg)',
+  xl: 'var(--radius-xl)',
+  '2xl': 'var(--radius-2xl)',
+  '3xl': 'var(--radius-3xl)',
+  '4xl': 'var(--radius-4xl)',
+  full: 'var(--radius-full)',
+} as const;
+
+export const SPACING = {
+  0: 'var(--space-0)',
+  px: 'var(--space-px)',
+  0.5: 'var(--space-0-5)',
+  1: 'var(--space-1)',
+  1.5: 'var(--space-1-5)',
+  2: 'var(--space-2)',
+  2.5: 'var(--space-2-5)',
+  3: 'var(--space-3)',
+  4: 'var(--space-4)',
+  5: 'var(--space-5)',
+  6: 'var(--space-6)',
+  8: 'var(--space-8)',
+  10: 'var(--space-10)',
+  12: 'var(--space-12)',
+  16: 'var(--space-16)',
+  20: 'var(--space-20)',
+  24: 'var(--space-24)',
 } as const;
 
 export const COLOR_TOKENS = {

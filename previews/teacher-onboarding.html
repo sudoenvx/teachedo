@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>إعداد أكاديميتك — Teachedo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F7FA; --surface:#FFFFFF; --ink:#0F1B2D; --muted:#5B687A; --line:#E2E7EE; --line-strong:#CBD3DE;
+  --brand:#0B6EB8; --brand-solid:#0B6EB8; --brand-soft:#E5F1FA; --on-brand:#FFFFFF;
+  --deep:#0B3B63; --deep-2:#0E4C7E;
+  --warn:#94570A; --warn-soft:#FDF1DC; --ok:#17704A; --ok-soft:#E1F3EA; --danger:#B42D25; --danger-soft:#FBE9E7;
+  --shadow:0 1px 2px rgba(15,27,45,.05),0 8px 24px rgba(15,27,45,.06);
+  --font:"IBM Plex Sans Arabic","Segoe UI",Tahoma,system-ui,sans-serif;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D131A; --surface:#141C26; --ink:#E9EEF4; --muted:#95A3B5; --line:#243040; --line-strong:#33425A;
+    --brand:#58AEEF; --brand-solid:#2385D3; --brand-soft:#13293D; --deep:#0A2440; --deep-2:#0C3157;
+    --warn:#F0B35C; --warn-soft:#33260F; --ok:#5FCB9A; --ok-soft:#10301F; --danger:#F08A82; --danger-soft:#3A1917; --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D131A; --surface:#141C26; --ink:#E9EEF4; --muted:#95A3B5; --line:#243040; --line-strong:#33425A;
+  --brand:#58AEEF; --brand-solid:#2385D3; --brand-soft:#13293D; --deep:#0A2440; --deep-2:#0C3157;
+  --warn:#F0B35C; --warn-soft:#33260F; --ok:#5FCB9A; --ok-soft:#10301F; --danger:#F08A82; --danger-soft:#3A1917; --shadow:none;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 80px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.7 var(--font);-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+[hidden]{display:none!important}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--brand);text-decoration:none}
+a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:6px}
+.ico{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ico.sm{width:15px;height:15px}.ico.lg{width:22px;height:22px}
+.muted{color:var(--muted)}
+.screen{display:none}.screen.on{display:block}
+
+/* demo strip */
+.demo{background:var(--surface);border-bottom:1px dashed var(--line-strong);padding:6px 16px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:12.5px;color:var(--muted)}
+.demo button,.demo select{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:2px 10px;font-size:12.5px;height:28px}
+.demo button:hover{border-color:var(--brand);color:var(--brand)}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 20px;border-radius:12px;border:1px solid var(--line-strong);background:var(--surface);font-weight:600;font-size:15px;white-space:nowrap;transition:background .15s,border-color .15s,transform .05s}
+.btn:hover{border-color:var(--muted)}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--brand-solid);border-color:var(--brand-solid);color:var(--on-brand)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--brand)}
+.btn.ghost:hover{background:var(--brand-soft)}
+.btn.lg{height:50px;font-size:16px;padding:0 26px}
+.btn.sm{height:36px;padding:0 14px;font-size:13.5px;border-radius:10px}
+.btn.block{width:100%}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.btn.white{background:#fff;color:var(--deep);border-color:#fff}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:2px 10px;border-radius:999px;line-height:1.7;white-space:nowrap}
+.badge.info{background:var(--brand-soft);color:var(--brand)}.badge.ok{background:var(--ok-soft);color:var(--ok)}.badge.warn{background:var(--warn-soft);color:var(--warn)}.badge.off{background:var(--bg);color:var(--muted);box-shadow:inset 0 0 0 1px var(--line)}
+
+/* fields */
+.field{margin-bottom:20px}
+.field>label,.lbl{display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:600;margin-bottom:8px}
+.field label em{font-style:normal;font-weight:400;color:var(--muted);font-size:12.5px}
+.control{position:relative;display:flex;align-items:center}
+.control>.ico{position:absolute;inset-inline-start:14px;color:var(--muted);pointer-events:none}
+.control .end{position:absolute;inset-inline-end:6px;width:36px;height:36px;border:0;background:none;color:var(--muted);border-radius:8px;display:grid;place-items:center}
+.control .end:hover{background:var(--bg);color:var(--ink)}
+input.in,select.in,textarea.in{width:100%;height:48px;padding:0 44px;border:1px solid var(--line-strong);border-radius:12px;background:var(--surface);font-size:15.5px;transition:border-color .15s,box-shadow .15s}
+input.in.plain,select.in,textarea.in{padding:0 14px}
+textarea.in{height:auto;padding:12px 14px;min-height:88px;resize:vertical;line-height:1.7}
+input.in:hover,select.in:hover,textarea.in:hover{border-color:var(--muted)}
+input.in:focus,select.in:focus,textarea.in:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 4px color-mix(in srgb,var(--brand) 20%,transparent)}
+input.in.ltr{direction:ltr;text-align:right}
+input.in[readonly]{background:var(--bg);color:var(--muted)}
+input.in[aria-invalid="true"],select.in[aria-invalid="true"]{border-color:var(--danger)}
+.hint{margin:6px 0 0;font-size:13px;color:var(--muted)}
+.err{margin:6px 0 0;font-size:13px;color:var(--danger);display:flex;gap:6px;align-items:flex-start}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+.suffix{display:flex;direction:ltr;align-items:stretch}
+.suffix input.in{border-start-end-radius:0;border-end-end-radius:0;border-inline-end:0;direction:ltr;text-align:left;padding:0 14px}
+.suffix span{display:grid;place-items:center;padding:0 14px;border:1px solid var(--line-strong);background:var(--bg);color:var(--muted);border-radius:0 12px 12px 0;font-size:14px;white-space:nowrap}
+.status{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13.5px;min-height:24px}
+.status.ok{color:var(--ok)}.status.bad{color:var(--danger)}.status.wait{color:var(--muted)}
+.spin{width:14px;height:14px;border-radius:50%;border:2px solid var(--line-strong);border-top-color:var(--brand);animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.sugs{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.sugs button{border:1px solid var(--line-strong);background:var(--surface);border-radius:999px;padding:0 12px;height:30px;font-size:13px;direction:ltr}
+.sugs button:hover{border-color:var(--brand);color:var(--brand)}
+
+/* chips & option cards */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--line-strong);background:var(--surface);font-size:14.5px;font-weight:500;transition:.15s}
+.chip:hover{border-color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--brand-soft);border-color:var(--brand);color:var(--brand);font-weight:600}
+.chip .ico{width:15px;height:15px;display:none}
+.chip[aria-pressed="true"] .ico{display:block}
+.addrow{display:flex;gap:8px;margin-top:10px;max-width:340px}
+.addrow input{height:40px!important;font-size:14px!important}
+.cards3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.oc{display:flex;flex-direction:column;gap:6px;align-items:flex-start;text-align:start;padding:14px;border-radius:14px;border:1.5px solid var(--line-strong);background:var(--surface);transition:.15s}
+.oc:hover{border-color:var(--muted)}
+.oc .ico{color:var(--muted);width:22px;height:22px}
+.oc b{font-size:14.5px}
+.oc small{color:var(--muted);font-size:12.5px;line-height:1.5}
+.oc[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft)}
+.oc[aria-pressed="true"] .ico{color:var(--brand)}
+
+/* pay methods */
+.pm{border:1.5px solid var(--line-strong);border-radius:14px;margin-bottom:10px;background:var(--surface);transition:.15s}
+.pm.on{border-color:var(--brand)}
+.pm-h{display:flex;align-items:center;gap:12px;padding:12px 14px;width:100%;border:0;background:none;text-align:start}
+.pm-h .pi{width:38px;height:38px;border-radius:11px;background:var(--bg);display:grid;place-items:center;color:var(--muted);flex:none}
+.pm.on .pi{background:var(--brand-soft);color:var(--brand)}
+.pm-h .t{flex:1;min-width:0}
+.pm-h .t b{display:block;font-size:14.5px}
+.pm-h .t small{color:var(--muted);font-size:12.5px}
+.sw{width:42px;height:24px;border-radius:999px;background:var(--line-strong);position:relative;flex:none;transition:.15s}
+.sw::after{content:"";position:absolute;top:3px;inset-inline-start:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.15s;box-shadow:0 1px 2px rgba(0,0,0,.25)}
+.pm.on .sw{background:var(--brand-solid)}
+.pm.on .sw::after{inset-inline-start:21px}
+.pm-b{padding:0 14px 14px 14px}
+
+/* upload */
+.uploader{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.av{width:72px;height:72px;border-radius:20px;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-weight:700;font-size:26px;overflow:hidden;flex:none;direction:ltr}
+.av img{width:100%;height:100%;object-fit:cover}
+.av.lg{width:96px;height:96px;font-size:34px;border-radius:26px}
+.swatches{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.swatches button{width:34px;height:34px;border-radius:50%;border:3px solid var(--surface);box-shadow:0 0 0 1.5px var(--line-strong);position:relative}
+.swatches button[aria-pressed="true"]{box-shadow:0 0 0 2.5px var(--ink)}
+.swatches input[type=color]{width:34px;height:34px;padding:0;border:0;border-radius:50%;background:none;cursor:pointer}
+.days{display:flex;gap:6px;flex-wrap:wrap}
+.days .chip{height:38px;padding:0 14px}
+
+/* auth screens */
+.auth{min-height:calc(100vh - 41px);grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.screen.auth.on{display:grid}
+.auth-form{display:flex;align-items:center;justify-content:center;padding:32px 24px}
+.auth-card{width:min(440px,100%)}
+.mini-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;margin-bottom:28px}
+.mini-logo i{width:34px;height:34px;border-radius:10px;background:var(--brand-solid);display:grid;place-items:center;font-style:normal;color:#fff}
+.auth h1{margin:12px 0 6px;font-size:28px;line-height:1.35;letter-spacing:-.01em}
+.lead{color:var(--muted);margin:0 0 24px;font-size:15.5px}
+.auth-brand{background:var(--deep);color:#fff;padding:48px;display:flex;flex-direction:column;justify-content:space-between;gap:24px;position:relative;overflow:hidden}
+.auth-brand h2{margin:0 0 10px;font-size:26px;line-height:1.4;letter-spacing:-.01em;max-width:18ch}
+.auth-brand p{margin:0;color:#B9CBE0;max-width:40ch}
+.bl{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:14px}
+.bl li{display:flex;gap:12px;align-items:flex-start;font-size:15px;color:#DCE7F4}
+.bl .ico{color:#7CC1F5;margin-top:3px}
+.illus{width:100%;max-width:420px;height:auto;align-self:center}
+.dots{display:flex;gap:6px;margin-bottom:16px}
+.dots i{height:4px;flex:1;border-radius:2px;background:var(--line)}
+.dots i.on{background:var(--brand-solid)}
+.rules{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;font-size:13px;color:var(--muted)}
+.rules li{display:flex;gap:6px;align-items:center}
+.rules li i{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--line-strong);display:grid;place-items:center;flex:none;color:transparent}
+.rules li.ok{color:var(--ok)}
+.rules li.ok i{background:var(--ok);border-color:var(--ok);color:#fff}
+.rules .ico{width:11px;height:11px;stroke-width:3}
+.meter{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:10px}
+.meter i{height:4px;border-radius:2px;background:var(--line)}
+.meter[data-s="1"] i:nth-child(-n+1){background:var(--danger)}
+.meter[data-s="2"] i:nth-child(-n+2){background:#D98A0B}
+.meter[data-s="3"] i:nth-child(-n+3){background:var(--brand)}
+.meter[data-s="4"] i:nth-child(-n+4){background:var(--ok)}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:14px;margin:4px 0 20px}
+.chk input{accent-color:var(--brand-solid);width:18px;height:18px;margin-top:3px;flex:none}
+.center{min-height:calc(100vh - 41px);display:flex;align-items:center;justify-content:center;padding:32px 20px}
+.center-card{width:min(560px,100%);text-align:center}
+.tasks{list-style:none;margin:28px auto 0;padding:0;text-align:start;max-width:380px;display:flex;flex-direction:column;gap:14px}
+.tasks li{display:flex;gap:12px;align-items:center;color:var(--muted);font-size:15px;transition:.3s}
+.tasks li .st{width:24px;height:24px;border-radius:50%;border:2px solid var(--line-strong);display:grid;place-items:center;flex:none;color:transparent}
+.tasks li.run{color:var(--ink)}.tasks li.run .st{border-color:var(--line-strong);border-top-color:var(--brand);animation:sp .7s linear infinite}
+.tasks li.ok{color:var(--ink)}.tasks li.ok .st{background:var(--ok);border-color:var(--ok);color:#fff}
+.tasks .ico{width:13px;height:13px;stroke-width:3}
+.welcome h1{font-size:32px;margin:14px 0 8px;letter-spacing:-.01em;line-height:1.35}
+.wgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:28px 0 24px;text-align:start}
+.wcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px}
+.wcard .ico{color:var(--brand);width:22px;height:22px;margin-bottom:8px}
+.wcard b{display:block;font-size:15px}
+.wcard span{font-size:13px;color:var(--muted)}
+.goals{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:12px 0 28px}
+
+/* wizard */
+.wz-top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);height:60px;display:flex;align-items:center;gap:12px;padding:0 24px}
+.wz-top .mini-logo{margin:0;font-size:16px}
+.wz-top .sp{flex:1}
+.wz-mprog{display:none}
+.wz-body{display:grid;grid-template-columns:268px minmax(0,1fr) 400px;gap:32px;max-width:1440px;margin:0 auto;padding:28px 24px 120px;align-items:start}
+.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 88px)}
+.rail h3{margin:0 0 4px;font-size:16px}
+.rprog{margin:10px 0 18px}
+.rprog .bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.rprog .bar i{display:block;height:100%;background:var(--brand-solid);border-radius:3px;transition:width .4s}
+.rprog small{display:flex;justify-content:space-between;margin-top:6px;color:var(--muted);font-size:12.5px}
+.steps{list-style:none;margin:0;padding:0;position:relative}
+.steps li{position:relative}
+.steps li:not(:last-child)::before{content:"";position:absolute;inset-inline-start:17px;top:40px;bottom:-4px;width:2px;background:var(--line)}
+.steps li.done:not(:last-child)::before{background:var(--ok)}
+.sbtn{display:flex;gap:12px;align-items:flex-start;width:100%;padding:8px 6px;border:0;background:none;text-align:start;border-radius:12px}
+.sbtn:hover:not([disabled]){background:var(--surface)}
+.sbtn[disabled]{cursor:default}
+.sbtn .n{width:30px;height:30px;border-radius:50%;border:2px solid var(--line-strong);background:var(--bg);display:grid;place-items:center;font-size:13px;font-weight:700;color:var(--muted);flex:none;position:relative;z-index:1}
+.sbtn .t b{display:block;font-size:14.5px;line-height:1.4}
+.sbtn .t small{font-size:12.5px;color:var(--muted)}
+li.cur .sbtn{background:var(--surface);box-shadow:var(--shadow)}
+li.cur .n{border-color:var(--brand);color:var(--brand);background:var(--brand-soft)}
+li.cur .t b{color:var(--brand)}
+li.done .n{background:var(--ok);border-color:var(--ok);color:#fff}
+li.skip .n{border-style:dashed}
+.rail-help{margin-top:18px;padding:14px;border-radius:14px;background:var(--surface);border:1px solid var(--line);font-size:13.5px}
+.rail-help b{display:block;margin-bottom:2px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)}
+.card-h{padding:26px 32px 0}
+.kicker{display:flex;gap:10px;align-items:center;font-size:13px;color:var(--muted);margin-bottom:8px}
+.card-h h2{margin:0 0 6px;font-size:26px;line-height:1.35;letter-spacing:-.01em}
+.card-h p{margin:0;color:var(--muted);font-size:15px;max-width:60ch}
+.card-b{padding:26px 32px 8px}
+.card-f{padding:16px 32px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px;position:sticky;bottom:0;background:var(--surface);border-radius:0 0 20px 20px}
+.card-f .sp{flex:1}
+.enter{animation:in .28s ease both}
+@keyframes in{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
+.pv{position:sticky;top:calc(env(safe-area-inset-top,0px) + 88px)}
+.pv-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;font-size:13px;color:var(--muted);font-weight:600}
+.pv-h span{display:flex;align-items:center;gap:6px}
+.live{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px var(--ok-soft)}
+.pv-card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}
+.pv-cap{margin:12px 4px 0;font-size:13px;color:var(--muted)}
+.tprof{text-align:center}
+.tprof .av{margin:0 auto 12px}
+.tprof h4{margin:0;font-size:19px}
+.tprof p{margin:4px 0 0;color:var(--muted);font-size:14px}
+.tags{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:12px}
+.tag{font-size:12.5px;font-weight:600;padding:1px 10px;border-radius:999px;background:var(--brand-soft);color:var(--brand)}
+.tag.gr{background:var(--bg);color:var(--muted)}
+.ph-line{display:inline-block;height:12px;border-radius:6px;background:var(--line);width:60%}
+.tip{margin-top:14px;padding:12px 14px;border-radius:12px;background:var(--brand-soft);font-size:13.5px;display:flex;gap:10px;color:var(--ink)}
+.tip .ico{color:var(--brand);margin-top:3px}
+.browser{border:1px solid var(--line-strong);border-radius:14px;overflow:hidden;background:var(--surface);box-shadow:var(--shadow)}
+.bb{background:var(--bg);padding:8px 12px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line)}
+.bb i{width:9px;height:9px;border-radius:50%;background:var(--line-strong);display:inline-block;margin-inline-end:3px}
+.bb .url{flex:1;background:var(--surface);border-radius:8px;padding:2px 10px;font-size:12px;color:var(--muted);direction:ltr;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.site{--bc:#0B6EB8;--bt:#fff}
+.site .hero{background:var(--bc);color:var(--bt);padding:22px 18px 26px;text-align:center}
+.site .lg{width:56px;height:56px;border-radius:16px;background:color-mix(in srgb,var(--bt) 18%,transparent);margin:0 auto 10px;display:grid;place-items:center;font-weight:700;font-size:22px;overflow:hidden}
+.site .lg img{width:100%;height:100%;object-fit:cover}
+.site h5{margin:0 0 4px;font-size:18px}
+.site .hero p{margin:0 0 14px;font-size:13px;opacity:.9}
+.site .cta{display:inline-block;background:var(--bt);color:var(--bc);font-weight:700;font-size:13px;padding:6px 18px;border-radius:999px}
+.site .body{padding:14px;display:grid;gap:8px}
+.site .gc{border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px;font-size:13px}
+.site .gc i{width:8px;height:32px;border-radius:4px;background:var(--bc)}
+.site .gc b{display:block}
+.site .gc small{color:var(--muted)}
+.calc{display:flex;flex-direction:column;gap:14px}
+.calc input[type=range]{width:100%;accent-color:var(--brand-solid)}
+.crow{display:flex;justify-content:space-between;font-size:14px}
+.crow b{font-weight:700}
+.crow.tot{border-top:1px solid var(--line);padding-top:12px;font-size:16px}
+.crow.tot b{color:var(--ok);font-size:20px}
+.tt{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:12px}
+.tt div{border-radius:8px;text-align:center;font-size:11.5px;padding:6px 2px;background:var(--bg);color:var(--muted);line-height:1.4}
+.tt div.on{background:var(--brand-solid);color:#fff;font-weight:600}
+.gcard{border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;gap:12px;align-items:center}
+.gcard .ib{width:44px;height:44px;border-radius:12px;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;flex:none}
+.gcard b{display:block;font-size:15px}
+.gcard small{color:var(--muted);font-size:13px}
+.wa{background:#E3F4E6;border-radius:16px 16px 16px 4px;padding:12px 14px;font-size:14px;line-height:1.7;white-space:pre-wrap;color:#0F1B2D;max-width:100%}
+.wa u{color:#0B6EB8;direction:ltr;display:inline-block}
+:root[data-theme="dark"] .wa{background:#12361F;color:#E9EEF4}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .wa{background:#12361F;color:#E9EEF4}}
+.linkbox{display:flex;gap:8px;align-items:center;border:1px solid var(--line-strong);border-radius:12px;padding:6px 6px 6px 14px;background:var(--bg)}
+.linkbox code{flex:1;direction:ltr;text-align:left;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:ui-monospace,Menlo,Consolas,monospace}
+.slist{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.srow{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;font-size:14px}
+.srow span{color:var(--muted);direction:ltr;margin-inline-start:auto;font-size:13px}
+.srow button{border:0;background:none;color:var(--muted);width:28px;height:28px;border-radius:8px;display:grid;place-items:center}
+.srow button:hover{background:var(--danger-soft);color:var(--danger)}
+.sep{height:1px;background:var(--line);margin:22px 0}
+
+/* done */
+.done-wrap{max-width:760px;margin:0 auto;padding:40px 20px 80px;position:relative}
+.done-hero{text-align:center;margin-bottom:28px}
+.done-hero .big-ck{width:72px;height:72px;border-radius:50%;background:var(--ok);color:#fff;display:grid;place-items:center;margin:0 auto 16px;animation:pop .5s cubic-bezier(.2,1.4,.4,1) both}
+.done-hero .big-ck .ico{width:36px;height:36px;stroke-width:2.5}
+@keyframes pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
+.done-hero h1{margin:0 0 6px;font-size:32px;letter-spacing:-.01em}
+.urlchip{display:inline-flex;align-items:center;gap:8px;direction:ltr;background:var(--surface);border:1px solid var(--line-strong);border-radius:999px;padding:6px 8px 6px 16px;font-weight:600;font-size:15px;margin-top:10px}
+.urlchip button{border:0;background:var(--bg);width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:var(--muted)}
+.sumrow{display:flex;align-items:center;gap:14px;padding:14px 18px}
+.sumrow+.sumrow{border-top:1px solid var(--line)}
+.sumrow .si{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;flex:none;background:var(--ok-soft);color:var(--ok)}
+.sumrow.later .si{background:var(--warn-soft);color:var(--warn)}
+.sumrow .t{flex:1;min-width:0}
+.sumrow .t b{display:block;font-size:14.5px}
+.sumrow .t small{color:var(--muted);font-size:13px}
+.trialbar{margin-top:16px;padding:14px 18px;border-radius:14px;background:var(--brand-soft);display:flex;gap:12px;align-items:center;font-size:14px}
+.trialbar .ico{color:var(--brand)}
+#confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:60}
+#confetti i{position:absolute;top:-20px;width:9px;height:14px;border-radius:2px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+
+/* dialog, toast */
+dialog{border:1px solid var(--line);border-radius:18px;padding:0;background:var(--surface);color:var(--ink);width:min(460px,calc(100% - 32px))}
+dialog::backdrop{background:rgba(10,18,30,.55)}
+.dlg{padding:24px 24px 8px}.dlg h3{margin:0 0 10px;font-size:18px}.dlg p{margin:0 0 12px;color:var(--muted);font-size:14.5px}
+.dlg-foot{display:flex;gap:10px;padding:8px 24px 24px}
+.hopt{display:flex;gap:12px;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;width:100%;background:none;text-align:start}
+.hopt:hover{border-color:var(--brand)}
+.hopt .ico{color:var(--brand)}
+.hopt small{display:block;color:var(--muted);font-size:12.5px}
+.toast{position:fixed;inset-inline-start:24px;bottom:calc(24px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:12px;font-size:14px;font-weight:500;z-index:90;opacity:0;transform:translateY(8px);pointer-events:none;transition:.2s;max-width:calc(100% - 48px)}
+.toast.show{opacity:1;transform:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+@media (max-width:1240px){
+  .wz-body{grid-template-columns:250px minmax(0,1fr);}
+  .pv{grid-column:2;position:static}
+}
+@media (max-width:900px){
+  .screen.auth.on{display:block}
+  .auth-brand{display:none}
+  .auth-form{padding-top:24px;align-items:flex-start}
+  .wz-body{grid-template-columns:minmax(0,1fr);padding:16px 16px 110px;gap:20px}
+  .rail{display:none}
+  .pv{grid-column:1}
+  .wz-mprog{display:block;position:sticky;top:calc(env(safe-area-inset-top,0px) + 60px);z-index:25;background:var(--surface);border-bottom:1px solid var(--line);padding:10px 16px}
+  .wz-mprog .bar{height:5px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:6px}
+  .wz-mprog .bar i{display:block;height:100%;background:var(--brand-solid);transition:width .4s}
+  .wz-mprog div{display:flex;justify-content:space-between;font-size:13px;font-weight:600}
+  .wz-top{padding:0 16px}
+  .card-h{padding:20px 20px 0}.card-b{padding:20px 20px 8px}.card-f{padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px));position:fixed;inset-inline:0;bottom:0;border-radius:0;z-index:30;box-shadow:0 -6px 20px rgba(15,27,45,.08)}
+  .card-h h2{font-size:22px}
+}
+@media (max-width:640px){
+  .row2{grid-template-columns:1fr}
+  .cards3{grid-template-columns:1fr}
+  .wgrid{grid-template-columns:1fr}
+  .rules{grid-template-columns:1fr}
+  .auth h1{font-size:24px}
+  .welcome h1{font-size:26px}
+  .btn.hide-sm span.lbl{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
+<symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M16 7l3 3"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-eyeoff" viewBox="0 0 24 24"><path d="M3 3l18 18"/><path d="M10.6 6.1A9.6 9.6 0 0 1 12 6c6.5 0 10 6 10 6a17 17 0 0 1-3.2 3.9M6.6 7.6A16.6 16.6 0 0 0 2 12s3.5 6 10 6c1.6 0 3-.4 4.3-1"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+<symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+<symbol id="i-left" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+<symbol id="i-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+<symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V5M7 9l5-5 5 5M5 20h14"/></symbol>
+<symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></symbol>
+<symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18c1.4 0 2-1 2-2 0-1.5-1-1.7-1-3 0-1 1-2 2.5-2H18a3 3 0 0 0 3-3c0-4.4-4-8-9-8z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="15" cy="7" r="1"/></symbol>
+<symbol id="i-card" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 10h19M6 15h4"/></symbol>
+<symbol id="i-wallet" viewBox="0 0 24 24"><path d="M4 7h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M4 7l11-3v3M16 14h2"/></symbol>
+<symbol id="i-cash" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/></symbol>
+<symbol id="i-bank" viewBox="0 0 24 24"><path d="M3 10 12 4l9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5a6.5 6.5 0 0 1 3.5 5.5"/></symbol>
+<symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v15H5.5A1.5 1.5 0 0 0 4 20.5z"/><path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H13v15h5.5a1.5 1.5 0 0 1 1.5 1.5z"/></symbol>
+<symbol id="i-monitor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></symbol>
+<symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 0 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+<symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/></symbol>
+<symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17v.01"/></symbol>
+<symbol id="i-save" viewBox="0 0 24 24"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4M8 20v-6h8v6"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+<symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></symbol>
+<symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></symbol>
+<symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 20l1.3-4.2A8 8 0 1 1 8.4 18.8z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1.2-1.4-2-1-.8.7a4 4 0 0 1-1.9-1.9l.7-.8-1-2z"/></symbol>
+<symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4M12 17.5v.01"/></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.01"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></symbol>
+<symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3 5 14h6l-1 7 8-11h-6z"/></symbol>
+<symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m4 18 5-5 4 4 3-3 4 4"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-building" viewBox="0 0 24 24"><path d="M4 21V8l8-5 8 5v13"/><path d="M9 21v-6h6v6"/></symbol>
+<symbol id="i-share" viewBox="0 0 24 24"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="m8.2 10.8 7.6-3.6M8.2 13.2l7.6 3.6"/></symbol>
+</defs></svg>
+
+<div class="demo" id="demo">
+  <span>معاينة التصميم — انتقل إلى:</span>
+  <button data-jump="login">تسجيل الدخول</button>
+  <button data-jump="newpw">كلمة المرور</button>
+  <button data-jump="welcome">الترحيب</button>
+  <select id="jump-step" aria-label="خطوة الإعداد"><option value="">خطوة الإعداد…</option><option value="1">1 · الملف الشخصي</option><option value="2">2 · التخصص</option><option value="3">3 · الأكاديمية</option><option value="4">4 · المدفوعات</option><option value="5">5 · أول مجموعة</option><option value="6">6 · الطلاب</option></select>
+  <button data-jump="done">الإنجاز</button>
+  <button data-jump="reset">إعادة ضبط</button>
+</div>
+
+<!-- 1. login -->
+<section class="screen auth on" id="s-login" aria-labelledby="l-title">
+  <div class="auth-form"><div class="auth-card">
+    <div class="mini-logo"><i>T</i>Teachedo</div>
+    <span class="badge info">دعوة من فريق Teachedo</span>
+    <h1 id="l-title">أهلًا بك في Teachedo</h1>
+    <p class="lead">وصلتك دعوة لإنشاء أكاديميتك الخاصة. سجّل الدخول بكلمة المرور المؤقتة المرسلة إلى بريدك، وسنرافقك خطوة بخطوة.</p>
+    <div class="field"><label>البريد الإلكتروني</label><div class="control"><svg class="ico"><use href="#i-mail"/></svg><input class="in ltr" value="admin@teachedo.com" readonly aria-label="البريد الإلكتروني"><svg class="ico" style="inset-inline-start:auto;inset-inline-end:14px"><use href="#i-lock"/></svg></div></div>
+    <div class="field"><label for="tp">كلمة المرور المؤقتة</label>
+      <div class="control"><svg class="ico"><use href="#i-key"/></svg><input class="in ltr" id="tp" type="password" autocomplete="off" placeholder="مثال: K7mQp-9xWd"><button class="end" type="button" data-eye="tp" aria-label="إظهار كلمة المرور"><svg class="ico sm"><use href="#i-eye"/></svg></button></div>
+      <p class="hint">انسخها من الرسالة كما هي، بما فيها الشرطة. تنتهي صلاحيتها بعد <b id="exp">46</b> ساعة.</p>
+      <div class="err" id="e-tp" hidden></div></div>
+    <button class="btn primary lg block" id="l-go" data-act="login">متابعة</button>
+    <p class="hint" style="text-align:center;margin-top:16px">لم تصلك الرسالة؟ <a href="#" data-act="support">تواصل مع الدعم</a></p>
+    <p class="hint" style="text-align:center;margin-top:20px;padding-top:16px;border-top:1px dashed var(--line-strong)">للمعاينة فقط: كلمة المرور المؤقتة <a href="#" data-act="fillpw"><code dir="ltr">K7mQp-9xWd</code></a></p>
+  </div></div>
+  <aside class="auth-brand" aria-hidden="true">
+    <div>
+      <h2>أكاديميتك أونلاين، جاهزة في دقائق</h2>
+      <p>مجموعات، حضور، مدفوعات، ومحتوى، في مكان واحد باسمك وعلامتك.</p>
+    </div>
+    <svg class="illus" viewBox="0 0 420 300" fill="none">
+      <rect x="20" y="30" width="250" height="180" rx="18" fill="#fff" opacity=".97"/>
+      <rect x="40" y="52" width="90" height="10" rx="5" fill="#0B3B63" opacity=".85"/>
+      <rect x="40" y="72" width="140" height="8" rx="4" fill="#0B3B63" opacity=".2"/>
+      <rect x="44" y="130" width="26" height="60" rx="6" fill="#7CC1F5"/><rect x="82" y="110" width="26" height="80" rx="6" fill="#0B6EB8"/><rect x="120" y="140" width="26" height="50" rx="6" fill="#7CC1F5"/><rect x="158" y="96" width="26" height="94" rx="6" fill="#0B6EB8"/><rect x="196" y="120" width="26" height="70" rx="6" fill="#7CC1F5"/>
+      <rect x="230" y="150" width="170" height="110" rx="18" fill="#123F6B" stroke="#2C6199"/>
+      <circle cx="262" cy="182" r="14" fill="#7CC1F5"/><rect x="286" y="172" width="80" height="8" rx="4" fill="#fff" opacity=".85"/><rect x="286" y="188" width="56" height="7" rx="3.5" fill="#fff" opacity=".35"/>
+      <rect x="250" y="214" width="130" height="30" rx="10" fill="#0B6EB8"/><rect x="274" y="226" width="82" height="7" rx="3.5" fill="#fff"/>
+      <rect x="290" y="20" width="110" height="100" rx="16" fill="#0E4C7E" stroke="#2C6199"/>
+      <rect x="306" y="38" width="60" height="7" rx="3.5" fill="#fff" opacity=".8"/>
+      <g fill="#7CC1F5"><rect x="306" y="60" width="18" height="18" rx="5"/><rect x="330" y="60" width="18" height="18" rx="5" opacity=".5"/><rect x="354" y="60" width="18" height="18" rx="5"/><rect x="306" y="84" width="18" height="18" rx="5" opacity=".5"/><rect x="330" y="84" width="18" height="18" rx="5"/><rect x="354" y="84" width="18" height="18" rx="5" opacity=".5"/></g>
+    </svg>
+    <ul class="bl">
+      <li><svg class="ico"><use href="#i-shield"/></svg>حسابك محمي: كلمة مرورك لا يراها أحد، حتى فريقنا.</li>
+      <li><svg class="ico"><use href="#i-clock"/></svg>الإعداد يستغرق نحو 6 دقائق ويمكنك الحفظ والمتابعة لاحقًا.</li>
+      <li><svg class="ico"><use href="#i-bolt"/></svg>14 يومًا تجربة مجانية بكل المزايا.</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- 2. new password -->
+<section class="screen auth" id="s-newpw" aria-labelledby="p-title">
+  <div class="auth-form"><div class="auth-card">
+    <div class="mini-logo"><i>T</i>Teachedo</div>
+    <div class="dots" aria-hidden="true"><i class="on"></i><i class="on"></i></div>
+    <span class="badge ok">تم التحقق من كلمة المرور المؤقتة</span>
+    <h1 id="p-title">اختر كلمة مرور خاصة بك</h1>
+    <p class="lead">كلمة المرور المؤقتة لن تعمل بعد الآن. اختر كلمة مرور قوية لا تستخدمها في مواقع أخرى.</p>
+    <div class="field"><label for="np">كلمة المرور الجديدة</label>
+      <div class="control"><svg class="ico"><use href="#i-lock"/></svg><input class="in ltr" id="np" type="password" autocomplete="new-password"><button class="end" type="button" data-eye="np" aria-label="إظهار كلمة المرور"><svg class="ico sm"><use href="#i-eye"/></svg></button></div>
+      <div class="meter" id="meter" data-s="0"><i></i><i></i><i></i><i></i></div>
+      <ul class="rules" id="rules"></ul>
+      <div class="err" id="e-np" hidden></div></div>
+    <div class="field"><label for="cp">تأكيد كلمة المرور</label>
+      <div class="control"><svg class="ico"><use href="#i-lock"/></svg><input class="in ltr" id="cp" type="password" autocomplete="new-password"></div>
+      <div class="err" id="e-cp" hidden></div></div>
+    <label class="chk"><input type="checkbox" id="terms"><span>أوافق على <a href="#" data-act="terms">شروط الاستخدام</a> و<a href="#" data-act="terms">سياسة الخصوصية</a>.</span></label>
+    <div class="err" id="e-terms" hidden style="margin-top:-14px;margin-bottom:14px"></div>
+    <button class="btn primary lg block" data-act="activate">تفعيل حسابي</button>
+  </div></div>
+  <aside class="auth-brand" aria-hidden="true">
+    <div><h2>خطوة أخيرة قبل أن نبدأ</h2><p>بعد التفعيل نجهّز لك مساحة أكاديميتك بالكامل، وتبدأ فترة التجربة المجانية.</p></div>
+    <ul class="bl">
+      <li><svg class="ico"><use href="#i-check"/></svg>مساحة خاصة بك على عنوان باسمك</li>
+      <li><svg class="ico"><use href="#i-check"/></svg>تخزين للملفات والحصص المسجلة</li>
+      <li><svg class="ico"><use href="#i-check"/></svg>إشعارات وتذكيرات للطلاب</li>
+    </ul>
+  </aside>
+</section>
+
+<!-- 3. provisioning -->
+<section class="screen" id="s-prov" aria-live="polite">
+  <div class="center"><div class="center-card">
+    <div class="av lg" style="margin:0 auto 18px;border-radius:50%"><svg class="ico lg" style="width:40px;height:40px"><use href="#i-sparkles"/></svg></div>
+    <h1 style="margin:0 0 6px;font-size:28px">نجهّز مساحتك الآن…</h1>
+    <p class="muted" style="margin:0">لحظات قليلة ونبدأ.</p>
+    <ul class="tasks" id="tasks"></ul>
+  </div></div>
+</section>
+
+<!-- 4. welcome -->
+<section class="screen welcome" id="s-welcome" aria-labelledby="w-title">
+  <div class="center"><div class="center-card">
+    <span class="badge ok">تم تفعيل حسابك</span>
+    <h1 id="w-title">أهلًا Ali، لنجهّز أكاديميتك</h1>
+    <p class="lead" style="margin-bottom:0">ستة أسئلة قصيرة، وتنتهي بصفحة أكاديمية باسمك تستقبل طلابك. كل ما تدخله يمكن تعديله لاحقًا.</p>
+    <div class="wgrid">
+      <div class="wcard"><svg class="ico"><use href="#i-clock"/></svg><b>نحو 6 دقائق</b><span>وبعضها اختياري ويمكن تخطيه</span></div>
+      <div class="wcard"><svg class="ico"><use href="#i-save"/></svg><b>تُحفظ تلقائيًا</b><span>اخرج وارجع في أي وقت</span></div>
+      <div class="wcard"><svg class="ico"><use href="#i-eye"/></svg><b>معاينة مباشرة</b><span>ترى صفحتك وهي تتشكل</span></div>
+    </div>
+    <div class="lbl" style="justify-content:center;margin-bottom:10px">ما أهم شيء تريد إنجازه أولًا؟ <em class="muted" style="font-weight:400">اختياري</em></div>
+    <div class="goals" id="goals">
+      <button class="chip" data-goal="groups" aria-pressed="false"><svg class="ico"><use href="#i-check"/></svg>تنظيم مجموعاتي</button>
+      <button class="chip" data-goal="pay" aria-pressed="false"><svg class="ico"><use href="#i-check"/></svg>تحصيل المصروفات</button>
+      <button class="chip" data-goal="content" aria-pressed="false"><svg class="ico"><use href="#i-check"/></svg>تقديم محتوى وفيديوهات</button>
+      <button class="chip" data-goal="all" aria-pressed="false"><svg class="ico"><use href="#i-check"/></svg>كل ذلك</button>
+    </div>
+    <button class="btn primary lg" data-act="startwiz">ابدأ الإعداد <svg class="ico"><use href="#i-left"/></svg></button>
+    <p style="margin:16px 0 0"><a href="#" data-act="skipall">سأكمل لاحقًا، خذني إلى اللوحة</a></p>
+  </div></div>
+</section>
+
+<!-- 5. wizard -->
+<section class="screen" id="s-wizard" aria-label="إعداد الأكاديمية">
+  <header class="wz-top">
+    <div class="mini-logo"><i>T</i><span>Teachedo</span></div>
+    <div class="sp"></div>
+    <button class="btn ghost sm" data-act="help"><svg class="ico sm"><use href="#i-help"/></svg><span class="lbl">مساعدة</span></button>
+    <button class="btn sm" data-act="savelater"><svg class="ico sm"><use href="#i-save"/></svg><span class="lbl">حفظ والمتابعة لاحقًا</span></button>
+  </header>
+  <div class="wz-mprog" id="mprog"></div>
+  <div class="wz-body">
+    <aside class="rail" id="rail" aria-label="خطوات الإعداد"></aside>
+    <main id="wz-main"></main>
+    <aside class="pv" id="wz-pv" aria-label="معاينة مباشرة"></aside>
+  </div>
+  <div class="sr" id="live" aria-live="polite"></div>
+</section>
+
+<!-- 6. saved -->
+<section class="screen" id="s-saved">
+  <div class="center"><div class="center-card">
+    <div class="av lg" style="margin:0 auto 18px;border-radius:50%;background:var(--ok-soft);color:var(--ok)"><svg class="ico lg" style="width:40px;height:40px"><use href="#i-save"/></svg></div>
+    <h1 style="margin:0 0 8px;font-size:28px">تم حفظ تقدمك</h1>
+    <p class="lead">لن تفقد شيئًا. أرسلنا رابط العودة إلى <b dir="ltr">admin@teachedo.com</b>، وستكمل من الخطوة التي توقفت عندها.</p>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn primary lg" data-act="resume">متابعة الآن</button><button class="btn lg" data-act="signout">تسجيل الخروج</button></div>
+  </div></div>
+</section>
+
+<!-- 7. done -->
+<section class="screen" id="s-done" aria-labelledby="d-title">
+  <div class="done-wrap">
+    <div class="done-hero">
+      <div class="big-ck"><svg class="ico"><use href="#i-check"/></svg></div>
+      <h1 id="d-title">أكاديميتك جاهزة!</h1>
+      <p class="muted" style="margin:0" id="d-sub"></p>
+      <div class="urlchip"><span id="d-url"></span><button data-act="copyurl" aria-label="نسخ العنوان"><svg class="ico sm"><use href="#i-copy"/></svg></button></div>
+    </div>
+    <div class="card" id="d-sum"></div>
+    <div class="trialbar"><svg class="ico lg"><use href="#i-bolt"/></svg><div><b>بدأت تجربتك المجانية.</b> لديك 14 يومًا بكل مزايا خطة Pro، بدون إدخال بطاقة.</div></div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:28px"><button class="btn primary lg" data-act="gotodash">الذهاب إلى لوحة التحكم <svg class="ico"><use href="#i-left"/></svg></button><button class="btn lg" data-act="openpage">معاينة صفحة أكاديميتي</button></div>
+  </div>
+  <div id="confetti" aria-hidden="true"></div>
+</section>
+
+<dialog id="dlg" aria-labelledby="dlg-title"><div class="dlg"><h3 id="dlg-title"></h3><div id="dlg-body"></div></div><div class="dlg-foot"><button class="btn primary" id="dlg-ok">حسنًا</button></div></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<input type="file" id="file-photo" accept="image/png,image/jpeg,image/webp" hidden>
+<input type="file" id="file-logo" accept="image/png,image/jpeg,image/svg+xml,image/webp" hidden>
+
+<script>
+(function(){
+"use strict";
+var $=function(s,r){return (r||document).querySelector(s)};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function ic(id,c){return '<svg class="ico '+(c||'')+'"><use href="#i-'+id+'"/></svg>'}
+function arNum(s){return String(s).replace(/[٠-٩]/g,function(d){return String(d.charCodeAt(0)-1632)}).replace(/[۰-۹]/g,function(d){return String(d.charCodeAt(0)-1776)})}
+function num(n){return Math.round(n).toLocaleString('en-US')}
+var toastT;function toast(m){var t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('show')},2800)}
+function copy(t,m){try{navigator.clipboard.writeText(t)}catch(e){}toast(m||'تم النسخ')}
+function initials(n){var p=String(n).trim().split(/\s+/).filter(Boolean);return p.length?((p[0][0]||'')+(p[1]?p[1][0]:'')).toUpperCase():'؟'}
+
+/* ---------------- state ---------------- */
+var KEY='teachedo.onb.v1',TEMP='K7mQp-9xWd';
+function fresh(){return {screen:'login',step:1,maxStep:1,attempts:0,goal:'',done:{},skipped:{},data:{
+  name:'Ali Tarek',phone:'',wa:true,bio:'',photo:null,subjects:[],stages:[],mode:'',size:'',
+  academy:'',sub:'ali-tarek',logo:null,color:'#0B6EB8',
+  methods:{cash:true,bank:false,vodafone:false,instapay:false,card:true},voda:'',insta:'',bankinfo:'',price:'',
+  gName:'',gSub:'',gLevel:'',gPrice:'',gDays:[],gTime:'16:00',gDur:'90',gCap:'30',gMode:'',students:[],calc:60}}}
+var S=fresh();
+function persist(){try{var c=JSON.parse(JSON.stringify(S));c.data.photo=null;c.data.logo=null;localStorage.setItem(KEY,JSON.stringify(c))}catch(e){}}
+function restore(){try{var v=JSON.parse(localStorage.getItem(KEY));if(v&&v.data&&v.screen)return v}catch(e){}return null}
+var pt;function saveSoon(){clearTimeout(pt);pt=setTimeout(persist,400)}
+var D=function(){return S.data};
+
+/* ---------------- screens ---------------- */
+var screens=['login','newpw','prov','welcome','wizard','saved','done'];
+function show(name){
+  S.screen=name;screens.forEach(function(s){$('#s-'+s).classList.toggle('on',s===name)});
+  window.scrollTo(0,0);persist();
+  if(name==='wizard')renderWizard();
+  if(name==='done')renderDone();
+  if(name==='newpw'){updateRules()}
+  if(name==='login')setTimeout(function(){$('#tp').focus()},50);
+}
+
+/* ---------------- login ---------------- */
+function doLogin(){
+  var v=$('#tp').value.trim(),e=$('#e-tp');
+  if(S.attempts>=5){e.hidden=false;e.innerHTML=ic('alert','sm')+'تم إيقاف المحاولات مؤقتًا لأسباب أمنية. تواصل مع الدعم.';return}
+  if(v!==TEMP){
+    S.attempts++;var left=5-S.attempts;$('#tp').setAttribute('aria-invalid','true');e.hidden=false;
+    e.innerHTML=ic('alert','sm')+'<span>كلمة المرور المؤقتة غير صحيحة. تأكد من نسخها كاملة من الرسالة. '+(left>0?'متبقي '+left+' محاولات.':'لا محاولات متبقية.')+'</span>';
+    $('#tp').focus();return;
+  }
+  $('#tp').removeAttribute('aria-invalid');e.hidden=true;show('newpw');
+  setTimeout(function(){$('#np').focus()},60);
+}
+/* ---------------- new password ---------------- */
+var RULES=[['8 أحرف على الأقل',function(p){return p.length>=8}],['حرف كبير وحرف صغير',function(p){return /[a-z]/.test(p)&&/[A-Z]/.test(p)}],['رقم واحد على الأقل',function(p){return /\d/.test(p)}],['مختلفة عن المؤقتة',function(p){return p&&p!==TEMP&&p.toLowerCase().indexOf('admin')<0}]];
+function strength(p){var s=0;if(p.length>=8)s++;if(p.length>=12)s++;if(/[a-z]/.test(p)&&/[A-Z]/.test(p)&&/\d/.test(p))s++;if(/[^A-Za-z0-9]/.test(p))s++;return p?Math.max(1,s):0}
+function updateRules(){
+  var p=$('#np').value;$('#rules').innerHTML=RULES.map(function(r){return '<li class="'+(r[1](p)?'ok':'')+'"><i>'+ic('check')+'</i>'+r[0]+'</li>'}).join('');
+  $('#meter').dataset.s=strength(p);
+}
+function doActivate(){
+  var p=$('#np').value,c=$('#cp').value,ok=true;
+  function er(id,inp,m){var e=$('#e-'+id);if(m){e.hidden=false;e.innerHTML=ic('alert','sm')+m;if(inp)$('#'+inp).setAttribute('aria-invalid','true');ok=false}else{e.hidden=true;if(inp)$('#'+inp).removeAttribute('aria-invalid')}}
+  er('np','np',RULES.every(function(r){return r[1](p)})?'':'كلمة المرور لا تستوفي كل الشروط أعلاه.');
+  er('cp','cp',c===p&&c?'':'كلمتا المرور غير متطابقتين.');
+  er('terms',null,$('#terms').checked?'':'يجب الموافقة على الشروط للمتابعة.');
+  if(!ok){var f=$('[aria-invalid="true"]',$('#s-newpw'));if(f)f.focus();return}
+  provision();
+}
+function provision(){
+  show('prov');var T=['إنشاء مساحة أكاديميتك','تجهيز التخزين والملفات','ضبط الإشعارات والتذكيرات','بدء الفترة التجريبية'],ul=$('#tasks');
+  ul.innerHTML=T.map(function(t){return '<li><span class="st">'+ic('check')+'</span>'+t+'</li>'}).join('');
+  var lis=$$('li',ul),i=0;
+  function tick(){if(i>0){lis[i-1].className='ok'}if(i<lis.length){lis[i].className='run';i++;setTimeout(tick,650)}else{setTimeout(function(){show('welcome')},500)}}
+  tick();
+}
+
+/* ---------------- wizard config ---------------- */
+var STAGES={'ابتدائي':['الصف الأول الابتدائي','الصف الثاني الابتدائي','الصف الثالث الابتدائي','الصف الرابع الابتدائي','الصف الخامس الابتدائي','الصف السادس الابتدائي'],'إعدادي':['الصف الأول الإعدادي','الصف الثاني الإعدادي','الصف الثالث الإعدادي'],'ثانوي':['الصف الأول الثانوي','الصف الثاني الثانوي','الصف الثالث الثانوي'],'جامعي':['الفرقة الأولى','الفرقة الثانية','الفرقة الثالثة','الفرقة الرابعة'],'لغات ودورات':['مستوى مبتدئ','مستوى متوسط','مستوى متقدم']};
+var SUBJ=['رياضيات','فيزياء','كيمياء','أحياء','لغة عربية','لغة إنجليزية','لغة فرنسية','تاريخ','جغرافيا','حاسب آلي','علوم'];
+var DAYS=['السبت','الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'];
+var COLORS=['#0B6EB8','#0F766E','#7C3AED','#C2410C','#BE123C','#1D4ED8','#4D7C0F','#0F172A'];
+var RESERVED=['admin','www','app','api','teachedo','support','mail','help'],TAKEN=['nour','elite','mahmoud','ali','math','physics','academy','demo'];
+var STEPS=[
+ {id:'profile',t:'ملفك الشخصي',s:'الاسم والصورة',m:1,req:true},
+ {id:'teach',t:'ما تدرّسه',s:'المواد والمراحل',m:1,req:true},
+ {id:'brand',t:'أكاديميتك',s:'الاسم والعنوان واللون',m:2,req:true},
+ {id:'pay',t:'استلام المدفوعات',s:'طرق الدفع والسعر',m:1,req:false},
+ {id:'group',t:'أول مجموعة',s:'الاسم والمواعيد',m:2,req:false},
+ {id:'students',t:'دعوة الطلاب',s:'رابط ورسالة',m:1,req:false}
+];
+var errs={};
+function normPhone(v){v=arNum(v).replace(/[\s\-()]/g,'');if(/^\+?20/.test(v))v='0'+v.replace(/^\+?20/,'');return v}
+function okPhone(v){return /^01[0125]\d{8}$/.test(normPhone(v))}
+function lum(hex){var h=hex.replace('#',''),r=parseInt(h.substr(0,2),16)/255,g=parseInt(h.substr(2,2),16)/255,b=parseInt(h.substr(4,2),16)/255;function f(c){return c<=.03928?c/12.92:Math.pow((c+.055)/1.055,2.4)}return .2126*f(r)+.7152*f(g)+.0722*f(b)}
+function onColor(hex){return lum(hex)>.5?'#0F1B2D':'#FFFFFF'}
+function tm(t){var p=t.split(':'),h=+p[0],m=p[1];return (h%12||12)+':'+m+' '+(h<12?'ص':'م')}
+function allSubjects(){var x=SUBJ.slice();D().subjects.forEach(function(s){if(x.indexOf(s)<0)x.push(s)});return x}
+function levels(){var o=[];D().stages.forEach(function(s){(STAGES[s]||[]).forEach(function(l){o.push(l)})});return o}
+function publicUrl(){return (D().sub||'ali-tarek')+'.teachedo.com'}
+function academyName(){return D().academy||('أكاديمية '+D().name)}
+
+/* ----- field helpers ----- */
+function fld(k,label,inner,hint,o){o=o||{};return '<div class="field"><label'+(o.for?' for="'+o.for+'"':'')+'>'+label+(o.opt?'<em>اختياري</em>':'')+'</label>'+inner+(hint?'<p class="hint">'+hint+'</p>':'')+'<div class="err" id="e-'+k+'" hidden></div></div>'}
+function inp(k,o){o=o||{};var v=D()[k];return '<div class="control">'+(o.ico?ic(o.ico):'')+'<input class="in'+(o.ltr?' ltr':'')+(o.ico?'':' plain')+'" id="f-'+k+'" data-k="'+k+'"'+(o.tf?' data-tf="'+o.tf+'"':'')+' value="'+esc(v)+'"'+(o.ph?' placeholder="'+o.ph+'"':'')+(o.ml?' maxlength="'+o.ml+'"':'')+(o.im?' inputmode="'+o.im+'"':'')+' autocomplete="off"></div>'}
+function chips(k,list,multi){var cur=D()[k];return '<div class="chips" id="c-'+k+'" role="group">'+list.map(function(v){var on=multi?cur.indexOf(v)>-1:cur===v;return '<button type="button" class="chip" data-chip="'+k+'" data-v="'+esc(v)+'" data-multi="'+(multi?1:0)+'" aria-pressed="'+on+'">'+ic('check')+esc(v)+'</button>'}).join('')+'</div>'}
+function sel(k,list,ph){var v=D()[k];return '<select class="in" id="f-'+k+'" data-k="'+k+'"><option value="">'+ph+'</option>'+list.map(function(x){return '<option'+(x===v?' selected':'')+'>'+esc(x)+'</option>'}).join('')+'</select>'}
+function avatarHtml(cls,img,name){return '<div class="av '+cls+'" id="av-'+(cls||'x')+'">'+(img?'<img alt="" src="'+img+'">':esc(initials(name)))+'</div>'}
+
+/* ----- step bodies ----- */
+function bodyProfile(){
+  var d=D();
+  return '<div class="field"><div class="lbl">صورتك الشخصية <em>اختياري</em></div><div class="uploader">'+avatarHtml('','',d.name).replace('id="av-x"','id="av-form"')+
+   '<div><button class="btn sm" type="button" data-act="pickphoto">'+ic('upload','sm')+'رفع صورة</button> '+(d.photo?'<button class="btn sm ghost" type="button" data-act="rmphoto">إزالة</button>':'')+'<p class="hint" style="margin-top:8px">صورة واضحة للوجه تزيد ثقة أولياء الأمور. JPG أو PNG حتى 2 ميجابايت.</p></div></div><div class="err" id="e-photo" hidden></div></div>'+
+  fld('name','الاسم كما سيظهر للطلاب',inp('name',{ico:'user',ml:60}),'',{for:'f-name'})+
+  fld('phone','رقم الهاتف',inp('phone',{ico:'phone',ltr:1,tf:'digits',ph:'01012345678',im:'tel'}),'للتواصل مع الطلاب وتنبيهات الحصص. لا يظهر للعامة.',{for:'f-phone',opt:1})+
+  '<label class="chk" style="margin-top:-8px"><input type="checkbox" data-toggle="wa"'+(d.wa?' checked':'')+'><span>أستخدم هذا الرقم للواتساب</span></label>'+
+  fld('bio','نبذة قصيرة',`<textarea class="in" id="f-bio" data-k="bio" maxlength="160" placeholder="مثال: خبرة 10 سنوات في تدريس الرياضيات للثانوية العامة">${esc(d.bio)}</textarea>`,'<span id="bio-n">'+d.bio.length+'</span>/160',{for:'f-bio',opt:1});
+}
+function bodyTeach(){
+  var d=D();
+  return fld('subjects','ما المواد التي تدرّسها؟',chips('subjects',allSubjects(),true)+'<div class="addrow"><input class="in plain" id="subj-new" placeholder="مادة أخرى…" maxlength="30"><button type="button" class="btn sm" data-act="addsubj">'+ic('plus','sm')+'إضافة</button></div>','اختر مادة واحدة على الأقل.')+
+   fld('stages','لأي مراحل؟',chips('stages',Object.keys(STAGES),true),'')+
+   fld('mode','كيف تدرّس؟','<div class="cards3" id="c-mode">'+[['online','monitor','أونلاين','حصص مباشرة ومسجلة'],['center','pin','في سنتر','حضور فعلي'],['both','sparkles','الاثنان','مرونة كاملة']].map(function(o){return '<button type="button" class="oc" data-radio="mode" data-v="'+o[0]+'" aria-pressed="'+(d.mode===o[0])+'">'+ic(o[1])+'<b>'+o[2]+'</b><small>'+o[3]+'</small></button>'}).join('')+'</div>','')+
+   fld('size','كم طالبًا تتوقع في أول 3 أشهر؟',chips('size',['أقل من 30','30 – 100','100 – 300','أكثر من 300'],false),'نستخدم إجابتك لاقتراح الخطة المناسبة فقط، ولا تلتزم بشيء.',{opt:1});
+}
+function bodyBrand(){
+  var d=D();
+  return fld('academy','اسم أكاديميتك',inp('academy',{ico:'building',ph:'مثال: أكاديمية النخبة',ml:40}),'يظهر في أعلى صفحتك وفي رسائل الطلاب.',{for:'f-academy'})+
+  `<div class="field"><label for="f-sub">عنوان أكاديميتك على الإنترنت</label><div class="suffix"><input class="in" id="f-sub" data-k="sub" data-tf="sub" value="${esc(d.sub)}" maxlength="30" autocomplete="off" aria-describedby="sub-st"><span>.teachedo.com</span></div><div class="status" id="sub-st" aria-live="polite"></div><div class="sugs" id="sub-sug"></div><p class="hint" style="display:flex;gap:6px">${ic('alert','sm')}لا يمكن تغيير العنوان بعد إنهاء الإعداد، لأن الطلاب سيحفظونه. أحرف إنجليزية صغيرة وأرقام وشرطة فقط.</p><div class="err" id="e-sub" hidden></div></div>`+
+  `<div class="field"><div class="lbl">شعار الأكاديمية <em>اختياري</em></div><div class="uploader">${avatarHtml('',d.logo,academyName()).replace('id="av-x"','id="av-logo"')}<div><button class="btn sm" type="button" data-act="picklogo">${ic('upload','sm')}رفع شعار</button> ${d.logo?'<button class="btn sm ghost" type="button" data-act="rmlogo">إزالة</button>':''}<p class="hint" style="margin-top:8px">إن لم ترفع شعارًا سنستخدم أول حرفين من اسمك.</p></div></div><div class="err" id="e-logo" hidden></div></div>`+
+  `<div class="field"><div class="lbl">لون العلامة</div><div class="swatches" id="sw">${COLORS.map(function(c){return '<button type="button" data-swatch="'+c+'" style="background:'+c+'" aria-label="لون '+c+'" aria-pressed="'+(d.color.toLowerCase()===c.toLowerCase())+'"></button>'}).join('')}<input type="color" id="colorpick" value="${d.color}" aria-label="لون مخصص"></div><div class="hint" id="contrast"></div></div>`;
+}
+var PM=[
+ ['cash','cash','نقدًا (كاش)','تسجّل الدفعة يدويًا عند الاستلام · بدون عمولة',null],
+ ['bank','bank','تحويل بنكي','يظهر للطالب بيانات حسابك · بدون عمولة','bankinfo'],
+ ['vodafone','wallet','محفظة إلكترونية (فودافون كاش…)','الطالب يحوّل لرقمك ويرفع الإيصال · بدون عمولة','voda'],
+ ['instapay','bolt','إنستاباي','الطالب يحوّل لعنوانك ويرفع الإيصال · بدون عمولة','insta'],
+ ['card','card','بطاقة أو محفظة عبر المنصة','دفع تلقائي وإيصالات فورية · عمولة 2.5%',null]
+];
+function bodyPay(){
+  var d=D();
+  return '<div class="field"><div class="lbl">كيف يدفع لك طلابك؟ <em>يمكنك اختيار أكثر من طريقة</em></div>'+PM.map(function(m){
+    var on=d.methods[m[0]],extra='';
+    if(on&&m[0]==='vodafone')extra='<div class="pm-b"><label class="lbl" for="f-voda" style="font-size:13.5px">رقم المحفظة</label><div class="control">'+ic('phone')+'<input class="in ltr" id="f-voda" data-k="voda" data-tf="digits" value="'+esc(d.voda)+'" placeholder="01012345678" inputmode="tel"></div><div class="err" id="e-voda" hidden></div></div>';
+    if(on&&m[0]==='instapay')extra='<div class="pm-b"><label class="lbl" for="f-insta" style="font-size:13.5px">عنوان إنستاباي</label><input class="in plain ltr" id="f-insta" data-k="insta" value="'+esc(d.insta)+'" placeholder="name@instapay"></div>';
+    if(on&&m[0]==='bank')extra='<div class="pm-b"><label class="lbl" for="f-bankinfo" style="font-size:13.5px">اسم البنك ورقم الحساب</label><input class="in plain" id="f-bankinfo" data-k="bankinfo" value="'+esc(d.bankinfo)+'" placeholder="مثال: البنك الأهلي · 1234 5678 9012"></div>';
+    if(on&&m[0]==='card')extra='<div class="pm-b" style="color:var(--muted);font-size:13.5px;display:flex;gap:8px">'+ic('info','sm')+'ستضيف حساب استلام الأرباح لاحقًا من لوحة التحكم، والدفع الإلكتروني لن يعمل قبل ذلك.</div>';
+    return '<div class="pm'+(on?' on':'')+'"><button type="button" class="pm-h" data-pm="'+m[0]+'" role="switch" aria-checked="'+!!on+'"><span class="pi">'+ic(m[1])+'</span><span class="t"><b>'+m[2]+'</b><small>'+m[3]+'</small></span><span class="sw"></span></button>'+extra+'</div>';
+  }).join('')+'<div class="err" id="e-methods" hidden></div></div>'+
+  fld('price','السعر الشهري المعتاد للطالب (ج.م)',inp('price',{ico:'cash',ltr:1,tf:'digits',ph:'300',im:'numeric'}),'نملأ به سعر مجموعتك الأولى. يمكنك تغييره لكل مجموعة.',{for:'f-price',opt:1});
+}
+function bodyGroup(){
+  var d=D(),lv=levels(),subs=d.subjects;
+  return '<div class="tip" style="margin:0 0 20px">'+ic('sparkles')+'<div>نقترح لك اسمًا وبيانات من إجاباتك السابقة. <button type="button" class="btn sm ghost" data-act="suggestgroup" style="height:28px;padding:0 8px">استخدم الاقتراح</button></div></div>'+
+  fld('gName','اسم المجموعة',inp('gName',{ico:'users',ph:'مثال: رياضيات — الثالث الثانوي (أ)',ml:60}),'',{for:'f-gName'})+
+  '<div class="row2">'+fld('gSub','المادة',sel('gSub',subs.length?subs:SUBJ,'اختر المادة'),'',{for:'f-gSub'})+fld('gLevel','المستوى',sel('gLevel',lv.length?lv:['—'],'اختر المستوى'),'',{for:'f-gLevel'})+'</div>'+
+  fld('gDays','أيام الحصص','<div class="days" id="c-gDays">'+DAYS.map(function(x){return '<button type="button" class="chip" data-chip="gDays" data-v="'+x+'" data-multi="1" aria-pressed="'+(d.gDays.indexOf(x)>-1)+'">'+x+'</button>'}).join('')+'</div>','')+
+  '<div class="row2">'+fld('gTime','وقت البدء','<input class="in plain ltr" type="time" id="f-gTime" data-k="gTime" value="'+esc(d.gTime)+'">','',{for:'f-gTime'})+
+   fld('gDur','مدة الحصة','<select class="in" id="f-gDur" data-k="gDur">'+[['60','ساعة'],['90','ساعة ونصف'],['120','ساعتان']].map(function(o){return '<option value="'+o[0]+'"'+(d.gDur===o[0]?' selected':'')+'>'+o[1]+'</option>'}).join('')+'</select>','',{for:'f-gDur'})+'</div>'+
+  '<div class="row2">'+fld('gPrice','السعر الشهري (ج.م)',inp('gPrice',{ico:'cash',ltr:1,tf:'digits',ph:'300',im:'numeric'}),'',{for:'f-gPrice'})+fld('gCap','عدد الطلاب الأقصى',inp('gCap',{ico:'users',ltr:1,tf:'digits',im:'numeric'}),'',{for:'f-gCap'})+'</div>';
+}
+function bodyStudents(){
+  var d=D(),link='https://'+publicUrl()+'/join';
+  return '<div class="field"><div class="lbl">رابط انضمام الطلاب</div><div class="linkbox"><code>'+esc(link)+'</code><button class="btn sm" type="button" data-act="copylink">'+ic('copy','sm')+'نسخ</button></div><p class="hint">شاركه في مجموعات واتساب أو على فيسبوك. من يفتحه يسجّل بياناته وينضم لمجموعتك.</p></div>'+
+  '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px"><a class="btn" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent(waText())+'">'+ic('chat')+'مشاركة عبر واتساب</a><button class="btn" type="button" data-act="nativeshare">'+ic('share')+'مشاركة…</button></div>'+
+  '<div class="sep"></div><div class="field" style="margin-bottom:8px"><div class="lbl">أو أضف طلابك بنفسك <em>اختياري</em></div><div class="row2" style="gap:8px 10px"><div><input class="in plain" id="s-name" placeholder="اسم الطالب" maxlength="40" aria-label="اسم الطالب"></div><div><input class="in plain ltr" id="s-phone" placeholder="رقم ولي الأمر" inputmode="tel" aria-label="رقم الهاتف"></div></div><div class="err" id="e-stu" hidden></div><div style="margin-top:10px;display:flex;gap:8px"><button class="btn sm" type="button" data-act="addstu">'+ic('plus','sm')+'إضافة طالب</button><button class="btn sm ghost" type="button" data-act="excel">'+ic('upload','sm')+'استيراد من Excel</button></div><div class="slist" id="slist"></div></div>';
+}
+function waText(){var d=D();return 'أهلًا 👋\nيسعدني انضمامك إلى '+academyName()+'.\nسجّل من هنا وانضم لمجموعتك:\nhttps://'+publicUrl()+'/join'}
+function paintStudents(){var l=$('#slist');if(!l)return;l.innerHTML=D().students.map(function(s,i){return '<div class="srow"><b>'+esc(s.n)+'</b><span>'+esc(s.p)+'</span><button type="button" data-rmstu="'+i+'" aria-label="حذف">'+ic('trash','sm')+'</button></div>'}).join('')}
+
+/* ----- previews ----- */
+function pvWrap(title,inner,cap){return '<div class="pv-h"><span><i class="live"></i>معاينة مباشرة</span><span>'+title+'</span></div>'+inner+(cap?'<p class="pv-cap">'+cap+'</p>':'')}
+function pvProfile(){
+  var d=D();return pvWrap('ملفك للطلاب','<div class="pv-card tprof">'+avatarHtml('lg',d.photo,d.name)+'<h4>'+esc(d.name||'اسمك')+'</h4><p>'+(d.subjects.length?esc(d.subjects.join(' · ')):'<span class="ph-line"></span>')+'</p>'+(d.bio?'<p style="margin-top:10px;color:var(--ink)">'+esc(d.bio)+'</p>':'<p style="margin-top:12px"><span class="ph-line" style="width:80%"></span></p>')+'<div class="tags"><span class="tag gr">'+ic('shield','sm')+' حساب موثّق</span></div></div>','هكذا يراك الطلاب وأولياء الأمور في صفحتك.');
+}
+function pvTeach(){
+  var d=D(),rec=d.size==='أكثر من 300'?['Pro','حتى 500 طالب'+(' — ونرقّيك لاحقًا إن كبرت')]:d.size==='100 – 300'?['Pro','حتى 500 طالب وتقارير متقدمة']:d.size==='30 – 100'?['Starter','حتى 100 طالب بسعر مناسب للبداية']:['التجربة المجانية','كل مزايا Pro مفتوحة 14 يومًا'];
+  return pvWrap('صفحتك في الدليل','<div class="pv-card"><div class="lbl" style="margin-bottom:8px">المواد</div><div class="tags" style="justify-content:flex-start;margin:0 0 16px">'+(d.subjects.length?d.subjects.map(function(s){return '<span class="tag">'+esc(s)+'</span>'}).join(''):'<span class="ph-line"></span>')+'</div><div class="lbl" style="margin-bottom:8px">المراحل</div><div class="tags" style="justify-content:flex-start;margin:0 0 16px">'+(d.stages.length?d.stages.map(function(s){return '<span class="tag gr">'+esc(s)+'</span>'}).join(''):'<span class="ph-line" style="width:40%"></span>')+'</div><div class="lbl" style="margin-bottom:8px">طريقة التدريس</div>'+(d.mode?'<span class="tag">'+({online:'أونلاين',center:'في سنتر',both:'أونلاين وسنتر'})[d.mode]+'</span>':'<span class="ph-line" style="width:30%"></span>')+'</div>'+
+   '<div class="tip">'+ic('sparkles')+'<div><b>اقتراحنا: '+rec[0]+'</b><br>'+rec[1]+'. لا تحتاج لاختيار خطة الآن.</div></div>','نستخدم اختياراتك لترتيب لوحتك وتقارير تناسب مراحلك.');
+}
+function pvBrand(){
+  var d=D(),bt=onColor(d.color),nm=academyName(),lg=d.logo?'<img alt="" src="'+d.logo+'">':esc(initials(d.academy||d.name));
+  var g=d.gName||'مجموعتك الأولى';
+  return pvWrap('صفحة طلابك','<div class="browser"><div class="bb"><span><i></i><i></i><i></i></span><div class="url">'+esc(publicUrl())+'</div></div><div class="site" style="--bc:'+d.color+';--bt:'+bt+'"><div class="hero"><div class="lg">'+lg+'</div><h5>'+esc(nm)+'</h5><p>'+(d.subjects.length?esc(d.subjects.slice(0,3).join(' · ')):'مواد وفيديوهات وحصص مباشرة')+'</p><span class="cta">سجّل الآن</span></div><div class="body"><div class="gc"><i></i><div><b>'+esc(g)+'</b><small>'+(d.gDays.length?d.gDays.slice(0,2).join(' و')+' · '+tm(d.gTime):'المواعيد تظهر هنا')+'</small></div></div><div class="gc"><i style="opacity:.4"></i><div><b>مجموعة أخرى</b><small>قريبًا</small></div></div></div></div></div>','هذه صفحة الطلاب كما ستظهر لهم. تتغير مع كل حرف تكتبه.');
+}
+function pvPay(){
+  var d=D(),price=parseInt(d.price,10)||300,n=d.calc||60,gross=price*n,online=d.methods.card?Math.round(gross*.4):0,fee=Math.round(online*.025);
+  return pvWrap('حاسبة دخلك','<div class="pv-card calc"><div class="crow"><span>عدد الطلاب</span><b id="c-n">'+n+'</b></div><input type="range" min="10" max="300" step="5" value="'+n+'" id="calc-r" aria-label="عدد الطلاب"><div class="crow"><span>السعر الشهري</span><b>'+num(price)+' ج.م</b></div><div class="crow"><span>الإجمالي المتوقع</span><b id="c-g">'+num(gross)+' ج.م</b></div><div class="crow"><span>عمولة الدفع الإلكتروني <small class="muted">(إن دفع 40% إلكترونيًا)</small></span><b id="c-f">− '+num(fee)+' ج.م</b></div><div class="crow tot"><span>صافي دخلك الشهري</span><b id="c-t">'+num(gross-fee)+' ج.م</b></div></div>','مثال توضيحي. الكاش والتحويل اليدوي بدون أي عمولة.');
+}
+function pvGroup(){
+  var d=D(),on={};d.gDays.forEach(function(x){on[x]=1});
+  var end=(function(){var p=d.gTime.split(':'),m=+p[0]*60+ +p[1]+ +d.gDur;return ('0'+Math.floor(m/60)%24).slice(-2)+':'+('0'+m%60).slice(-2)})();
+  return pvWrap('بطاقة المجموعة','<div class="pv-card"><div class="gcard"><div class="ib">'+ic('users')+'</div><div><b>'+esc(d.gName||'اسم المجموعة')+'</b><small>'+esc([d.gSub,d.gLevel].filter(Boolean).join(' · ')||'المادة والمستوى')+'</small></div><div style="margin-inline-start:auto;text-align:end"><b>'+(d.gPrice?num(d.gPrice)+' ج.م':'—')+'</b><small>شهريًا</small></div></div><div class="tt" aria-label="الجدول الأسبوعي">'+DAYS.map(function(x){return '<div class="'+(on[x]?'on':'')+'">'+x.replace('ال','')+'<br>'+(on[x]?tm(d.gTime):'·')+'</div>'}).join('')+'</div><p class="hint" style="margin-top:12px">'+(d.gDays.length?'الحصة من '+tm(d.gTime)+' إلى '+tm(end)+' · حتى '+(d.gCap||'—')+' طالب':'اختر أيام الحصص لتظهر في الجدول')+'</p></div>','سنُنشئ الجدول تلقائيًا ونذكّر الطلاب قبل كل حصة.');
+}
+function pvStudents(){
+  return pvWrap('رسالة واتساب','<div class="pv-card"><div class="wa">'+esc(waText()).replace(/(https:\/\/[^\s<]+)/,'<u>$1</u>')+'</div></div>','أرسلها كما هي أو عدّلها. الطلاب سينضمون بضغطة واحدة.');
+}
+var PV=[pvProfile,pvTeach,pvBrand,pvPay,pvGroup,pvStudents];
+
+/* ----- validation ----- */
+function validate(i){
+  var d=D(),e={};
+  if(i===1){if(!d.name.trim())e.name='أدخل اسمك كما تريد أن يظهر للطلاب.';if(d.phone&&!okPhone(d.phone))e.phone='أدخل رقم موبايل مصريًا صحيحًا مثل 01012345678.'}
+  if(i===2){if(!d.subjects.length)e.subjects='اختر مادة واحدة على الأقل.';if(!d.stages.length)e.stages='اختر مرحلة واحدة على الأقل.';if(!d.mode)e.mode='اختر طريقة التدريس.'}
+  if(i===3){if(d.academy.trim().length<3)e.academy='اسم الأكاديمية يجب ألا يقل عن 3 أحرف.';
+    if(subState==='checking')e.sub='ننتظر انتهاء التحقق من العنوان…';else if(subState!=='ok')e.sub=subMsg()||'اختر عنوانًا صالحًا ومتاحًا.'}
+  if(i===4){var any=Object.keys(d.methods).some(function(k){return d.methods[k]});if(!any)e.methods='اختر طريقة دفع واحدة على الأقل.';
+    if(d.methods.vodafone&&!okPhone(d.voda))e.voda='أدخل رقم المحفظة بشكل صحيح.'}
+  if(i===5){if(!d.gName.trim())e.gName='أدخل اسم المجموعة.';if(!d.gSub)e.gSub='اختر المادة.';if(!d.gLevel)e.gLevel='اختر المستوى.';if(!d.gDays.length)e.gDays='اختر يومًا واحدًا على الأقل.';
+    if(!(parseInt(d.gPrice,10)>=10))e.gPrice='أدخل سعرًا صحيحًا (10 ج.م أو أكثر).';var c=parseInt(d.gCap,10);if(!(c>=1&&c<=500))e.gCap='العدد بين 1 و500.'}
+  return e;
+}
+function showErrs(e){
+  $$('.err[id^="e-"]',$('#wz-main')).forEach(function(x){x.hidden=true});$$('[aria-invalid]',$('#wz-main')).forEach(function(x){x.removeAttribute('aria-invalid')});
+  var first=null;
+  Object.keys(e).forEach(function(k){var el=$('#e-'+k);if(el){el.hidden=false;el.innerHTML=ic('alert','sm')+'<span>'+e[k]+'</span>';if(!first)first=el}var f=$('#f-'+k);if(f)f.setAttribute('aria-invalid','true')});
+  if(first){var f=$('#f-'+Object.keys(e)[0])||first;first.scrollIntoView({block:'center',behavior:'smooth'});if(f.focus)f.focus({preventScroll:true})}
+}
+function clearErr(k){var el=$('#e-'+k);if(el)el.hidden=true;var f=$('#f-'+k);if(f)f.removeAttribute('aria-invalid')}
+
+/* ----- subdomain ----- */
+var subState='idle',subT;
+function subMsg(){return {invalid:'العنوان يجب أن يكون من 3 إلى 30 حرفًا، ولا يبدأ أو ينتهي بشرطة.',reserved:'هذا العنوان محجوز للنظام.',taken:'هذا العنوان مستخدم بالفعل.'}[subState]}
+function checkSub(now){
+  clearTimeout(subT);var v=D().sub;
+  if(!/^[a-z0-9][a-z0-9-]{1,28}[a-z0-9]$/.test(v)){subState=v?'invalid':'idle';paintSub();return}
+  if(RESERVED.indexOf(v)>-1){subState='reserved';paintSub();return}
+  subState='checking';paintSub();
+  subT=setTimeout(function(){subState=TAKEN.indexOf(v)>-1?'taken':'ok';paintSub()},now?350:650);
+}
+function paintSub(){
+  var st=$('#sub-st'),sg=$('#sub-sug');if(!st)return;
+  var v=D().sub,m={checking:['wait','<span class="spin"></span>جارٍ التحقق من التوفر…'],ok:['ok',ic('check','sm')+'<b dir="ltr">'+esc(publicUrl())+'</b> متاح لك'],idle:['wait','اكتب العنوان الذي تريده'],invalid:['bad',ic('alert','sm')+subMsg()],reserved:['bad',ic('alert','sm')+subMsg()],taken:['bad',ic('alert','sm')+subMsg()]}[subState];
+  st.className='status '+m[0];st.innerHTML=m[1];
+  sg.innerHTML=subState==='taken'||subState==='reserved'?['-academy','-edu','1'].map(function(x){return '<button type="button" data-sug="'+esc(v+x)+'">'+esc(v+x)+'</button>'}).join(''):'';
+  if(subState==='ok')clearErr('sub');
+}
+
+/* ----- wizard rendering ----- */
+function status(i){return S.done[i]?'done':S.skipped[i]?'skip':i===S.step?'cur':'todo'}
+function pct(){var n=0;STEPS.forEach(function(s,k){if(S.done[k+1]||S.skipped[k+1])n++});return Math.round(n/STEPS.length*100)}
+function minsLeft(){var m=0;STEPS.forEach(function(s,k){if(!S.done[k+1]&&!S.skipped[k+1])m+=s.m});return m}
+function renderRail(){
+  $('#rail').innerHTML='<h3>إعداد أكاديميتك</h3><div class="rprog"><div class="bar"><i style="width:'+pct()+'%"></i></div><small><span>'+pct()+'% مكتمل</span><span>متبقي نحو '+minsLeft()+' دقيقة</span></small></div><ol class="steps">'+STEPS.map(function(s,k){
+    var i=k+1,st=status(i),reach=i<=S.maxStep;
+    return '<li class="'+(st==='cur'?'cur':st==='done'?'done':st==='skip'?'skip':'')+'"><button class="sbtn" data-goto="'+i+'"'+(reach?'':' disabled')+(st==='cur'?' aria-current="step"':'')+'><span class="n">'+(st==='done'?ic('check','sm'):i)+'</span><span class="t"><b>'+s.t+'</b><small>'+(st==='skip'?'تخطيته — تكمله لاحقًا':s.req?s.s:s.s+' · اختياري')+'</small></span></button></li>'}).join('')+'</ol><div class="rail-help"><b>تحتاج مساعدة؟</b>فريقنا يرد عادةً خلال دقائق.<div style="margin-top:8px"><a href="#" data-act="help">تحدّث معنا</a></div></div>';
+  $('#mprog').innerHTML='<div><span>الخطوة '+S.step+' من '+STEPS.length+' · '+STEPS[S.step-1].t+'</span><span>'+pct()+'%</span></div><div class="bar"><i style="width:'+((S.step-1)/STEPS.length*100+100/STEPS.length/2)+'%"></i></div>';
+}
+var BODY=[bodyProfile,bodyTeach,bodyBrand,bodyPay,bodyGroup,bodyStudents];
+var LEAD=[
+ 'نبدأ بالأساسيات: كيف تريد أن يعرفك طلابك وأولياء الأمور؟',
+ 'نسألك حتى نرتّب لوحتك ونقترح ما يناسبك، ولا شيء هنا نهائي.',
+ 'هذه هوية أكاديميتك: تظهر لطلابك في صفحتك ورسائلك.',
+ 'أخبرنا كيف تستلم المصروفات. الكاش والتحويل بدون عمولة، ويمكنك التعديل لاحقًا.',
+ 'أنشئ مجموعتك الأولى لتظهر في الجدول ويبدأ الطلاب بالانضمام.',
+ 'آخر خطوة: ادعُ طلابك. يمكنك التخطي ودعوتهم لاحقًا من لوحتك.'
+];
+function renderWizard(reuse){
+  var i=S.step,s=STEPS[i-1],last=i===STEPS.length;
+  $('#wz-main').innerHTML='<div class="card enter"><div class="card-h"><div class="kicker"><span class="badge info">الخطوة '+i+' من '+STEPS.length+'</span><span>'+(s.req?'مطلوبة':'اختيارية')+' · نحو '+s.m+' دقيقة</span></div><h2 id="step-h" tabindex="-1">'+s.t+'</h2><p>'+LEAD[i-1]+'</p></div><div class="card-b" id="wz-form">'+BODY[i-1]()+'</div><div class="card-f">'+
+    (i>1?'<button class="btn" data-act="back">'+ic('right')+'<span class="lbl">رجوع</span></button>':'')+
+    '<span class="sp"></span>'+(!s.req?'<button class="btn ghost" data-act="skip">تخطَّ الآن</button>':'')+
+    '<button class="btn primary" data-act="next" id="next-btn"><span>'+(last?'إنهاء الإعداد':'متابعة')+'</span>'+ic(last?'check':'left')+'</button></div></div>';
+  renderRail();renderPreview();
+  if(i===3){if(!D().academy)D().academy='أكاديمية '+D().name;var f=$('#f-academy');if(f)f.value=D().academy;checkSub(true);applyColorUI();renderPreview()}
+  if(i===6)paintStudents();
+  if(i===5&&!D().gPrice&&D().price){D().gPrice=D().price;var gp=$('#f-gPrice');if(gp)gp.value=D().gPrice;renderPreview()}
+  $('#live').textContent='الخطوة '+i+' من '+STEPS.length+': '+s.t;
+  if(!reuse){var h=$('#step-h');setTimeout(function(){var f=$('#wz-form input:not([type=checkbox]),#wz-form select');if(window.innerWidth>900&&f)f.focus({preventScroll:true});else if(h)h.focus({preventScroll:true})},80)}
+  persist();
+}
+function renderPreview(){$('#wz-pv').innerHTML=PV[S.step-1]();bindCalc()}
+function bindCalc(){var r=$('#calc-r');if(!r)return;r.addEventListener('input',function(){D().calc=+r.value;var price=parseInt(D().price,10)||300,g=price*D().calc,f=D().methods.card?Math.round(g*.4*.025):0;$('#c-n').textContent=D().calc;$('#c-g').textContent=num(g)+' ج.م';$('#c-f').textContent='− '+num(f)+' ج.م';$('#c-t').textContent=num(g-f)+' ج.م'})}
+function applyColorUI(){var c=D().color,bt=onColor(c),el=$('#contrast');if(el)el.innerHTML=bt==='#FFFFFF'?'نص أبيض على لونك، والتباين مريح للقراءة.':'لونك فاتح، لذلك سنستخدم نصًا داكنًا عليه تلقائيًا.';var cp=$('#colorpick');if(cp)cp.value=c;$$('[data-swatch]').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.swatch.toLowerCase()===c.toLowerCase())})}
+
+/* ----- flow ----- */
+function goStep(n){S.step=n;S.maxStep=Math.max(S.maxStep,n);renderWizard();window.scrollTo({top:0,behavior:'smooth'})}
+function next(){
+  var i=S.step,e=validate(i);showErrs(e);if(Object.keys(e).length)return;
+  S.done[i]=true;delete S.skipped[i];
+  if(i===STEPS.length){finish();return}
+  goStep(i+1);
+}
+function skip(){var i=S.step;S.skipped[i]=true;if(i===STEPS.length){finish();return}goStep(i+1);toast('تخطيت «'+STEPS[i-1].t+'». ستجدها في قائمة المهام بلوحتك.')}
+function finish(){persist();show('done');confetti()}
+
+/* ----- done ----- */
+function renderDone(){
+  var d=D();$('#d-url').textContent=publicUrl();$('#d-sub').textContent='أهلًا بك في '+academyName()+'. صفحتك جاهزة لاستقبال الطلاب.';
+  var rows=[
+   [1,'user','ملفك الشخصي',d.name+(d.phone?' · '+d.phone:''),'أكمل الملف'],
+   [2,'book','ما تدرّسه',(d.subjects.join('، ')||'—')+' · '+d.stages.join('، '),'حدّد المواد'],
+   [3,'palette','أكاديميتك',academyName()+' · '+publicUrl(),'أكمل الهوية'],
+   [4,'wallet','استلام المدفوعات',PM.filter(function(m){return d.methods[m[0]]}).map(function(m){return m[2].split(' (')[0]}).join('، ')||'—','أضف طرق الدفع'],
+   [5,'users','أول مجموعة',d.gName||'—','أنشئ مجموعة'],
+   [6,'share','دعوة الطلاب',d.students.length?d.students.length+' طلاب أُضيفوا':'رابط الانضمام جاهز للمشاركة','ادعُ طلابك']
+  ];
+  $('#d-sum').innerHTML=rows.map(function(r){var sk=S.skipped[r[0]]&&!S.done[r[0]];return '<div class="sumrow'+(sk?' later':'')+'"><span class="si">'+ic(sk?'clock':r[1])+'</span><div class="t"><b>'+r[2]+'</b><small>'+(sk?'تخطيته — يمكنك إكماله من لوحتك':esc(r[3]))+'</small></div>'+(sk?'<button class="btn sm" data-act="dashtask">'+r[4]+'</button>':'<span class="badge ok">تم</span>')+'</div>'}).join('');
+}
+function confetti(){
+  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  var c=$('#confetti');c.innerHTML='';var col=['#0B6EB8','#17704A','#D98A0B','#7C3AED','#BE123C'];
+  for(var i=0;i<60;i++){var p=document.createElement('i');p.style.left=Math.random()*100+'%';p.style.background=col[i%col.length];p.style.animationDuration=(2.2+Math.random()*2)+'s';p.style.animationDelay=(Math.random()*.6)+'s';p.style.transform='rotate('+Math.random()*360+'deg)';c.appendChild(p)}
+  setTimeout(function(){c.innerHTML=''},5500);
+}
+
+/* ----- file uploads ----- */
+function readImg(file,cb,errId){
+  var e=$('#'+errId);function bad(m){if(e){e.hidden=false;e.innerHTML=ic('alert','sm')+m}}
+  if(!file)return;if(!/^image\//.test(file.type)){bad('الملف يجب أن يكون صورة.');return}
+  if(file.size>2*1024*1024){bad('حجم الصورة أكبر من 2 ميجابايت.');return}
+  if(e)e.hidden=true;var r=new FileReader();r.onload=function(){cb(r.result)};r.readAsDataURL(file);
+}
+$('#file-photo').addEventListener('change',function(){var f=this.files[0];readImg(f,function(u){D().photo=u;renderWizard(true)},'e-photo');this.value=''});
+$('#file-logo').addEventListener('change',function(){var f=this.files[0];readImg(f,function(u){D().logo=u;renderWizard(true)},'e-logo');this.value=''});
+
+/* ----- dialogs ----- */
+function dialog(title,body,ok){$('#dlg-title').textContent=title;$('#dlg-body').innerHTML=body;$('#dlg-ok').textContent=ok||'حسنًا';$('#dlg').showModal()}
+$('#dlg-ok').addEventListener('click',function(){$('#dlg').close()});
+
+/* ----- events ----- */
+var ACT={
+  login:doLogin,activate:doActivate,
+  fillpw:function(){$('#tp').value=TEMP;$('#tp').type='text';$('#tp').focus()},
+  support:function(){dialog('التواصل مع الدعم','<button class="hopt">'+ic('chat')+'<span>واتساب<small>نرد خلال دقائق</small></span></button><button class="hopt">'+ic('mail')+'<span>support@teachedo.com<small>نرد خلال ساعات العمل</small></span></button>')},
+  help:function(){ACT.support()},
+  terms:function(){dialog('الشروط والخصوصية','<p>نص الشروط وسياسة الخصوصية يظهر هنا في النسخة الفعلية.</p>')},
+  startwiz:function(){S.step=1;S.maxStep=Math.max(S.maxStep,1);show('wizard')},
+  skipall:function(){dialog('الانتقال إلى اللوحة','<p>سنأخذك إلى لوحة التحكم، وستجد خطوات الإعداد كقائمة مهام يمكنك إكمالها في أي وقت.</p>','فهمت')},
+  next:next,skip:skip,back:function(){if(S.step>1)goStep(S.step-1)},
+  savelater:function(){persist();show('saved')},resume:function(){show('wizard')},signout:function(){toast('تم تسجيل الخروج (معاينة)')},
+  pickphoto:function(){$('#file-photo').click()},rmphoto:function(){D().photo=null;renderWizard(true)},
+  picklogo:function(){$('#file-logo').click()},rmlogo:function(){D().logo=null;renderWizard(true)},
+  addsubj:function(){var i=$('#subj-new'),v=i.value.trim();if(!v)return;if(D().subjects.indexOf(v)<0)D().subjects.push(v);clearErr('subjects');renderWizard(true);var n=$('#subj-new');if(n)n.focus()},
+  suggestgroup:function(){var d=D();d.gSub=d.gSub||d.subjects[0]||'';d.gLevel=d.gLevel||levels()[0]||'';d.gName=(d.gSub&&d.gLevel)?d.gSub+' — '+d.gLevel+' (أ)':'مجموعتي الأولى';if(!d.gDays.length)d.gDays=['السبت','الثلاثاء'];if(!d.gPrice)d.gPrice=d.price||'300';['gName','gSub','gLevel','gPrice','gDays'].forEach(clearErr);renderWizard(true);toast('طبّقنا الاقتراح، عدّل ما تشاء')},
+  copylink:function(){copy('https://'+publicUrl()+'/join','تم نسخ رابط الانضمام')},
+  nativeshare:function(){if(navigator.share){navigator.share({text:waText()}).catch(function(){})}else copy(waText(),'تم نسخ الرسالة')},
+  addstu:function(){var n=$('#s-name').value.trim(),p=$('#s-phone').value,e=$('#e-stu');
+    if(!n){e.hidden=false;e.innerHTML=ic('alert','sm')+'أدخل اسم الطالب.';return}
+    if(!okPhone(p)){e.hidden=false;e.innerHTML=ic('alert','sm')+'أدخل رقم موبايل صحيحًا لولي الأمر.';return}
+    e.hidden=true;D().students.push({n:n,p:normPhone(p)});$('#s-name').value='';$('#s-phone').value='';paintStudents();$('#s-name').focus();saveSoon()},
+  excel:function(){dialog('استيراد من Excel','<p>حمّل النموذج، املأ أعمدة «الاسم» و«رقم ولي الأمر» ثم ارفعه. سنتحقق من الأرقام ونعرض لك الأخطاء قبل الإضافة.</p>','حسنًا')},
+  copyurl:function(){copy('https://'+publicUrl(),'تم نسخ العنوان')},
+  openpage:function(){toast('سيفتح صفحة أكاديميتك: '+publicUrl())},
+  gotodash:function(){toast('سيتم فتح لوحة التحكم (خارج نطاق المعاينة)')},
+  dashtask:function(){toast('ستجد هذه المهمة في قائمة مهامك بلوحة التحكم')}
+};
+document.addEventListener('click',function(e){
+  var t=e.target;
+  var a=t.closest('[data-act]');if(a&&ACT[a.dataset.act]){e.preventDefault();ACT[a.dataset.act]();return}
+  var ey=t.closest('[data-eye]');if(ey){var i=$('#'+ey.dataset.eye),sh=i.type==='password';i.type=sh?'text':'password';$('use',ey).setAttribute('href',sh?'#i-eyeoff':'#i-eye');return}
+  var g=t.closest('[data-goal]');if(g){S.goal=S.goal===g.dataset.goal?'':g.dataset.goal;$$('[data-goal]').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.goal===S.goal)});return}
+  var gt=t.closest('[data-goto]');if(gt&&!gt.disabled){goStep(+gt.dataset.goto);return}
+  var c=t.closest('[data-chip]');if(c){var k=c.dataset.chip,v=c.dataset.v,d=D();
+    if(c.dataset.multi==='1'){var ix=d[k].indexOf(v);if(ix>-1)d[k].splice(ix,1);else d[k].push(v);c.setAttribute('aria-pressed',ix<0)}
+    else{d[k]=d[k]===v?'':v;$$('[data-chip="'+k+'"]').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.v===d[k])})}
+    if(k==='stages'&&d.gLevel&&levels().indexOf(d.gLevel)<0)d.gLevel='';
+    clearErr(k);renderPreview();saveSoon();return}
+  var r=t.closest('[data-radio]');if(r){var k2=r.dataset.radio;D()[k2]=r.dataset.v;$$('[data-radio="'+k2+'"]').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.v===D()[k2])});clearErr(k2);renderPreview();saveSoon();return}
+  var pm=t.closest('[data-pm]');if(pm){var m=pm.dataset.pm;D().methods[m]=!D().methods[m];clearErr('methods');renderWizard(true);saveSoon();return}
+  var sw=t.closest('[data-swatch]');if(sw){D().color=sw.dataset.swatch;applyColorUI();renderPreview();saveSoon();return}
+  var sg=t.closest('[data-sug]');if(sg){D().sub=sg.dataset.sug;$('#f-sub').value=D().sub;checkSub(true);saveSoon();return}
+  var rs=t.closest('[data-rmstu]');if(rs){D().students.splice(+rs.dataset.rmstu,1);paintStudents();saveSoon();return}
+  var j=t.closest('[data-jump]');if(j)jump(j.dataset.jump);
+});
+function onField(e){
+  var el=e.target;
+  if(el.id==='tp'){$('#e-tp').hidden=true;el.removeAttribute('aria-invalid');return}
+  if(el.id==='np'){updateRules();return}
+  if(el.id==='colorpick'){D().color=el.value;applyColorUI();renderPreview();saveSoon();return}
+  var k=el.dataset&&el.dataset.k;if(!k)return;
+  var v=el.value,tf=el.dataset.tf;
+  if(tf==='digits')v=arNum(v).replace(/[^\d+]/g,'');
+  if(tf==='sub')v=v.toLowerCase().replace(/[^a-z0-9-]/g,'');
+  if(v!==el.value)el.value=v;
+  D()[k]=v;clearErr(k);
+  if(k==='bio'){var n=$('#bio-n');if(n)n.textContent=v.length}
+  if(k==='sub')checkSub();
+  if(k==='gSub'||k==='gLevel')clearErr(k);
+  if(k==='name'){var av=$('#av-form');if(av&&!D().photo)av.textContent=initials(v)}
+  if(k==='academy'){var al=$('#av-logo');if(al&&!D().logo)al.textContent=initials(v||D().name)}
+  renderPreview();saveSoon();
+}
+document.addEventListener('input',onField);document.addEventListener('change',function(e){onField(e);var el=e.target;if(el.dataset&&el.dataset.toggle){D()[el.dataset.toggle]=el.checked;saveSoon()}});
+document.addEventListener('keydown',function(e){
+  if(e.key!=='Enter'||e.isComposing)return;var t=e.target;
+  if(t.tagName==='TEXTAREA'||t.tagName==='BUTTON'||t.tagName==='A')return;
+  if(t.id==='tp'){e.preventDefault();doLogin();return}
+  if(t.id==='np'||t.id==='cp'){e.preventDefault();doActivate();return}
+  if(t.id==='subj-new'){e.preventDefault();ACT.addsubj();return}
+  if(t.id==='s-name'||t.id==='s-phone'){e.preventDefault();ACT.addstu();return}
+  if($('#s-wizard').classList.contains('on')&&t.closest('#wz-main')){e.preventDefault();next()}
+});
+
+/* ----- demo jumps ----- */
+function seed(){var d=D();if(!d.subjects.length)d.subjects=['رياضيات'];if(!d.stages.length)d.stages=['ثانوي'];if(!d.mode)d.mode='online';if(!d.academy)d.academy='أكاديمية Ali Tarek'}
+function jump(t){
+  if(t==='reset'){try{localStorage.removeItem(KEY)}catch(e){}S=fresh();subState='idle';show('login');toast('أُعيد ضبط المعاينة');return}
+  if(t==='done'){seed();var d=D();d.phone=d.phone||'01012345678';d.gName=d.gName||'رياضيات — الصف الثالث الثانوي (أ)';for(var i=1;i<=5;i++)S.done[i]=true;S.skipped[6]=true;S.maxStep=6;show('done');confetti();return}
+  if(t==='login'||t==='newpw'||t==='welcome'){show(t);return}
+}
+$('#jump-step').addEventListener('change',function(){var n=+this.value;if(!n)return;seed();S.step=n;S.maxStep=Math.max(S.maxStep,n);for(var i=1;i<n;i++)if(!S.skipped[i])S.done[i]=true;show('wizard');this.value=''});
+$$('[data-jump]',$('#demo')).forEach(function(b){b.addEventListener('click',function(){jump(b.dataset.jump)})});
+
+/* ----- boot ----- */
+var saved=restore();
+if(saved&&saved.screen==='wizard'){S=saved;show('wizard');toast('أكملنا من حيث توقفت 👌')}
+else if(saved&&saved.screen==='saved'){S=saved;show('saved')}
+})();
+</script>
+</body>
+</html>

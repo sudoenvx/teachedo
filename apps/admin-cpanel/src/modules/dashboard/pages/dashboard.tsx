@@ -13,10 +13,12 @@ import {
   Wallet,
   Settings
 } from 'lucide-react'
-import { StatisticCard, DataTable, Badge, Card, IconButton, Button } from '@teachedo/ui/legacy'
+import { StatisticCard, Badge, Card, IconButton } from '@teachedo/ui/legacy'
+import { DataTable, Button, type ColumnDef } from '@teachedo/ui/components'
 import { useAdminStats, useLatestTeachers } from '../api/dashboard.queries'
 import type { LatestTeacher } from '../types/dashboard.types'
 import { cn } from '@/core/utils'
+import { QuickDataTable, SimpleTeachersTable, TeachersTable } from '@/modules/dashboard/pages/x.d'
 
 // --- بيانات الرسم البياني (MRR) ---
 // type: 'primary' | 'secondary' | 'projected' (مخطط)
@@ -51,40 +53,44 @@ export default function AdminDashboard() {
   const { data: stats, isLoading: statsLoading } = useAdminStats()
   const { data: latestTeachers = [], isLoading: teachersLoading } = useLatestTeachers()
 
-  const columns = useMemo(() => [
+  const columns = useMemo<ColumnDef<LatestTeacher>[]>(() => [
     {
       header: 'ID',
-      accessor: 'id' as keyof LatestTeacher,
-      cellClassName: 'text-[12px] text-text-muted font-inter tabular-nums',
-      render: (item: LatestTeacher) => <span className="font-bold text-text">{item.id}</span>,
+      accessorKey: 'id',
+      cell: ({ row }) => <span className="font-bold text-text">{row.original.id}</span>,
     },
     {
       header: 'المدرس',
-      accessor: 'name' as keyof LatestTeacher,
-      sortable: true,
-      render: (item: LatestTeacher) => <span className="font-bold text-[12px] text-primary-hover">{item.name}</span>,
+      accessorKey: 'name',
+      cell: ({ row }) => <span className="font-bold text-[12px] text-primary-hover">{row.original.name}</span>,
     },
     {
       header: 'البريد',
-      accessor: 'email' as keyof LatestTeacher,
-      render: (item: LatestTeacher) => <span className="text-text-muted text-[11px] font-inter">{item.email}</span>,
+      accessorKey: 'email',
+      cell: ({ row }) => <span className="text-text-muted text-[11px] font-inter">{row.original.email}</span>,
     },
-    { header: 'الطلاب', accessor: 'studentsCount' as keyof LatestTeacher, cellClassName: 'text-[12px] font-bold text-primary tabular-nums' },
+    {
+      header: 'الطلاب',
+      accessorKey: 'studentsCount',
+      cell: ({ row }) => <span className="text-[12px] font-bold text-primary tabular-nums">{row.original.studentsCount}</span>,
+    },
     {
       header: 'الحالة',
-      accessor: 'status' as keyof LatestTeacher,
-      render: (item: LatestTeacher) => (
-        <Badge variant={item.status === 'ACTIVE' ? 'success' : 'warning'} size="sm">
-          {STATUS_MAP[item.status] || item.status}
+      accessorKey: 'status',
+      cell: ({ row }) => (
+        <Badge variant={row.original.status === 'ACTIVE' ? 'success' : 'warning'} size="sm">
+          {STATUS_MAP[row.original.status] || row.original.status}
         </Badge>
       ),
     },
     {
       header: '',
-      render: (item: LatestTeacher) => {
+      id: 'actions',
+      enableSorting: false,
+      cell: ({ row }) => {
         return (
           <div className="flex items-center justify-end gap-1">
-            <Link to={`/teachers/${item.id}`}>
+            <Link to={`/teachers/${row.original.id}`}>
               <IconButton aria-label="فتح ملف المدرس" title="فتح ملف المدرس" icon={<Settings />} size="sm" />
             </Link>
           </div>
@@ -136,7 +142,7 @@ export default function AdminDashboard() {
 
         {/* --- رسم الإيرادات العمودي (Concept from image, using your tokens) --- */}
         <Card
-          className="hidden lg:col-span-2 rounded-sm"
+          className="lg:col-span-2 rounded-sm"
           bodyClassName="p-4 flex flex-col h-full"
         >
           <div className="flex justify-between items-start mb-6">
@@ -184,7 +190,7 @@ export default function AdminDashboard() {
         </Card>
 
         {/* --- أفضل المدرسين - شريط أفقي (Concept from image, using your tokens) --- */}
-        <Card className="hidden rounded-sm" bodyClassName="p-4 flex flex-col h-full">
+        <Card className="rounded-sm" bodyClassName="p-4 flex flex-col h-full">
           <div className="flex justify-between items-start mb-6">
             <div className="flex flex-col">
               <span className="flex items-center gap-1.5 text-[14px] font-bold text-text mb-1">
@@ -222,7 +228,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
         {/* صندوق التنبيه المالي بستايل نظامك (Danger colors) */}
-        <Card className="hidden rounded-sm border-destructive/30 bg-destructive-subtle" bodyClassName="p-4 flex flex-col justify-between relative overflow-hidden group cursor-pointer">
+        <Card className="rounded-sm border-destructive/30 bg-destructive-subtle" bodyClassName="p-4 flex flex-col justify-between relative overflow-hidden group cursor-pointer">
           <div className="absolute -left-6 -top-6 text-destructive/20">
             <AlertOctagon size={100} strokeWidth={1} />
           </div>
@@ -241,7 +247,7 @@ export default function AdminDashboard() {
         </Card>
 
         {/* الإجراءات السريعة (Concept from Activity Time, using your layout) */}
-        <Card className="hidden lg:col-span-2 rounded-sm" bodyClassName="p-4">
+        <Card className="lg:col-span-2 rounded-sm" bodyClassName="p-4">
           <div className="flex items-center gap-1.5 text-[14px] font-bold text-text mb-4">
             <Zap size={16} className="text-text-muted" /> إجراءات سريعة
           </div>
@@ -265,29 +271,6 @@ export default function AdminDashboard() {
         </Card>
 
       </div>
-
-      {/* 4. الجدول (DataTable) */}
-      <Card className="rounded-sm" bodyClassName="p-0!">
-        <DataTable
-          title="أحدث المدرسين المنضمين"
-          data={latestTeachers}
-          columns={columns}
-          getRowId={(item) => item.id}
-          loading={teachersLoading}
-          className="border-0 shadow-none rounded-none" // إزالة حواف الجدول ليتماشى مع الكارد
-          tableActions={
-            <div className='flex items-center gap-2'>
-              <Link to="/teachers">
-                <Button rightIcon={<School />} color="neutral" size="sm">كل المدرسين</Button>
-              </Link>
-              <Link to="/teachers/new">
-                <Button size="sm" leftIcon={<Plus size={16} />}>إضافة مدرس</Button>
-              </Link>
-            </div>
-          }
-        />
-      </Card>
-
     </div>
   )
 }

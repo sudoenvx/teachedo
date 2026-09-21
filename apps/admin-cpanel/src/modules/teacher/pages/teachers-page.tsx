@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   Plus,
-  Search,
   GraduationCap,
   UserCheck,
   Users,
@@ -12,20 +11,18 @@ import {
   Settings
 } from 'lucide-react'
 import {
-  Button,
-  Input,
   DataTable,
   Badge,
   StatisticCard,
   Body,
   Pagination,
-  IconButton,
   Breadcrumb,
   PageHeader,
 } from '@teachedo/ui/legacy'
 import { useDebounce } from '@/core/hooks/use_debounce'
 import { useTeachersList, type TeacherListItem } from '../api/teachers.queries'
 import { useAdminStats } from '@/modules/dashboard/api/dashboard.queries'
+import { Button, Tooltip, TooltipContent, TooltipTrigger } from '@teachedo/ui/components'
 
 const STATUS_MAP: Record<string, { label: string; variant: 'success' | 'warning' | 'danger' | 'neutral' }> = {
   active: { label: 'نشط', variant: 'success' },
@@ -37,7 +34,7 @@ const STATUS_MAP: Record<string, { label: string; variant: 'success' | 'warning'
 export default function TeachersPage() {
   const navigate = useNavigate()
   const [page, setPage] = useState(1)
-  const [searchTerm, setSearchTerm] = useState('')
+  const [searchTerm] = useState('')
   const debouncedSearch = useDebounce(searchTerm, 400)
 
   const { data: result, isLoading } = useTeachersList(page, debouncedSearch)
@@ -121,7 +118,18 @@ export default function TeachersPage() {
         header: '',
         render: (item) => (
           <Link to={`/teachers/${item.id}`}>
-            <IconButton color='secondary' aria-label="تعديل المدرس" icon={<Settings size={15} />} size="sm" title="عرض تفاصيل المدرس وإدارته" />
+            <Tooltip>
+              <TooltipTrigger>
+
+              <Button variant="neutral" size="icon-sm" aria-label="تعديل المدرس" title="">
+              <Settings size={15} />
+            </Button>
+              </TooltipTrigger>
+
+              <TooltipContent>
+                عرض تفاصيل المدرس وإدارته
+              </TooltipContent>
+            </Tooltip>
           </Link>
         )
       }
@@ -136,7 +144,8 @@ export default function TeachersPage() {
         title="إدارة المدرسين"
         description="راجع حسابات المدرسين وبياناتهم وحالتهم التشغيلية."
         actions={
-          <Button type="button" size="sm" uppercase={false} leftIcon={<Plus size={16} />} onClick={() => navigate('/teachers/new')}>
+          <Button type="button" onClick={() => navigate('/teachers/new')}>
+            <Plus size={16} />
             إضافة مدرس جديد
           </Button>
         }
@@ -170,24 +179,10 @@ export default function TeachersPage() {
         />
       </div>
 
-      {/* 3. Search and Table Controls */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        <div className="w-full max-w-sm">
-          <Input
-            placeholder="ابحث بالاسم، الهاتف، المادة، البريد..."
-            variant="filled"
-            leadingIcon={<Search size={14} />}
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value)
-              setPage(1)
-            }}
-          />
-        </div>
-      </div>
 
       {/* 4. Teachers Data Table */}
       <DataTable
+      selectable
         title={
           <div className="flex items-center gap-2">
             <Body className="text-text font-bold">
@@ -200,14 +195,6 @@ export default function TeachersPage() {
         }
 
 
-        tableActions={
-          <Button
-            leftIcon={<Plus size={16} />}
-            onClick={() => navigate('/teachers/new')}
-          >
-            إضافة مدرس جديد
-          </Button>
-        }
         data={result?.data || []}
         columns={columns}
         getRowId={(item) => String(item.id)}

@@ -368,7 +368,7 @@ export function DataTable<T>({
       <tr
         key={id}
         className={cn(
-          'transition-colors border-b border-border-subtle last:border-none',
+          'transition-colors border-b border-[#d8dadb] last:border-none',
           !selectable && 'hover:bg-surface-secondary',
           onRowClick && 'cursor-pointer',
           rowBg,
@@ -406,7 +406,7 @@ export function DataTable<T>({
   }
 
   return (
-    <Card className={cn('flex flex-col overflow-hidden', className)}>
+    <Card className={cn('flex flex-col overflow-hidden border border-[#d8dadb] rounded-lg', className)}>
       {(title || description || tableActions || persistedKey || hasGroupingOptions) && (
         <div className="mb-2 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
           <div className="flex min-w-0 flex-col">
@@ -445,7 +445,7 @@ export function DataTable<T>({
 
       <div ref={wrapperRef} className="overflow-x-auto">
         <table dir={dir} className="w-full text-[12px]">
-          <thead>
+          <thead className='bg-secondary text-secondary-foreground'>
             <tr>
               {selectable && (
                 <th
@@ -481,7 +481,7 @@ export function DataTable<T>({
                         : undefined
                     }
                     className={cn(
-                      'whitespace-nowrap bg-secondary/90 px-2.5 py-1.5 text-start text-[12px] font-medium uppercase tracking-wider text-secondary-foreground',
+                      'whitespace-nowrap px-2.5 py-1.5 text-start text-[12px] font-medium uppercase tracking-wider',
                       col.headerClassName
                     )}
                   >

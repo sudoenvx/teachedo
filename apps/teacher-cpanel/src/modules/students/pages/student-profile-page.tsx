@@ -1,6 +1,6 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ArrowRight, Edit3, GraduationCap, Phone, Users } from 'lucide-react'
-import { Badge, Body, Breadcrumb, Button, Card, PageHeader, Title } from '@teachedo/ui'
+import { Badge, Body, Breadcrumb, Button, Card, PageHeader, Title } from '@teachedo/ui/legacy'
 import { useStudent } from '../api/students.queries'
 import { useMemo, useState } from 'react'
 import { CreditCard, CalendarCheck, Download, KeyRound } from 'lucide-react'

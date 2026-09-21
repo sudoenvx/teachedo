@@ -42,7 +42,7 @@ export { Radio, RadioGroup, RadioIndicator, RadioTile } from './radio'
 export { Checkbox, CheckboxGroup, CheckboxIndicator, CheckboxTile } from './checkbox'
 
 export { Toolbar, type ToolbarProps } from './toolbar'
-export { SwitchTile } from './switch'
+export { Switch, SwitchTile } from './switch'
 
 export { QuickActions, type QuickActionItem as QuickAction } from './quick-actions'
 

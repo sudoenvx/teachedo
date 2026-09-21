@@ -12,7 +12,7 @@ import {
   Wallet,
   Plus,
 } from 'lucide-react'
-import { Button, Card, StatisticCard, Title } from '@teachedo/ui'
+import { Button, Card, StatisticCard, Title } from '@teachedo/ui/legacy'
 import { useTeacherDashboardStats, useUpcomingTeacherSessions } from '../api/dashboard.queries'
 import { useGroups } from '@/modules/groups/api/groups.queries'
 import type { UpcomingSession } from '../types/dashboard.types'

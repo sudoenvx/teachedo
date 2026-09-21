@@ -4,7 +4,7 @@ import {
   NotificationToast,
   type NotificationProps,
   type NotificationType
-} from '@teachedo/ui';
+} from '@teachedo/ui/legacy';
 
 interface NotificationOptions {
   duration?: number;

@@ -14,7 +14,7 @@ import {
   Title,
   Body,
   type DataTableColumn,
-} from '@teachedo/ui'
+} from '@teachedo/ui/legacy'
 import { useNotification } from '@/core/hooks/use_notification'
 import { useDeleteGroup } from '../api/groups.mutations'
 import { useGroups } from '../api/groups.queries'

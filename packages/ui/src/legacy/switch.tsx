@@ -80,8 +80,8 @@ export function SwitchTile({ checked, onCheckedChange, label, description, size 
     <label
       htmlFor={id}
       className={cn(
-        'flex cursor-pointer select-none items-center justify-between gap-3 rounded-sm bg-surface p-2 transition-colors duration-150',
-        checked ? 'bg-primary-subtle' : 'bg-neutral-100 hover:bg-neutral-200/80',
+        'flex cursor-pointer select-none items-center justify-between gap-3 rounded-sm bg-surface p-2 transition-colors duration-150 ',
+        checked ? 'bg-primary-subtle' : 'border-neutral-300 hover:border-neutral-300 bg-neutral-50 hover:bg-neutral-100',
         disabled && 'pointer-events-none opacity-45',
         className,
       )}

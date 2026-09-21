@@ -1,5 +1,5 @@
 import { CheckCheck, ShieldCheck, Square } from 'lucide-react'
-import { Badge, Button, Card, CheckboxGroup, CheckboxTile } from '@teachedo/ui'
+import { Badge, Button, Card, CheckboxGroup, CheckboxTile } from '@teachedo/ui/legacy'
 import type { Permission } from '../api/assistants'
 
 type PermissionPickerProps = {

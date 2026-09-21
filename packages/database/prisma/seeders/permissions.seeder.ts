@@ -1,4 +1,4 @@
-import { prisma } from '../prisma.client'
+import { PrismaClient } from "../../src"
 
 const permissions = [
   { key: 'finance_view', label: 'View financial data and invoices' },
@@ -14,7 +14,7 @@ const permissions = [
   { key: 'notifications_send', label: 'Send broadcast notifications' },
 ]
 
-export async function seedPermissions() {
+export async function seedPermissions(prisma: PrismaClient) {
   for (const permission of permissions) {
     await prisma.permission.upsert({
       where: { key: permission.key },

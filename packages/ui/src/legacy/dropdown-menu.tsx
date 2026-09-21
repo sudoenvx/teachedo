@@ -147,7 +147,7 @@ export function DropdownMenu({
       open={isOpen}
       onOpenChange={setOpen}
       contentClassName={cn(
-        'flex max-h-60 min-w-50 flex-col gap-1 rounded-sm p-1.5',
+        'flex max-h-60 min-w-50 border border-border/40 flex-col gap-1 rounded-md p-1.5',
         menuClassName,
       )}
     >
@@ -213,8 +213,8 @@ export function DropdownMenuItem({
         close()
       }}
       className={cn(
-        'flex w-full items-center justify-between gap-2 rounded-sm border-none px-1.5 py-1 text-left',
-        'cursor-pointer font-[inherit] text-[11px] font-medium outline-none transition-colors duration-100',
+        'flex w-full items-center justify-between gap-2 rounded-sm border-none px-2 py-1.5 text-left',
+        'cursor-pointer font-[inherit] text-[12px] font-medium outline-none transition-colors duration-100',
         'focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1',
         'disabled:pointer-events-none disabled:opacity-40',
         variant === 'danger' &&
@@ -228,7 +228,7 @@ export function DropdownMenuItem({
     >
       <span className="flex items-center gap-2">
         {icon && (
-          <span className="flex h-3.5 w-3.5 shrink-0 items-center justify-center opacity-65 [&>svg]:h-full [&>svg]:w-full">
+          <span className="flex h-4 w-4 shrink-0 items-center justify-center opacity-65 [&>svg]:h-full [&>svg]:w-full">
             {icon}
           </span>
         )}

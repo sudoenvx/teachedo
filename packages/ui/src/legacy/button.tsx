@@ -73,7 +73,7 @@ const buttonVariants = cva(
       { color: 'secondary', style: 'outline', class: 'bg-transparent text-secondary border border-secondary hover:bg-secondary hover:text-secondary-foreground focus-visible:ring-secondary/50' },
       { color: 'accent', style: 'outline', class: 'bg-transparent text-accent border border-accent hover:bg-accent hover:text-accent-foreground focus-visible:ring-accent/50' },
       { color: 'danger', style: 'outline', class: 'bg-transparent text-destructive border border-destructive hover:bg-destructive hover:text-destructive-foreground focus-visible:ring-destructive/50' },
-      { color: 'neutral', style: 'outline', class: 'bg-transparent text-text border border-border-strong hover:bg-surface-raised focus-visible:ring-border-strong/50' },
+      { color: 'neutral', style: 'outline', class: 'bg-transparent text-neutral-600 border border-neutral-600 hover:bg-neutral-100 focus-visible:ring-border-strong/50' },
 
       // --- ghost (no bg/border at rest; color only shapes text + hover) ---
       { color: 'primary', style: 'ghost', class: 'bg-transparent text-primary hover:bg-primary-subtle focus-visible:ring-primary/40' },

@@ -38,8 +38,8 @@ function CardHeader({
   return (
     <header
       className={cn(
-        'flex items-center justify-between gap-4 border-b border-border',
-        variant === 'flat' ? ' px-3 py-1.5 bg-secondary-subtle text-secondary' : 'mb-2',
+        'flex items-center justify-between gap-4 ',
+        variant === 'flat' ? ' px-2 py-1.5 border-b border-border text-primary-hover mb-1' : 'mb-2.5',
         headerClassName
       )}
     >
@@ -124,7 +124,8 @@ export function Card({
     <div
       {...(variant === 'flat' ? interactiveProps : {})}
       className={cn(
-        'w-full overflow-hidden rounded-sm bg-surface',
+        'w-full overflow-hidden rounded-lg! border border-border bg-surface',
+        // 'border border-border',
         variant === 'flat' && elevated && 'shadow-none',
         variant === 'flat' && interactiveProps.className,
         variant === 'flat' && className
@@ -137,7 +138,7 @@ export function Card({
         headerClassName={headerClassName}
         variant={variant}
       />
-      <section className={cn('text-sm leading-relaxed text-text p-2', bodyClassName ?? 'p-2')}>
+      <section className={cn('text-sm leading-relaxed text-text p-5!', bodyClassName)}>
         {children}
       </section>
       {variant === 'flat' && <CardFooter footer={footer} footerClassName={footerClassName} />}

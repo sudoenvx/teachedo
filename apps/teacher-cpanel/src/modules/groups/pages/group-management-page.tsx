@@ -28,7 +28,7 @@ import {
   Body,
   Text,
   type DataTableColumn
-} from '@teachedo/ui'
+} from '@teachedo/ui/legacy'
 
 import { useGroup } from '../api/groups.queries'
 import type { GroupEnrollment, GroupListItem, GroupSession } from '../types/group.types'

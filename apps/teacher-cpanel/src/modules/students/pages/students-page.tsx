@@ -25,7 +25,7 @@ import {
   StatisticCard,
   Title,
   type DataTableColumn,
-} from '@teachedo/ui'
+} from '@teachedo/ui/legacy'
 import { useDebounce } from '@/core/hooks/use_debounce'
 import { useNotification } from '@/core/hooks/use_notification'
 import { useDeleteStudent } from '../api/students.mutations'
@@ -107,8 +107,8 @@ export default function StudentsPage() {
         render: (student) => {
           const status = statusMap[student.status] || statusMap.inactive
           return (
-            <Badge variant={status.variant} size="sm">
-              {status.label}
+            <Badge variant={status?.variant ?? 'primary'} size="sm">
+              {status?.label}
             </Badge>
           )
         },
