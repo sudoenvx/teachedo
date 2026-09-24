@@ -12,6 +12,11 @@ model Teacher {
   subjectSpecialization  String?  @map("subject_specialization") @db.VarChar(100)
   accountStatus          String?  @map("account_status") @db.VarChar(20) // active, suspended_payment, inactive...
   profilePictureUrl      String?  @map("profile_picture_url") @db.VarChar(255)
+  mustChangePassword     Boolean  @default(true) @map("must_change_password")
+  famousName             String?  @map("famous_name") @db.VarChar(120)
+  teachingMode           String?  @map("teaching_mode") @db.VarChar(20) // center, institute, both
+  pricePerStudent        Decimal? @map("price_per_student") @db.Decimal(10, 2)
+  customSubdomain        String?  @unique @map("custom_subdomain") @db.VarChar(63)
   onboardingCompletedAt  DateTime? @map("onboarding_completed_at")
   onboardingPolicyKey    String?  @map("onboarding_policy_key") @db.VarChar(100)
   onboardingPolicyVersion Int?    @map("onboarding_policy_version")
@@ -23,7 +28,8 @@ model Teacher {
   platformPayments PlatformPayment[]
   studyStages      StudyStage[]
   students         Student[]
-  studentGroups    StudentGroup[]
+  studentClasses   StudentClass[]
+  centers          Center[]
   classSessions    ClassSession[]
   attendance       Attendance[]
   lessons          Lesson[]
@@ -35,6 +41,26 @@ model Teacher {
 //   notifications    Notification[]
 
   @@map("teachers")
+}
+
+model Center {
+  id             Int            @id @default(autoincrement())
+  teacherId      Int            @map("teacher_id")
+  teacher        Teacher        @relation(fields: [teacherId], references: [id])
+  name           String         @db.VarChar(100)
+  location       String?        @db.VarChar(255)
+  area           String?        @db.VarChar(100)
+  phoneNumber    String?        @map("phone_number") @db.VarChar(20)
+  commission     Decimal?       @db.Decimal(10, 2)
+  commissionType CommissionType @default(none) @map("commission_type")
+  isActive       Boolean        @default(true) @map("is_active")
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+
+  classes        StudentClass[]
+
+  @@index([teacherId, isActive])
+  @@map("centers")
 }
 
 model TeacherAssistant {

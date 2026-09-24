@@ -12,9 +12,11 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary-hover aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
         accent: "bg-accent text-accent-foreground hover:bg-accent-hover aria-expanded:bg-accent aria-expanded:text-accent-foreground",
         ghost: "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
-        destructive: "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
+        destructive: "bg-destructive/20 text-destructive hover:bg-destructive/30 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
         link: "text-primary underline-offset-4 hover:underline",
-        neutral: "bg-neutral-200 text-text hover:bg-neutral-300 aria-expanded:bg-muted aria-expanded:text-muted-foreground dark:bg-neutral-700 dark:text-text dark:hover:bg-neutral-600 dark:aria-expanded:bg-muted dark:aria-expanded:text-muted-foreground",
+        neutral: "bg-neutral-200 text-text hover:bg-neutral-300 aria-expanded:bg-muted aria-expanded:text-muted-foreground dark:bg-neutral-700 dark:text-black dark:hover:bg-neutral-600 dark:aria-expanded:bg-muted dark:aria-expanded:text-muted-foreground",
+
+        "neutral-muted": "bg-neutral-300 text-text hover:bg-neutral-400/60 hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:bg-input/30 dark:text-text dark:hover:bg-neutral-600 dark:aria-expanded:bg-muted dark:aria-expanded:text-muted-foreground",
 
         "neutral-outline": "border-neutral-500 text-text bg-neutral-200 hover:bg-neutral-300 hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:bg-input/30 dark:text-text dark:hover:bg-neutral-600 dark:aria-expanded:bg-muted dark:aria-expanded:text-muted-foreground"
       },
@@ -26,15 +28,16 @@ const buttonVariants = cva(
         xs: "py-0.5 px-1 rounded-sm text-[0.625rem]/none gap-1 has-data-[icon=inline-end]:pr-1 has-data-[icon=inline-start]:pl-1 [&_svg:not([class*='size-'])]:size-2.5",
         
         // py-1 (4px) | px-2 (8px)
-        sm: "py-1 px-2 text-[11px]/none gap-1 has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
+        sm: "py-1.5 px-2 rounded-sm text-[11px]/none gap-1 has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
         
         // py-2 (8px) | px-4 (16px)
-        lg: "py-2 px-4 text-xs/none gap-1 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 [&_svg:not([class*='size-'])]:size-4",
+        lg: "py-3 px-4 text-sm/none gap-1 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 [&_svg:not([class*='size-'])]:size-4",
         
         // Icon variants retain square dimensions using aspect-square or matching padding
         icon: "p-1.5 aspect-square [&_svg:not([class*='size-'])]:size-3.5",
         "icon-xs": "p-0.5 rounded-sm aspect-square [&_svg:not([class*='size-'])]:size-2.5",
         "icon-sm": "p-1 aspect-square [&_svg:not([class*='size-'])]:size-3",
+        "icon-md": "p-1.5 aspect-square [&_svg:not([class*='size-'])]:size-3.5",
         "icon-lg": "p-2 aspect-square [&_svg:not([class*='size-'])]:size-4",
       },
     },

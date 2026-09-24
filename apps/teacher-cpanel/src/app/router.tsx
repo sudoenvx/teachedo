@@ -10,9 +10,14 @@ import GroupFormPage from '@/modules/groups/pages/group-form-page'
 import GroupManagementPage from '@/modules/groups/pages/group-management-page'
 import TeacherOnboardingPage from '@/modules/authentication/pages/teacher-onboarding-page'
 import OnboardingCompletePage from '@/modules/authentication/pages/onboarding-complete-page'
+import ChangePasswordPage from '@/modules/authentication/pages/change-password-page'
+import WelcomePage from '@/modules/authentication/pages/welcome-page'
 import ProtectedLayout from '../core/layouts/protected_layout'
 import AssistantsPage from '@/modules/assistants/pages/assistants-page'
 import AssistantEditPage from '@/modules/assistants/pages/assistant-edit-page'
+import CentersPage from '@/modules/centers/pages/centers-page'
+import CenterFormPage from '@/modules/centers/pages/center-form-page'
+import CenterProfilePage from '@/modules/centers/pages/center-profile-page'
 
 
 const router = createBrowserRouter([
@@ -23,6 +28,14 @@ const router = createBrowserRouter([
   {
     path: 'onboarding',
     element: <TeacherOnboardingPage />,
+  },
+  {
+    path: 'password/change',
+    element: <ChangePasswordPage />,
+  },
+  {
+    path: 'welcome',
+    element: <WelcomePage />,
   },
   {
     path: 'onboarding/complete',
@@ -42,6 +55,10 @@ const router = createBrowserRouter([
       { path: 'groups/new', element: <GroupFormPage /> },
       { path: 'groups/:id', element: <GroupManagementPage /> },
       { path: 'groups/:id/edit', element: <GroupFormPage /> },
+      { path: 'centers', element: <CentersPage /> },
+      { path: 'centers/new', element: <CenterFormPage /> },
+      { path: 'centers/:id', element: <CenterProfilePage /> },
+      { path: 'centers/:id/edit', element: <CenterFormPage /> },
       { path: 'assistants', element: <AssistantsPage /> },
       { path: 'assistants/:id/edit', element: <AssistantEditPage /> },
       ] },

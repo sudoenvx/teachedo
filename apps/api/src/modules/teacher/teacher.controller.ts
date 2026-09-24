@@ -15,6 +15,16 @@ export const logoutTeacherHandler = async (_req: Request, res: Response) => {
     ApiResponse.success(res, null, 'Logged out successfully.');
 };
 
+export const changeTeacherPasswordHandler = async (req: Request, res: Response) => {
+    await teacherService.changePassword(Number(req.user?.id), req.body);
+    ApiResponse.success(res, null, 'Password updated successfully.');
+};
+
+export const checkTeacherSubdomainHandler = async (req: Request, res: Response) => {
+    const result = await teacherService.isSubdomainAvailable(String(req.query.subdomain), Number(req.user?.id));
+    ApiResponse.success(res, result);
+};
+
 export const getTeacherMeHandler = async (req: Request, res: Response) => {
     const teacherId = Number(req.user?.id);
     const teacher = await teacherService.findById(teacherId);
@@ -22,7 +32,7 @@ export const getTeacherMeHandler = async (req: Request, res: Response) => {
 };
 
 export const completeTeacherOnboardingHandler = async (req: Request, res: Response) => {
-    const teacher = await teacherService.completeOnboarding(Number(req.user?.id), req.body);
+    const teacher = await teacherService.completeOnboardingV2(Number(req.user?.id), req.body, req.file);
     ApiResponse.success(res, teacher, 'Teacher onboarding completed.');
 };
 

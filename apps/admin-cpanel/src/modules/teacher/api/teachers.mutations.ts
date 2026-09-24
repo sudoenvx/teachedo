@@ -2,14 +2,14 @@ import { useMutationAction } from '@/core/hooks/use_query_actions'
 import type { CreateTeacherFormValues } from '../schemas/teachers.schemas'
 
 export function useAddTeacher() {
-  return useMutationAction<void, CreateTeacherFormValues & { profileImage?: File }>({
+  return useMutationAction<void, CreateTeacherFormValues>({
     method: 'post',
     url: '/teachers',
     key: ['teachers'],
-    body: ({ profileImage, ...values }) => {
+    body: ({ profileImage, confirmPassword: _confirmPassword, pricingMode: _pricingMode, ...values }) => {
       const formData = new FormData()
       Object.entries(values).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) formData.append(key, String(value))
+        if (value !== undefined && value !== null && value !== '') formData.append(key, String(value))
       })
       if (profileImage) formData.append('profileImage', profileImage)
       return formData

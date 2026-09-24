@@ -10,8 +10,11 @@ import { AppConfig, CorsConfig } from './core/config/server.config';
 import { notFoundMiddleware } from './core/middlewares/not-found.mw';
 import { globalErrorHandler } from './core/middlewares/global-error-handler.mw';
 import { AppRouter } from './modules';
+import { createServer } from 'node:http';
 
 export const app: Application = express();
+export const httpServer = createServer(app)
+
 const appDirectory = path.dirname(fileURLToPath(import.meta.url));
 app.use(helmet())
 app.use(cookieParser())

@@ -1,4 +1,5 @@
 export type StudentStatus = 'active' | 'inactive'
+export type StudentAttendanceType = 'in_person' | 'online_streaming' | 'hybrid_both'
 
 export interface StudentListItem {
   id: number
@@ -12,7 +13,7 @@ export interface StudentListItem {
   parentName?: string
   parentPhone?: string
   parentWhatsapp?: string
-  activeGroups: string[]
+  activeClasses: string[]
   totalAttendance: number
   createdAt: string
 }
@@ -31,16 +32,23 @@ export interface StudentDetails extends StudentListItem {
     whatsappNumber?: string | null
   } | null
   studyStage?: { id: number; stageName: string } | null
-  groupEnrollments?: Array<{
+  classEnrollments?: Array<{
     status: string
     customPrice?: number | string | null
-    group: { id: number; groupName: string; standardMonthlyFee?: number | string | null }
+    studentAttendanceType: StudentAttendanceType
+    studentClass: { id: number; className: string; monthlyPrice?: number | string | null }
   }>
   attendance?: Array<{
     id: number
     status: string
     recordedAt: string
-    session?: { sessionDate: string; topic?: string | null; group?: { groupName: string } }
+    session?: {
+      sessionDate: string
+      scheduledStartTime?: string | null
+      sessionType?: string
+      topic?: string | null
+      studentClass?: { className: string }
+    }
   }>
   invoices?: Array<{
     id: number
@@ -48,7 +56,7 @@ export interface StudentDetails extends StudentListItem {
     amountDue: number | string
     amountPaid: number | string
     status: string
-    group?: { groupName: string }
+    studentClass?: { className: string }
   }>
   payments?: Array<{
     id: number
@@ -79,8 +87,8 @@ export interface CreateStudentInput {
   studentCode?: string | null
   password?: string | null
   profileImage?: File
-  groupId?: number | null
-  customPrice?: number | null
+  classIds?: number[]
+  studentAttendanceType?: StudentAttendanceType
   parent?: {
     fullName: string
     phoneNumber: string
@@ -97,6 +105,5 @@ export interface UpdateStudentInput {
   studentCode?: string | null
   password?: string | null
   profileImage?: File
-  groupId?: number | null
-  customPrice?: number | null
+  classIds?: number[]
 }

@@ -1,51 +1,38 @@
 import { prisma } from '../../core/database/prisma.client';
 import { NotFoundError } from '../../shared/contracts/api-error';
-import type { CreateGroupInput, UpdateGroupInput } from './group.schema';
+import type { CreateClassInput, CreateClassSessionInput, UpdateClassInput } from './group.schema';
 
-function toTime(value: string) {
-    const [hours, minutes] = value.split(':').map(Number);
-    const date = new Date(1970, 0, 1);
-    date.setHours(hours, minutes, 0, 0);
-    return date;
+function toDateOnly(value: string) {
+    return new Date(`${value}T00:00:00.000Z`);
 }
 
-function durationMinutes(startTime: string, endTime: string) {
-    const [startHour, startMinute] = startTime.split(':').map(Number);
-    const [endHour, endMinute] = endTime.split(':').map(Number);
-    return (endHour * 60 + endMinute) - (startHour * 60 + startMinute);
+function toTime(value?: string | null) {
+    if (!value) return null;
+    const [hours = 0, minutes = 0] = value.split(':').map(Number);
+    const result = new Date(0);
+    result.setUTCHours(hours, minutes, 0, 0);
+    return result;
 }
 
-function withEndTimes<T extends { schedules: Array<{ startTime: Date; durationMinutes: number }> }>(group: T) {
-    return {
-        ...group,
-        schedules: group.schedules.map((schedule) => ({
-            ...schedule,
-            endTime: new Date(schedule.startTime.getTime() + schedule.durationMinutes * 60_000),
-        })),
-    };
-}
-
-export class GroupService {
+export class ClassService {
     public async list(teacherId: number) {
-        const groups = await prisma.studentGroup.findMany({
+        const classes = await prisma.studentClass.findMany({
             where: { teacherId, deletedAt: null },
             orderBy: { createdAt: 'desc' },
             include: {
-                studyStage: { select: { id: true, stageName: true } },
+                center: { select: { id: true, name: true, location: true, area: true, phoneNumber: true, commission: true, commissionType: true } },
                 _count: { select: { enrollments: true, classSessions: true } },
-                schedules: true,
             },
         });
-        return groups.map(withEndTimes);
+        return classes;
     }
 
     public async findById(id: number, teacherId: number) {
-        const group = await prisma.studentGroup.findFirst({
+        const group = await prisma.studentClass.findFirst({
             where: { id, teacherId, deletedAt: null },
             include: {
-                studyStage: { select: { id: true, stageName: true } },
+                center: { select: { id: true, name: true, location: true, area: true, phoneNumber: true, commission: true, commissionType: true } },
                 _count: { select: { enrollments: true, classSessions: true } },
-                schedules: true,
                 enrollments: {
                     where: { status: 'active', student: { deletedAt: null } },
                     orderBy: { student: { fullName: 'asc' } },
@@ -53,6 +40,7 @@ export class GroupService {
                         status: true,
                         enrollmentDate: true,
                         customPrice: true,
+                        studentAttendanceType: true,
                         student: {
                             select: {
                                 id: true,
@@ -72,7 +60,10 @@ export class GroupService {
                     select: {
                         id: true,
                         sessionDate: true,
-                        startTime: true,
+                        sessionType: true,
+                        scheduledStartTime: true,
+                        durationMinutes: true,
+                        isMandatory: true,
                         topic: true,
                         status: true,
                         isCompleted: true,
@@ -83,69 +74,114 @@ export class GroupService {
                 },
             },
         });
-        if (!group) throw new NotFoundError('Group not found.');
-        return withEndTimes(group);
+        if (!group) throw new NotFoundError('Class not found.');
+        return group;
     }
 
-    public async create(teacherId: number, input: CreateGroupInput) {
+    public async create(teacherId: number, input: CreateClassInput) {
+        if (input.centerId) {
+            const center = await prisma.center.findFirst({
+                where: { id: input.centerId, teacherId, isActive: true },
+                select: { id: true },
+            });
+            if (!center) throw new NotFoundError('Center not found.');
+        }
         return prisma.$transaction(async (transaction) => {
-            const group = await transaction.studentGroup.create({
+            const group = await transaction.studentClass.create({
             data: {
                 teacherId,
-                groupName: input.groupName,
-                studyStageId: input.studyStageId ?? null,
-                standardMonthlyFee: input.standardMonthlyFee ?? null,
+                className: input.className,
+                gradeLevel: input.gradeLevel,
+                centerId: input.centerId ?? null,
+                sessionPrice: input.sessionPrice ?? null,
+                monthlyPrice: input.monthlyPrice ?? null,
                 maxCapacity: input.maxCapacity ?? null,
+                groupTier: input.groupTier,
+                deliveryMode: input.deliveryMode,
             },
             });
-            if (input.schedules?.length) {
-                await transaction.groupSchedule.createMany({ data: input.schedules.map((schedule) => ({ groupId: group.id, dayOfWeek: schedule.dayOfWeek, startTime: toTime(schedule.startTime), durationMinutes: durationMinutes(schedule.startTime, schedule.endTime) })) });
-            }
-            const created = await transaction.studentGroup.findUnique({
+            const created = await transaction.studentClass.findUnique({
                 where: { id: group.id },
                 include: {
-                    studyStage: { select: { id: true, stageName: true } },
+                    center: { select: { id: true, name: true, location: true, area: true, phoneNumber: true, commission: true, commissionType: true } },
                     _count: { select: { enrollments: true, classSessions: true } },
-                    schedules: true,
                 },
             });
-            return created ? withEndTimes(created) : created;
+            return created;
         });
     }
 
-    public async update(id: number, teacherId: number, input: UpdateGroupInput) {
+    public async update(id: number, teacherId: number, input: UpdateClassInput) {
         await this.findById(id, teacherId);
+        if (input.centerId) {
+            const center = await prisma.center.findFirst({
+                where: { id: input.centerId, teacherId, isActive: true },
+                select: { id: true },
+            });
+            if (!center) throw new NotFoundError('Center not found.');
+        }
         return prisma.$transaction(async (transaction) => {
-            const group = await transaction.studentGroup.update({
+            const group = await transaction.studentClass.update({
                 where: { id },
                 data: {
-                ...(input.groupName !== undefined ? { groupName: input.groupName } : {}),
-                ...(input.studyStageId !== undefined ? { studyStageId: input.studyStageId ?? null } : {}),
-                ...(input.standardMonthlyFee !== undefined ? { standardMonthlyFee: input.standardMonthlyFee ?? null } : {}),
+                ...(input.className !== undefined ? { className: input.className } : {}),
+                ...(input.gradeLevel !== undefined ? { gradeLevel: input.gradeLevel } : {}),
+                ...(input.centerId !== undefined ? { centerId: input.centerId ?? null } : {}),
+                ...(input.sessionPrice !== undefined ? { sessionPrice: input.sessionPrice ?? null } : {}),
+                ...(input.monthlyPrice !== undefined ? { monthlyPrice: input.monthlyPrice ?? null } : {}),
                 ...(input.maxCapacity !== undefined ? { maxCapacity: input.maxCapacity ?? null } : {}),
+                ...(input.groupTier !== undefined ? { groupTier: input.groupTier } : {}),
+                ...(input.deliveryMode !== undefined ? { deliveryMode: input.deliveryMode } : {}),
                 },
             });
-            if (input.schedules !== undefined) {
-                await transaction.groupSchedule.deleteMany({ where: { groupId: id } });
-                await transaction.groupSchedule.createMany({ data: input.schedules.map((schedule) => ({ groupId: id, dayOfWeek: schedule.dayOfWeek, startTime: toTime(schedule.startTime), durationMinutes: durationMinutes(schedule.startTime, schedule.endTime) })) });
-            }
-            const updated = await transaction.studentGroup.findUnique({
+            const updated = await transaction.studentClass.findUnique({
                 where: { id: group.id },
                 include: {
-                    studyStage: { select: { id: true, stageName: true } },
+                    center: { select: { id: true, name: true, location: true, area: true, phoneNumber: true, commission: true, commissionType: true } },
                     _count: { select: { enrollments: true, classSessions: true } },
-                    schedules: true,
                 },
             });
-            return updated ? withEndTimes(updated) : updated;
+            return updated;
         });
     }
 
     public async delete(id: number, teacherId: number) {
         await this.findById(id, teacherId);
-        await prisma.studentGroup.update({ where: { id }, data: { deletedAt: new Date() } });
-        return { message: 'Group deleted successfully.' };
+        await prisma.studentClass.update({ where: { id }, data: { deletedAt: new Date() } });
+        return { message: 'Class deleted successfully.' };
+    }
+
+    public async createSession(classId: number, teacherId: number, input: CreateClassSessionInput) {
+        await this.findById(classId, teacherId);
+
+        const session = await prisma.classSession.create({
+            data: {
+                classId,
+                teacherId,
+                sessionDate: toDateOnly(input.sessionDate),
+                sessionType: input.sessionType,
+                scheduledStartTime: toTime(input.scheduledStartTime),
+                durationMinutes: input.durationMinutes,
+                isMandatory: input.isMandatory,
+                topic: input.topic ?? null,
+                status: 'scheduled',
+            },
+            select: {
+                id: true,
+                sessionDate: true,
+                sessionType: true,
+                scheduledStartTime: true,
+                durationMinutes: true,
+                isMandatory: true,
+                topic: true,
+                status: true,
+                isCompleted: true,
+                attendance: { select: { studentId: true, status: true } },
+            },
+        });
+
+        return session;
     }
 }
 
-export const groupService = new GroupService();
+export const classService = new ClassService();

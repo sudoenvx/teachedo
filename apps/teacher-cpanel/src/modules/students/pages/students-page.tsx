@@ -12,26 +12,39 @@ import {
 } from 'lucide-react'
 import {
   Badge,
-  Body,
-  Breadcrumb,
   Button,
-  DataTable,
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
   IconButton,
-  Modal,
-  Pagination,
-  PageHeader,
+  InputGroup,
+  InputGroupInput,
   Select,
-  SearchInput,
-  StatisticCard,
-  Title,
-  type DataTableColumn,
-} from '@teachedo/ui/legacy'
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@teachedo/ui/components'
 import { useDebounce } from '@/core/hooks/use_debounce'
 import { useNotification } from '@/core/hooks/use_notification'
 import { useDeleteStudent } from '../api/students.mutations'
 import { useStudentStats, useStudentsList } from '../api/students.queries'
 import type { StudentListItem } from '../types/student.types'
 import { useTeacherMe } from '@/modules/authentication/api/auth.queries'
+import {
+  DataTable,
+  type DataTableColumn,
+} from '@teachedo/ui/components'
+import {
+  Breadcrumb,
+  PageHeader,
+  Pagination,
+  StatisticCard,
+} from '@teachedo/ui/legacy'
 
 const statusMap: Record<string, { label: string; variant: 'success' | 'danger' }> = {
   active: { label: 'نشط', variant: 'success' },
@@ -44,7 +57,7 @@ export default function StudentsPage() {
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
   const [stageId, setStageId] = useState('')
-  const [groupId, setGroupId] = useState('')
+  const [classId, setClassId] = useState('')
   const [studentToDelete, setStudentToDelete] = useState<StudentListItem | null>(null)
   const debouncedSearch = useDebounce(search, 350)
   const { data: result, isLoading } = useStudentsList(
@@ -52,11 +65,17 @@ export default function StudentsPage() {
     debouncedSearch,
     undefined,
     stageId,
-    groupId
+    classId
   )
   const { data: stats, isLoading: statsLoading } = useStudentStats()
   const { data: teacher } = useTeacherMe()
   const deleteMutation = useDeleteStudent()
+  const selectedStageLabel = stageId
+    ? teacher?.studyStages?.find((stage) => String(stage.id) === stageId)?.stageName
+    : 'كل المراحل'
+  const selectedClassLabel = classId
+    ? teacher?.classes?.find((item) => String(item.id) === classId)?.className
+    : 'كل الفصول'
 
   const columns = useMemo<DataTableColumn<StudentListItem>[]>(
     () => [
@@ -94,20 +113,20 @@ export default function StudentsPage() {
         render: (student) => (
           <div className="flex items-center gap-1.5 text-[12px] text-text">
             <Group size={13} className="text-text-muted" />
-            {student.activeGroups.length ? student.activeGroups.join('، ') : 'بدون مجموعة'}
+            {student.activeClasses.length ? student.activeClasses.join('، ') : 'بدون فصل'}
           </div>
         ),
       },
       {
         header: 'المرحلة',
-        render: (student) => <Badge variant="primary" size="sm">{student.stageName || 'غير محددة'}</Badge>,
+        render: (student) => <Badge variant="default">{student.stageName || 'غير محددة'}</Badge>,
       },
       {
         header: 'الحالة',
         render: (student) => {
           const status = statusMap[student.status] || statusMap.inactive
           return (
-            <Badge variant={status?.variant ?? 'primary'} size="sm">
+            <Badge variant={status?.variant === 'success' ? 'secondary' : 'destructive'}>
               {status?.label}
             </Badge>
           )
@@ -174,13 +193,9 @@ export default function StudentsPage() {
         actions={
           <Button
             type="button"
-            color="primary"
-            style="solid"
-            size="sm"
-            uppercase={false}
-            leftIcon={<Plus size={15} />}
             onClick={() => navigate('/students/new')}
           >
+            <Plus />
             إضافة طالب
           </Button>
         }
@@ -216,7 +231,7 @@ export default function StudentsPage() {
           <>
             <div className="flex items-center gap-2">
               <span>قائمة الطلاب</span>
-              <Badge variant="neutral" size="sm">
+              <Badge variant="neutral">
                 {result?.meta?.total ?? 0} طالب
               </Badge>
             </div>
@@ -225,53 +240,55 @@ export default function StudentsPage() {
         description="ابحث وفلتر الطلاب حسب المرحلة أو المجموعة."
         tableActions={
           <div className="flex flex-wrap items-center justify-end gap-2">
-            <SearchInput
-              containerClassName="w-8 sm:w-8"
-              expandedWidth={224}
-              mode="compact"
-              size="md"
-              value={search}
-              onChange={(value) => {
-                setSearch(value)
-                setPage(1)
-              }}
-              placeholder="ابحث عن طالب..."
-              variant="neutral"
-            />
+            <InputGroup className="w-56" size="sm">
+              <InputGroupInput
+                value={search}
+                onChange={(event) => {
+                  setSearch(event.target.value)
+                  setPage(1)
+                }}
+                placeholder="ابحث عن طالب..."
+                aria-label="البحث عن طالب"
+              />
+            </InputGroup>
             <Select
               value={stageId}
-              onChange={(value) => {
-                setStageId(value)
+              onValueChange={(value) => {
+                setStageId(value ?? '')
                 setPage(1)
               }}
-              options={[
-                { value: '', label: 'كل المراحل' },
-                ...(teacher?.studyStages || []).map((stage) => ({
-                  value: String(stage.id),
-                  label: stage.stageName,
-                })),
-              ]}
-              placeholder="المرحلة"
-              variant="neutral"
-              size="sm"
-            />
+            >
+              <SelectTrigger size="sm" className="text-text-muted">
+                <SelectValue>{selectedStageLabel || 'المرحلة'}</SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">كل المراحل</SelectItem>
+                {(teacher?.studyStages || []).map((stage) => (
+                  <SelectItem key={stage.id} value={String(stage.id)}>
+                    {stage.stageName}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <Select
-              value={groupId}
-              onChange={(value) => {
-                setGroupId(value)
+              value={classId}
+              onValueChange={(value) => {
+                setClassId(value ?? '')
                 setPage(1)
               }}
-              variant="neutral"
-              options={[
-                { value: '', label: 'كل المجموعات' },
-                ...(teacher?.groups || []).map((group) => ({
-                  value: String(group.id),
-                  label: group.groupName,
-                })),
-              ]}
-              placeholder="المجموعة"
-              size="sm"
-            />
+            >
+              <SelectTrigger size="sm" className="text-text-muted">
+                <SelectValue>{selectedClassLabel || 'الفصل'}</SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">كل الفصول</SelectItem>
+                {(teacher?.classes || []).map((group) => (
+                  <SelectItem key={group.id} value={String(group.id)}>
+                    {group.className}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         }
         data={result?.data || []}
@@ -292,45 +309,32 @@ export default function StudentsPage() {
         }
 
       />
-      <Modal
+      <Dialog
         open={!!studentToDelete}
-        onClose={() => setStudentToDelete(null)}
-        size="sm"
-        footer={
-          <>
+        onOpenChange={(open) => !open && setStudentToDelete(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+            هل تريد حذف {studentToDelete?.fullName}؟
+            </DialogTitle>
+            <DialogDescription>
+            سيتم إخفاء الطالب من قائمتك وتعطيل حسابه. هذا الإجراء لا يحذف السجلات المرتبطة به.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose render={<Button variant="outline" />}>إلغاء</DialogClose>
             <Button
               type="button"
-              color="secondary"
-              style="tint"
-              size="sm"
-              uppercase={false}
-              onClick={() => setStudentToDelete(null)}
-            >
-              إلغاء
-            </Button>
-            <Button
-              type="button"
-              color="danger"
-              style="solid"
-              size="sm"
-              uppercase={false}
-              loading={deleteMutation.isPending}
+              variant="destructive"
+              disabled={deleteMutation.isPending}
               onClick={confirmDelete}
             >
-              حذف الطالب
+              {deleteMutation.isPending ? 'جار الحذف...' : 'حذف الطالب'}
             </Button>
-          </>
-        }
-      >
-        <div className="p-0">
-          <Title className="mb-1 font-bold text-text">
-            هل تريد حذف {studentToDelete?.fullName}؟
-          </Title>
-          <Body className=" leading-relaxed text-text-muted">
-            سيتم إخفاء الطالب من قائمتك وتعطيل حسابه. هذا الإجراء لا يحذف السجلات المرتبطة به.
-          </Body>
-        </div>
-      </Modal>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

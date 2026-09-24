@@ -28,7 +28,6 @@ export function NotificationsBell({
       <PopoverTrigger
         render={
           <LayoutIconButton
-            className="text-neutral-300 hover:bg-white/15 hover:text-white"
             aria-label="الإشعارات"
           />
         }

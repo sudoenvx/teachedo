@@ -3,7 +3,6 @@ import { z } from 'zod'
 export const studentFormSchema = z.object({
   fullName: z.string().min(2, 'الاسم يجب أن يحتوي على حرفين على الأقل'),
   phoneNumber: z.string().optional(),
-  profilePictureUrl: z.string().optional(),
   status: z.enum(['active', 'inactive']),
   studentCode: z.string().optional(),
   password: z.string().optional(),
@@ -12,8 +11,8 @@ export const studentFormSchema = z.object({
   parentWhatsapp: z.string().optional(),
   parentPassword: z.string().optional(),
   includeParent: z.boolean(),
-  groupId: z.string().optional(),
-  customPrice: z.string().optional(),
+  classIds: z.array(z.string()).optional(),
+  studentAttendanceType: z.enum(['in_person', 'online_streaming', 'hybrid_both']),
 }).superRefine((values, context) => {
   if (!values.includeParent) return
 

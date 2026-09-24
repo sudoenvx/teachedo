@@ -1,6 +1,6 @@
 export interface TeacherDashboardStats {
   totalStudents: number
-  activeGroups: number
+  activeClasses: number
   totalSessions: number
   sessionsThisMonth: number
   revenueThisMonth: number
@@ -10,8 +10,11 @@ export interface TeacherDashboardStats {
 export interface UpcomingSession {
   id: number
   sessionDate: string
-  startTime: string | null
+  sessionType: string
+  scheduledStartTime: string | null
+  durationMinutes: number
+  isMandatory: boolean
   topic: string | null
   status: string | null
-  group: { groupName: string }
+  studentClass: { className: string }
 }

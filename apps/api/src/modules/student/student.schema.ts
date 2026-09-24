@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+const studentAttendanceType = z.enum(['in_person', 'online_streaming', 'hybrid_both']);
+
 export const studentLoginSchema = z.object({
     body: z.object({
         studentCode: z.string().min(1, 'Student code is required'),
@@ -32,8 +34,12 @@ export const createStudentSchema = z.object({
         }, fastCreateParentSchema.optional().nullable()),
 
         // Initial enrollment
-        groupId: z.number().int().positive().optional().nullable(),
-        customPrice: z.number().nonnegative().optional().nullable(),
+        classId: z.number().int().positive().optional().nullable(),
+        classIds: z.preprocess((value) => {
+            if (typeof value !== 'string') return value;
+            try { return JSON.parse(value); } catch { return value; }
+            }, z.array(z.number().int().positive()).optional()),
+        studentAttendanceType: studentAttendanceType.default('in_person'),
     }),
 });
 
@@ -58,8 +64,8 @@ export const enrollStudentSchema = z.object({
         id: z.coerce.number().positive('Invalid student ID'),
     }),
     body: z.object({
-        groupId: z.number().int().positive('Group ID is required'),
-        customPrice: z.number().nonnegative().optional().nullable(),
+        classId: z.number().int().positive('Class ID is required'),
+        studentAttendanceType: studentAttendanceType.default('in_person'),
     }),
 });
 
@@ -69,7 +75,7 @@ export const queryStudentsSchema = z.object({
         perPage: z.coerce.number().min(1).max(100).default(10),
         search: z.string().optional(),
         stageId: z.coerce.number().optional(),
-        groupId: z.coerce.number().optional(),
+        classId: z.coerce.number().optional(),
         status: z.string().optional(),
     }),
 });
@@ -83,7 +89,7 @@ export const studentIdParamSchema = z.object({
 export const unenrollStudentParamSchema = z.object({
     params: z.object({
         id: z.coerce.number().positive('Invalid student ID'),
-        groupId: z.coerce.number().positive('Invalid group ID'),
+        classId: z.coerce.number().positive('Invalid class ID'),
     }),
 });
 

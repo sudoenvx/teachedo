@@ -1,0 +1,1 @@
+export { CenterRouter } from './center.routes'

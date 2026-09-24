@@ -9,10 +9,11 @@ export interface ToggleOption {
 
 export interface ToggleGroupProps {
   options: ToggleOption[]
-  value: string
-  onChange: (value: string) => void
+  value: string | string[]
+  onChange: (value: string | string[]) => void
   className?: string
   size?: 'sm' | 'md'
+  multiple?: boolean
 }
 
 export function ToggleGroup({
@@ -21,25 +22,33 @@ export function ToggleGroup({
   onChange,
   className,
   size = 'sm',
+  multiple = false,
 }: ToggleGroupProps) {
   return (
     <div
-      role="radiogroup"
+      role={multiple ? 'group' : 'radiogroup'}
       className={cn(
         'inline-flex w-fit gap-1 items-center rounded-sm bg-white p-1',
         className
       )}
     >
       {options.map((option) => {
-        const isActive = value === option.value
+        const isActive = multiple ? Array.isArray(value) && value.includes(option.value) : value === option.value
 
         return (
           <button
             key={option.value}
             type="button"
-            role="radio"
+            role={multiple ? 'checkbox' : 'radio'}
             aria-checked={isActive}
-            onClick={() => onChange(option.value)}
+            onClick={() => {
+              if (!multiple) {
+                onChange(option.value)
+                return
+              }
+              const current = Array.isArray(value) ? value : []
+              onChange(isActive ? current.filter((item) => item !== option.value) : [...current, option.value])
+            }}
             className={cn(
               'inline-flex items-center justify-center gap-1.5 rounded-sm font-medium transition-all duration-200 cursor-pointer',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40',

@@ -1,7 +1,7 @@
 model Lesson {
   id            Int          @id @default(autoincrement())
-  groupId       Int          @map("group_id")
-  group         StudentGroup @relation(fields: [groupId], references: [id])
+  classId       Int          @map("class_id")
+  studentClass  StudentClass @relation(fields: [classId], references: [id])
   teacherId     Int      @map("teacher_id")
   teacher       Teacher  @relation(fields: [teacherId], references: [id])
   title         String   @db.VarChar(255)

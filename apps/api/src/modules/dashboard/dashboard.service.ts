@@ -10,7 +10,7 @@ export class DashboardService {
                 label: date.toLocaleDateString('ar-EG', { month: 'short' }),
             };
         });
-        const currentMonth = months[months.length - 1].key;
+        const currentMonth = months[months.length - 1]?.key ?? '';
 
         const [billingCycles, overdueCycles, topTeachers] = await Promise.all([
             prisma.platformBillingCycle.groupBy({
@@ -79,7 +79,7 @@ export class DashboardService {
             enrolledStudents,
             studentsLast30Days,
             studentsPrev30Days,
-            activeGroups,
+            activeClasses,
             billingCyclesSum,
             platformPaymentsSum,
         ] = await Promise.all([
@@ -102,7 +102,7 @@ export class DashboardService {
             prisma.student.count({
                 where: { createdAt: { gte: sixtyDaysAgo, lt: thirtyDaysAgo }, deletedAt: null },
             }),
-            prisma.studentGroup.count({
+            prisma.studentClass.count({
                 where: { deletedAt: null },
             }),
             prisma.platformBillingCycle.aggregate({
@@ -131,7 +131,7 @@ export class DashboardService {
             activeTeachersGrowth,
             enrolledStudents,
             enrolledStudentsGrowth,
-            activeGroups,
+            activeClasses,
             monthlyRevenue,
             systemHealth: 99.8,
             currentMonth: currentMonthStr,
@@ -148,7 +148,7 @@ export class DashboardService {
 
         const [
             totalStudents,
-            activeGroups,
+            activeClasses,
             totalSessions,
             sessionsThisMonth,
             paymentsAggregate,
@@ -157,7 +157,7 @@ export class DashboardService {
             prisma.student.count({
                 where: { teacherId, deletedAt: null },
             }),
-            prisma.studentGroup.count({
+            prisma.studentClass.count({
                 where: { teacherId, deletedAt: null },
             }),
             prisma.classSession.count({
@@ -178,7 +178,7 @@ export class DashboardService {
         return {
             teacherId,
             totalStudents,
-            activeGroups,
+            activeClasses,
             totalSessions,
             sessionsThisMonth,
             revenueThisMonth: Number(paymentsAggregate._sum.amount || 0),
@@ -198,14 +198,14 @@ export class DashboardService {
                 status: { not: 'cancelled' },
             },
             take: 8,
-            orderBy: [{ sessionDate: 'asc' }, { startTime: 'asc' }],
+            orderBy: [{ sessionDate: 'asc' }, { scheduledStartTime: 'asc' }],
             select: {
                 id: true,
                 sessionDate: true,
-                startTime: true,
+                scheduledStartTime: true,
                 topic: true,
                 status: true,
-                group: { select: { groupName: true } },
+                studentClass: { select: { className: true } },
             },
         });
     }

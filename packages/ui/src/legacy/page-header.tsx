@@ -11,7 +11,7 @@ type PageHeaderProps = {
 
 export function PageHeader({ title, description, actions, className = '' }: PageHeaderProps) {
   return (
-    <Card className={`flex flex-col gap-2 bg-transparent border-none p-2! shadow-none  ${className}`} bodyClassName="p-0!">
+    <Card className={`flex flex-col gap-2 bg-transparent border-none p-0 shadow-none  ${className}`}>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
           <Title size='small' className="font-bold tracking-tight text-text">{title}</Title>

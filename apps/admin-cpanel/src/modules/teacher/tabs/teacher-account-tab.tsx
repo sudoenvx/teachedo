@@ -180,13 +180,13 @@ export function TeacherAccountTab({
                 </p>
               </div>
               <div className="flex flex-wrap items-center justify-end gap-2">
-                <Button type="button" variant="outline" size="sm">
+                <Button type="button" variant="outline">
                   <Send size={14} /> إرسال رابط إعادة تعيين
                 </Button>
-                <Button type="button" variant="outline" size="sm">
+                <Button type="button" variant="outline">
                   <RefreshCw size={14} /> كلمة مؤقتة جديدة
                 </Button>
-                <Button type="submit" size="sm" disabled={isPending}>
+                <Button type="submit" disabled={isPending}>
                   <Save size={14} />
                   {isPending ? "جاري الحفظ..." : "حفظ التعديلات"}
                 </Button>

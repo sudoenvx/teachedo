@@ -6,9 +6,10 @@ import { StudentRouter } from './student';
 import { ParentRouter } from './parent';
 import { SettingsRouter } from './settings';
 import { DashboardRouter } from './dashboard';
-import { GroupRouter } from './group';
+import { ClassRouter } from './group';
 import { PolicyRouter } from './policy';
 import { SubjectRouter } from './subject';
+import { CenterRouter } from './center';
 
 const AppRouter: Router = Router();
 
@@ -38,8 +39,10 @@ AppRouter.use('/students', StudentRouter);
 AppRouter.use('/parents', ParentRouter);
 AppRouter.use('/settings', SettingsRouter);
 AppRouter.use('/dashboard', DashboardRouter);
-AppRouter.use('/groups', GroupRouter);
+AppRouter.use('/classes', ClassRouter);
+AppRouter.use('/groups', ClassRouter);
 AppRouter.use('/policies', PolicyRouter);
 AppRouter.use('/subjects', SubjectRouter);
+AppRouter.use('/centers', CenterRouter);
 
 export { AppRouter };

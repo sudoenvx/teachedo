@@ -1,249 +1,182 @@
-import { useMemo, useState } from 'react'
-import { CalendarClock, Edit3, GraduationCap, Plus, Trash2, Users } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { useState } from "react";
+import {
+  Edit3,
+  GraduationCap,
+  Home,
+  ArrowRight,
+  MapPin,
+  Plus,
+  Trash2,
+  Users,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import {
   Badge,
   Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
   Button,
   Card,
-  DataTable,
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
   IconButton,
-  Modal,
   PageHeader,
-  StatisticCard,
-  Title,
-  Body,
-  type DataTableColumn,
-} from '@teachedo/ui/legacy'
-import { useNotification } from '@/core/hooks/use_notification'
-import { useDeleteGroup } from '../api/groups.mutations'
-import { useGroups } from '../api/groups.queries'
-import type { GroupListItem } from '../types/group.types'
+} from "@teachedo/ui/components";
+import { useNotification } from "@/core/hooks/use_notification";
+import { useDeleteGroup } from "../api/groups.mutations";
+import { useGroups } from "../api/groups.queries";
+import type { ClassListItem } from "../types/group.types";
+import { StatisticCard } from "@teachedo/ui/legacy";
 
 export default function GroupsPage() {
-  const navigate = useNavigate()
-  const { notify } = useNotification()
-  const { data: groups = [], isLoading } = useGroups()
-  const [groupToDelete, setGroupToDelete] = useState<GroupListItem | null>(null)
-  const deleteMutation = useDeleteGroup()
+  const navigate = useNavigate();
+  const { notify } = useNotification();
+  const { data: classes = [], isLoading } = useGroups();
+  const [classToDelete, setClassToDelete] = useState<ClassListItem | null>(
+    null,
+  );
+  const deleteMutation = useDeleteGroup();
 
-  const totalStudents = groups.reduce((total, group) => total + group._count.enrollments, 0)
-  const scheduledGroups = groups.filter((group) => group.schedules?.length).length
-  const formatSchedule = (group: GroupListItem) => {
-    const schedule = group.schedules?.[0]
-    if (!schedule) return 'لا يوجد موعد'
-    const day =
-      (
-        {
-          saturday: 'السبت',
-          sunday: 'الأحد',
-          monday: 'الاثنين',
-          tuesday: 'الثلاثاء',
-          wednesday: 'الأربعاء',
-          thursday: 'الخميس',
-          friday: 'الجمعة',
-        } as Record<string, string>
-      )[schedule.dayOfWeek] || schedule.dayOfWeek
-    const start = schedule.startTime.includes('T')
-      ? schedule.startTime.slice(11, 16)
-      : schedule.startTime.slice(0, 5)
-    const end = schedule.endTime.includes('T')
-      ? schedule.endTime.slice(11, 16)
-      : schedule.endTime.slice(0, 5)
-    return `${day}، ${start} - ${end}${(group.schedules?.length || 0) > 1 ? ` + ${(group.schedules?.length || 0) - 1}` : ''}`
-  }
-
-  const columns = useMemo<DataTableColumn<GroupListItem>[]>(
-    () => [
-      {
-        header: 'المجموعة',
-        accessor: 'groupName',
-        sortable: true,
-        render: (group) => (
-          <div className="flex items-center gap-2">
-            <span className="flex h-6 w-6 items-center justify-center bg-primary-subtle text-text rounded-sm">
-              <Users size={14} />
-            </span>
-            <span className="text-[12px] font-bold text-text">{group.groupName}</span>
-          </div>
-        ),
-      },
-      {
-        header: 'المرحلة',
-        render: (group) => (
-          <span className="text-[12px] text-text-muted">
-            {group.studyStage?.stageName || 'غير محددة'}
-          </span>
-        ),
-      },
-      {
-        header: 'الطلاب',
-        render: (group) => (
-          <span dir='ltr' className="inline-flex items-center gap-1 text-[12px] font-semibold text-text">
-            <GraduationCap size={13} className="text-text-muted" />
-            {group._count.enrollments}
-            {group.maxCapacity ? ` / ${group.maxCapacity}` : ''}
-          </span>
-        ),
-      },
-      {
-        header: 'المواعيد',
-        render: (group) => (
-          <span className="inline-flex items-center gap-1 text-[12px] text-text-muted">
-            <CalendarClock size={13} />
-            {formatSchedule(group)}
-          </span>
-        ),
-      },
-      {
-        header: 'الاشتراك الشهري',
-        render: (group) => (
-          <span className="font-inter text-[12px] text-text-muted">
-            {group.standardMonthlyFee ?? 'غير محدد'} EGP
-          </span>
-        ),
-      },
-      {
-        header: 'الحصص',
-        render: (group) => (
-          <Badge variant="neutral" size="sm" className='font-inter'>
-            {group._count.classSessions}
-          </Badge>
-        ),
-      },
-      {
-        header: 'الإجراءات',
-        render: (group) => (
-          <div className="flex items-center gap-1">
-            <IconButton
-              type="button"
-              color="secondary"
-              style="tint"
-              size="sm"
-              aria-label={`تعديل ${group.groupName}`}
-              title="تعديل المجموعة"
-              icon={<Edit3 size={14} />}
-              onClick={() => navigate(`/groups/${group.id}/edit`)}
-            />
-            <IconButton
-              type="button"
-              color="danger"
-              style="tint"
-              size="sm"
-              aria-label={`حذف ${group.groupName}`}
-              title="حذف المجموعة"
-              icon={<Trash2 size={14} />}
-              onClick={() => setGroupToDelete(group)}
-            />
-          </div>
-        ),
-      },
-    ],
-    [navigate]
-  )
+  const totalStudents = classes.reduce(
+    (total, group) => total + group._count.enrollments,
+    0,
+  );
 
   const confirmDelete = async () => {
-    if (!groupToDelete) return
+    if (!classToDelete) return;
     try {
-      await deleteMutation.mutateAsync({ id: groupToDelete.id })
-      notify.success('تم حذف المجموعة')
-      setGroupToDelete(null)
+      await deleteMutation.mutateAsync({ id: classToDelete.id });
+      notify.success("تم حذف الفصل");
+      setClassToDelete(null);
     } catch (error) {
-      notify.error(error instanceof Error ? error.message : 'تعذر حذف المجموعة')
+      notify.error(
+        error instanceof Error ? error.message : "تعذر حذف المجموعة",
+      );
     }
-  }
+  };
 
   return (
     <div className="flex flex-col gap-4 pb-10 animate-in fade-in duration-300">
-      <Breadcrumb showHome items={[{ label: 'المجموعات' }]} />
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <a href="/" className="transition-colors hover:text-text">
+              <Home className="size-3.5" />
+              <span className="sr-only">الرئيسية</span>
+            </a>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>المجموعات</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <PageHeader
         title="إدارة المجموعات"
         description="نظّم مجموعاتك الدراسية وتابع أعداد الطلاب والحصص."
-        actions={
-          <Button
-            type="button"
-            color="primary"
-            style="solid"
-            size="sm"
-            uppercase={false}
-            leftIcon={<Plus size={15} />}
-            onClick={() => navigate('/groups/new')}
-          >
-            إضافة مجموعة
-          </Button>
-        }
+        actions={<div className="flex items-center gap-2"><Button type="button" variant="neutral" onClick={() => navigate("/")}><ArrowRight /> رجوع</Button><Button type="button" onClick={() => navigate("/groups/new")}><Plus size={15} /> إضافة مجموعة</Button></div>}
       />
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <StatisticCard label="إجمالي المجموعات" value={String(groups.length)} icon={Users} iconClassName="bg-primary-subtle text-primary" />
-        <StatisticCard label="الطلاب المسجلون" value={String(totalStudents)} icon={GraduationCap} iconClassName="bg-success-subtle text-success" />
-        <StatisticCard label="مجموعات لها مواعيد" value={String(scheduledGroups)} icon={CalendarClock} iconClassName="bg-accent-subtle text-accent" />
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+        <StatisticCard
+          label="إجمالي المجموعات"
+          value={String(classes.length)}
+          icon={Users}
+          // iconClassName="bg-primary-subtle"
+        />
+        <StatisticCard
+          label="الطلاب المسجلون"
+          value={String(totalStudents)}
+          icon={GraduationCap}
+          iconClassName="bg-success-subtle"
+        />
       </div>
-      {!isLoading && groups.length === 0 ? (
-        <Card bodyClassName="p-8 text-center">
-          <Users size={28} className="mx-auto text-primary" />
-          <h2 className="mt-3 text-[14px] font-bold text-text">ابدأ بأول مجموعة</h2>
-          <p className="mx-auto mt-1 max-w-sm text-[12px] leading-6 text-text-muted">
-            أنشئ مجموعة وحدد مرحلتها ورسومها ومواعيدها لتبدأ بإضافة الطلاب وتنظيم الحضور.
-          </p>
-          <Button
-            type="button"
-            color="primary"
-            style="solid"
-            size="sm"
-            className="mt-4"
-            leftIcon={<Plus size={14} />}
-            onClick={() => navigate('/groups/new')}
-          >
-            إنشاء مجموعة
-          </Button>
+      {!isLoading && classes.length === 0 ? (
+        <Card>
+          <Empty className="min-h-64 border border-dashed border-border-subtle bg-surface">
+            <EmptyHeader>
+              <EmptyMedia variant="icon"><Users /></EmptyMedia>
+              <EmptyTitle>ابدأ بأول مجموعة</EmptyTitle>
+              <EmptyDescription>أنشئ مجموعة وحدد صفها ورسومها لتبدأ في تنظيم طلابك.</EmptyDescription>
+            </EmptyHeader>
+            <Button type="button" onClick={() => navigate("/groups/new")}><Plus /> إنشاء مجموعة</Button>
+          </Empty>
         </Card>
       ) : (
-        <DataTable
-          title={<span className="flex items-center gap-2">قائمة المجموعات <Badge variant="neutral" size="sm">{groups.length} مجموعة</Badge></span>}
-          description="المجموعات النشطة المرتبطة بحسابك التعليمي."
-          data={groups}
-          columns={columns}
-          getRowId={(group) => String(group.id)}
-          loading={isLoading}
-        />
+        <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {classes.map((item) => (
+            <Card
+              key={item.id}
+              role="link"
+              tabIndex={0}
+              className="cursor-pointer gap-4 transition-all hover:shadow-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              onClick={() => navigate(`/groups/${item.id}`)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault()
+                  navigate(`/groups/${item.id}`)
+                }
+              }}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-primary-subtle text-primary"><Users className="size-4.5" /></span>
+                  <div className="min-w-0"><h2 className="truncate font-bold text-text">{item.className}</h2><p className="mt-0.5 text-xs text-text-muted">{item.gradeLevel}</p></div>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Badge variant={item.groupTier === 'vip' ? 'accent' : 'neutral'}>
+                    {item.groupTier === 'vip' ? 'VIP' : 'عادية'}
+                  </Badge>
+                  <Badge variant="neutral">{item._count.classSessions} حصص</Badge>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="rounded-md bg-surface-secondary p-2"><p className="text-text-muted">الطلاب</p><p className="mt-1 flex items-center gap-1 font-semibold"><GraduationCap className="size-3.5" />{item._count.enrollments}{item.maxCapacity ? ` / ${item.maxCapacity}` : ''}</p></div>
+                <div className="rounded-md bg-surface-secondary p-2"><p className="text-text-muted">الشهري</p><p className="mt-1 font-semibold">{item.monthlyPrice ?? 'غير محدد'} EGP</p></div>
+              </div>
+              <div className="flex items-center justify-between border-t border-border-subtle pt-3 text-xs text-text-muted">
+                <span className="flex items-center gap-1">{item.center ? <><MapPin className="size-3.5" />{item.center.name}</> : 'بدون سنتر'}</span>
+                <div className="flex items-center gap-1" onClick={(event) => event.stopPropagation()}><IconButton type="button" color="secondary" style="tint" size="sm" aria-label={`تعديل ${item.className}`} title="تعديل المجموعة" icon={<Edit3 size={14} />} onClick={() => navigate(`/groups/${item.id}/edit`)} /><IconButton type="button" color="danger" style="tint" size="sm" aria-label={`حذف ${item.className}`} title="حذف المجموعة" icon={<Trash2 size={14} />} onClick={() => setClassToDelete(item)} /></div>
+              </div>
+            </Card>
+          ))}
+        </section>
       )}
-      <Modal
-        open={!!groupToDelete}
-        onClose={() => setGroupToDelete(null)}
-        size="sm"
-        footer={
-          <>
-            <Button
-              type="button"
-              color="secondary"
-              style="tint"
-              size="sm"
-              uppercase={false}
-              onClick={() => setGroupToDelete(null)}
-            >
+      <Dialog
+        open={!!classToDelete}
+        onOpenChange={(open) => !open && setClassToDelete(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              حذف {classToDelete?.className}؟
+            </DialogTitle>
+            <DialogDescription>
+              سيتم إخفاء المجموعة من قائمتك. سجلات الطلاب والحصص المرتبطة بها لن
+              تُحذف.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose render={<Button variant="neutral" />}>
               إلغاء
-            </Button>
-            <Button
-              type="button"
-              color="danger"
-              style="solid"
-              size="sm"
-              uppercase={false}
-              loading={deleteMutation.isPending}
-              onClick={confirmDelete}
-            >
+            </DialogClose>
+            <Button type="button" variant="destructive" onClick={confirmDelete}>
               حذف المجموعة
             </Button>
-          </>
-        }
-      >
-        <div className="p-0">
-          <Title className="mb-1 font-bold text-text">حذف {groupToDelete?.groupName}؟</Title>
-          <Body className="leading-relaxed text-text-muted">
-            سيتم إخفاء المجموعة من قائمتك. سجلات الطلاب والحصص المرتبطة بها لن تُحذف.
-          </Body>
-        </div>
-      </Modal>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
-  )
+  );
 }

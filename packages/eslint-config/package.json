@@ -5,12 +5,15 @@
   "type": "module",
   "exports": {
     "./base": "./base.ts",
-    "./react": "./react.ts"
+    "./react": "./react.ts",
+    "./ui": "./ui.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@shadcn/lint": "^0.1.5",
     "@types/eslint-plugin-jsx-a11y": "^6.10.1",
     "@types/node": "^24.13.4",
+    "@typescript-eslint/parser": "^8.70.0",
     "eslint": "^10.10.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",

@@ -7,6 +7,8 @@ export interface TeacherListItem {
   phoneNumber: string | null
   subjectSpecialization: string | null
   accountStatus: string
+  pricePerStudent: number | null
+  customSubdomain: string | null
   studentsCount: number
   groupsCount: number
   createdAt: string

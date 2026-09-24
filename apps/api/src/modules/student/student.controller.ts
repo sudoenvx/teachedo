@@ -65,9 +65,9 @@ export const enrollStudentHandler = async (req: Request, res: Response) => {
 
 export const unenrollStudentHandler = async (req: Request, res: Response) => {
     const studentId = Number(req.params.id);
-    const groupId = Number(req.params.groupId);
+    const classId = Number(req.params.classId);
     const teacherId = req.user?.role === 'admin' || req.user?.role === 'super_admin' ? undefined : Number(req.scope || req.user?.id);
-    const result = await studentService.unenroll(studentId, groupId, teacherId);
+    const result = await studentService.unenroll(studentId, classId, teacherId);
     ApiResponse.success(res, result, result.message);
 };
 

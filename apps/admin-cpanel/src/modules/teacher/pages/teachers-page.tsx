@@ -11,8 +11,6 @@ import {
   Settings
 } from 'lucide-react'
 import {
-  DataTable,
-  Badge,
   StatisticCard,
   Body,
   Pagination,
@@ -22,7 +20,7 @@ import {
 import { useDebounce } from '@/core/hooks/use_debounce'
 import { useTeachersList, type TeacherListItem } from '../api/teachers.queries'
 import { useAdminStats } from '@/modules/dashboard/api/dashboard.queries'
-import { Button, Tooltip, TooltipContent, TooltipTrigger } from '@teachedo/ui/components'
+import { Badge, Button, DataTable, Tooltip, TooltipContent, TooltipTrigger } from '@teachedo/ui/components'
 
 const STATUS_MAP: Record<string, { label: string; variant: 'success' | 'warning' | 'danger' | 'neutral' }> = {
   active: { label: 'نشط', variant: 'success' },
@@ -86,8 +84,8 @@ export default function TeachersPage() {
         header: 'الطلاب النشطون',
         accessor: 'studentsCount' as keyof TeacherListItem,
         render: (item: TeacherListItem) => (
-          <div className="flex items-center gap-1.5 tabular-nums text-xs font-bold text-primary">
-            <Users size={12} className="text-primary/70" />
+          <div className="flex items-center gap-1.5 tabular-nums text-xs font-medium text-text-muted">
+            <Users size={12} className="text-text-muted" />
             <span>{item.studentsCount ?? 0}</span>
           </div>
         ),
@@ -96,7 +94,7 @@ export default function TeachersPage() {
         header: 'المجموعات',
         accessor: 'groupsCount' as keyof TeacherListItem,
         render: (item: TeacherListItem) => (
-          <div className="flex items-center gap-1.5 tabular-nums text-xs font-semibold text-text">
+          <div className="flex items-center gap-1.5 tabular-nums text-xs font-semibold text-text-muted">
             <Layers size={12} className="text-text-muted" />
             <span>{item.groupsCount ?? 0}</span>
           </div>
@@ -107,7 +105,7 @@ export default function TeachersPage() {
         render: (item: TeacherListItem) => {
           const cfg = STATUS_MAP[item.accountStatus] || { label: item.accountStatus, variant: 'neutral' as const }
           return (
-            <Badge variant={cfg.variant} size="sm">
+            <Badge variant={"neutral"} >
               {cfg.label}
             </Badge>
           )
@@ -121,7 +119,7 @@ export default function TeachersPage() {
             <Tooltip>
               <TooltipTrigger>
 
-              <Button variant="neutral" size="icon-sm" aria-label="تعديل المدرس" title="">
+              <Button variant="neutral" size="icon-md" aria-label="تعديل المدرس" title="">
               <Settings size={15} />
             </Button>
               </TooltipTrigger>
@@ -157,38 +155,37 @@ export default function TeachersPage() {
           label="إجمالي المدرسين"
           value={String(stats?.totalTeachers ?? result?.meta?.total ?? 0)}
           icon={GraduationCap}
-          iconClassName="bg-primary/10 text-primary"
+          iconClassName="bg-primary-subtle"
         />
         <StatisticCard
           label="المدرسون النشطون"
           value={String(stats?.activeTeachers ?? 0)}
           icon={UserCheck}
-          iconClassName="bg-success/10 text-success"
+          iconClassName="bg-success-subtle"
         />
         <StatisticCard
           label="إجمالي الطلاب المسجلين"
           value={String(stats?.enrolledStudents ?? 0)}
           icon={Users}
-          iconClassName="bg-info/10 text-info"
+          iconClassName="bg-info-subtle"
         />
         <StatisticCard
           label="المجموعات الدراسية"
           value={String(stats?.activeGroups ?? 0)}
           icon={Layers}
-          iconClassName="bg-warning/10 text-warning"
+          iconClassName="bg-warning-subtle"
         />
       </div>
 
 
       {/* 4. Teachers Data Table */}
       <DataTable
-      selectable
         title={
           <div className="flex items-center gap-2">
             <Body className="text-text font-bold">
               إدارة المدرسين
             </Body>
-            <Badge size="sm">
+            <Badge variant="neutral">
               {result?.meta?.total ?? 0} مدرس
             </Badge>
           </div>

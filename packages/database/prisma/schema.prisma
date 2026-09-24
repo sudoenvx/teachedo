@@ -9,14 +9,10 @@ datasource db {
 }
 
 
-enum DayOfWeek {
-  saturday
-  sunday
-  monday
-  tuesday
-  wednesday
-  thursday
-  friday
+enum CommissionType {
+  percentage
+  fixed_per_student
+  none
 }
 
 // Who performed/logged an action — used for polymorphic "recorded by" /

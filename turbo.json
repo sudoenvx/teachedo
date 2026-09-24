@@ -30,14 +30,16 @@
       "cache": false
     },
     "db:push": {
-      "cache": false,
-      "persistent": true
+      "cache": false
     },
     "db:migrate": {
       "cache": false,
       "persistent": true
     },
     "db:build": {
+      "cache": false
+    },
+    "db:reset": {
       "cache": false
     },
     "db:seed": {

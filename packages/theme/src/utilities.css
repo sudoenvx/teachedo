@@ -51,3 +51,7 @@
     var(--border) 11px
   );
 }
+
+@utility tabular-nums{
+  font-family: 'Inter'
+}

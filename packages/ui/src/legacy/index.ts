@@ -1,6 +1,6 @@
 export { Button } from './button'
 export { IconButton } from './icon-button'
-export { Card, type CardProps } from './card'
+export * from './card'
 export { StatisticCard, type StatisticCardProps } from './statistic-card'
 export { Input } from './input'
 export { Textarea } from './textarea'
@@ -10,8 +10,6 @@ export { ImageUpload, type ImageUploadProps } from './image-upload'
 export { Modal } from './modal'
 
 export { BaseModal, type BaseModalProps, type ModalSize } from './base-modal'
-
-export { DataTable, type DataTableColumn, type DataTableProps, type DataTableGroupingOption, type DataTableGroupConfig } from './data-table'
 
 export { Tabs, type TabItem } from './tabs'
 export { PageLoading } from './page-loading'

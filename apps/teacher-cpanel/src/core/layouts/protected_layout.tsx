@@ -26,6 +26,7 @@ export default function ProtectedLayout() {
   }
   if (isError || !teacher)
     return <Navigate to={`/login?redirect=${encodeURIComponent(location.pathname)}`} replace />
+  if (teacher.mustChangePassword) return <Navigate to="/password/change" replace />
   if (teacher.onboardingRequired) return <Navigate to="/onboarding" replace />
   return <Outlet />
 }

@@ -44,6 +44,8 @@ export interface TeacherProfileDetails {
   subjectSpecialization: string | null
   status: string
   accountStatus: TeacherAccountStatus
+  pricePerStudent: number | null
+  customSubdomain: string | null
   profilePictureUrl: string | null
   joinDate: string
   createdAt: string

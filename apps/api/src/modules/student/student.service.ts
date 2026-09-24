@@ -171,15 +171,17 @@ export class StudentService {
         }
 
         // 4. Initial group enrollment if specified
-        if (input.groupId) {
-            await prisma.groupEnrollment.create({
-                data: {
-                    groupId: input.groupId,
+        const classIds = input.classIds?.length ? input.classIds : input.classId ? [input.classId] : [];
+        if (classIds.length) {
+            await prisma.classEnrollment.createMany({
+                data: classIds.map((classId) => ({
+                    classId,
                     studentId: student.id,
                     enrollmentDate: new Date(),
                     status: 'active',
-                    customPrice: input.customPrice !== undefined ? input.customPrice : null,
-                },
+                    studentAttendanceType: input.studentAttendanceType,
+                })),
+                skipDuplicates: true,
             });
         }
 
@@ -212,10 +214,10 @@ export class StudentService {
             where.studyStageId = Number(query.stageId);
         }
 
-        if (query.groupId) {
-            where.groupEnrollments = {
+        if (query.classId) {
+            where.classEnrollments = {
                 some: {
-                    groupId: Number(query.groupId),
+                    classId: Number(query.classId),
                     status: 'active',
                 },
             };
@@ -261,16 +263,16 @@ export class StudentService {
                             stageName: true,
                         },
                     },
-                    groupEnrollments: {
+                    classEnrollments: {
                         where: { status: 'active' },
                         select: {
-                            groupId: true,
+                            classId: true,
                             customPrice: true,
-                            group: {
+                            studentClass: {
                                 select: {
                                     id: true,
-                                    groupName: true,
-                                    standardMonthlyFee: true,
+                                    className: true,
+                                    monthlyPrice: true,
                                 },
                             },
                         },
@@ -296,7 +298,7 @@ export class StudentService {
             parentName: s.parent?.fullName,
             parentPhone: s.parent?.phoneNumber,
             parentWhatsapp: s.parent?.whatsappNumber,
-            activeGroups: s.groupEnrollments.map((ge) => ge.group.groupName),
+            activeClasses: s.classEnrollments.map((ge) => ge.studentClass.className),
             totalAttendance: s._count.attendance,
             createdAt: s.createdAt,
         }));
@@ -358,13 +360,13 @@ export class StudentService {
                         stageName: true,
                     },
                 },
-                groupEnrollments: {
+                classEnrollments: {
                     include: {
-                        group: {
+                        studentClass: {
                             select: {
                                 id: true,
-                                groupName: true,
-                                standardMonthlyFee: true,
+                                className: true,
+                                monthlyPrice: true,
                             },
                         },
                     },
@@ -391,7 +393,7 @@ export class StudentService {
                         amountDue: true,
                         amountPaid: true,
                         status: true,
-                        group: { select: { groupName: true } },
+                        studentClass: { select: { className: true } },
                     },
                 },
                 payments: {
@@ -550,31 +552,31 @@ export class StudentService {
             throw new NotFoundError('Student not found.');
         }
 
-        const enrollment = await prisma.groupEnrollment.upsert({
+        const enrollment = await prisma.classEnrollment.upsert({
             where: {
-                groupId_studentId: {
-                    groupId: input.groupId,
+                classId_studentId: {
+                    classId: input.classId,
                     studentId,
                 },
             },
             update: {
                 status: 'active',
                 leftAt: null,
-                ...(input.customPrice !== undefined ? { customPrice: input.customPrice } : {}),
+                studentAttendanceType: input.studentAttendanceType,
             },
             create: {
-                groupId: input.groupId,
+                classId: input.classId,
                 studentId,
                 status: 'active',
                 enrollmentDate: new Date(),
-                customPrice: input.customPrice !== undefined ? input.customPrice : null,
+                studentAttendanceType: input.studentAttendanceType,
             },
         });
 
         return enrollment;
     }
 
-    public async unenroll(studentId: number, groupId: number, teacherId?: number) {
+    public async unenroll(studentId: number, classId: number, teacherId?: number) {
         const studentWhere: Record<string, unknown> = { id: studentId, deletedAt: null };
         if (teacherId) studentWhere.teacherId = teacherId;
 
@@ -583,10 +585,10 @@ export class StudentService {
             throw new NotFoundError('Student not found.');
         }
 
-        await prisma.groupEnrollment.update({
+        await prisma.classEnrollment.update({
             where: {
-                groupId_studentId: {
-                    groupId,
+                classId_studentId: {
+                    classId,
                     studentId,
                 },
             },
@@ -617,14 +619,10 @@ export class StudentService {
                         stageName: true,
                     },
                 },
-                groupEnrollments: {
+                classEnrollments: {
                     where: { status: 'active' },
                     include: {
-                        group: {
-                            include: {
-                                schedules: true,
-                            },
-                        },
+                            studentClass: true,
                     },
                 },
             },
@@ -645,11 +643,11 @@ export class StudentService {
                 session: {
                     select: {
                         sessionDate: true,
-                        startTime: true,
+                        scheduledStartTime: true,
                         topic: true,
-                        group: {
+                        studentClass: {
                             select: {
-                                groupName: true,
+                                className: true,
                             },
                         },
                     },
@@ -666,9 +664,9 @@ export class StudentService {
                 where: { studentId },
                 orderBy: { createdAt: 'desc' },
                 include: {
-                    group: {
+                    studentClass: {
                         select: {
-                            groupName: true,
+                            className: true,
                         },
                     },
                 },

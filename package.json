@@ -12,6 +12,7 @@
     "db:generate": "turbo run db:generate --filter=@teachedo/database",
     "db:build": "turbo run build --filter=@teachedo/database",
     "db:seed": "turbo run db:seed --filter=@teachedo/database",
+    "db:reset": "turbo run db:reset --filter=@teachedo/database",
 
     "api:start": "turbo run start --filter=@teachedo/api",
     "api:build": "turbo run build --filter=@teachedo/api",

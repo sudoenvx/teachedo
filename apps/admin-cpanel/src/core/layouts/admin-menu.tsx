@@ -1,43 +1,57 @@
-import { LogOut, Settings, User } from 'lucide-react'
+import { BookText, CreditCard, LifeBuoy } from 'lucide-react'
 import {
-    Avatar,
+  AccountMenuHeader,
+  Avatar,
   AvatarFallback,
   AvatarImage,
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  ThemeModeToggle,
 } from '@teachedo/ui/components'
 
 export function AdminMenu() {
+  const name = 'أحمد'
+  const email = 'ahmed@teachedo.app'
+
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex size-7 items-center justify-center rounded-md bg-white/10 text-[11px] font-bold text-neutral-200 transition-colors hover:bg-white/20">
-        <Avatar>
-            <AvatarImage src='https://github.com/shadcn.png' />
-            <AvatarFallback>
-                
-            </AvatarFallback>
+      <DropdownMenuTrigger className="flex size-7 items-center justify-center rounded-full transition-opacity hover:opacity-80">
+        <Avatar className="size-7">
+          <AvatarImage src="https://github.com/shadcn.png" />
+          <AvatarFallback className="text-[10px] font-bold">{name.slice(0, 1)}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" sideOffset={8} className="w-48">
-        <DropdownMenuGroup>
-                    <DropdownMenuLabel className="text-xs text-text-muted">أحمد — مالك النظام</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <User className="size-4" /> الملف الشخصي
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Settings className="size-4" /> الإعدادات
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-destructive focus:text-destructive ">
-          <LogOut className="size-4" /> تسجيل الخروج
-        </DropdownMenuItem>
+
+      <DropdownMenuContent align="end" sideOffset={10} className="w-64 border border-border-subtle bg-surface p-0 shadow-elevated">
+        <AccountMenuHeader name={name} email={email} avatarSrc="https://github.com/shadcn.png" onSettingsClick={() => {}} />
+
+        <DropdownMenuSeparator className="m-0" />
+
+        <DropdownMenuGroup className="p-1.5">
+          <DropdownMenuItem>
+            <CreditCard className="size-4" /> الفوترة والإيرادات
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <BookText className="size-4" /> سجل التحديثات
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <LifeBuoy className="size-4" /> الدعم الفني
+          </DropdownMenuItem>
         </DropdownMenuGroup>
+
+        <DropdownMenuSeparator className="m-0" />
+
+        <div className="flex items-center justify-between p-1.5">
+          <ThemeModeToggle />
+          <Button variant="destructive" size="sm" className="font-medium text-xs/3 rounded-[calc(var(--radius-md)-3px)]">
+            تسجيل الخروج
+          </Button>
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   )

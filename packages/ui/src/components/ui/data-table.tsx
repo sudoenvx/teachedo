@@ -1,442 +1,607 @@
-"use client"
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-import * as React from "react"
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import {
-  flexRender,
-  type Column,
-  type ColumnDef,
-  type Header,
-  type Row,
-  type RowData,
-  type Table as TanStackTable,
-} from "@tanstack/react-table"
-import { ArrowDownIcon, ArrowUpDownIcon, ArrowUpIcon, ChevronDownIcon, Loader2Icon } from "lucide-react"
+  Layers,
+  ListFilter,
+  ChevronRight,
+  ArrowDownNarrowWideIcon,
+  ArrowUpDownIcon,
+  ArrowUpNarrowWide,
+} from 'lucide-react'
+import { cn } from 'cn'
+import { Card } from './card'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './select'
+import { Checkbox } from './checkbox'
+import { useTableStore } from '../../hooks/use-table-store'
 
-import { cn } from "cn"
-
-import { Button } from "./button"
-import { Card, CardHeader, CardTitle } from "./card"
-import { Checkbox } from "./checkbox"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./table"
-import { SELECT_COLUMN_ID } from "./use-data-table"
-
-/* ==========================================================================
-   Anatomy
-
-   const table = useDataTable({ data, columns, selectable, ... })
-
-   <DataTable table={table} loading>          context + card surface
-     <DataTableHeader>                        title area (optional)
-       <DataTableTitle /> <DataTableDescription /> <DataTableActions />
-     <DataTableToolbar />                     row for <DataTableGroupBy />, search, filters...
-     <DataTableContent>                       scroll container + <table>
-       <DataTableHead />                      header cells + sorting
-       <DataTableBody />                      rows, group rows, empty and loading states
-     <DataTableFooter />                      pagination, totals...
-     <DataTableSelectionBar />                floating bar for bulk actions
-
-   Each part is optional. <DataTable table={table} /> alone renders the table.
-   The component that calls useDataTable re-renders on every table state
-   change, and the parts re-render with it.
-   ========================================================================== */
-
-declare module "@tanstack/react-table" {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  interface ColumnMeta<TData extends RowData, TValue> {
-    /** Label for the group-by menu and group rows. Falls back to a string header, then the column id. */
-    label?: string
-    /** Formats the value shown on a group row (e.g. an enum key to its Arabic label). */
-    formatGroupValue?: (value: unknown, row: Row<TData>) => React.ReactNode
-  }
-}
-
-export { type ColumnDef, type TanStackTable }
-
-/* ---- context ------------------------------------------------------------ */
-
-type DataTableContextValue = { table: TanStackTable<any>; loading: boolean }
-
-const DataTableContext = React.createContext<DataTableContextValue | null>(null)
-
-export function useDataTableContext<TData = any>() {
-  const context = React.useContext(DataTableContext)
-  if (!context) throw new Error("DataTable parts must be rendered inside <DataTable table={...}>.")
-  return context as { table: TanStackTable<TData>; loading: boolean }
-}
-
-export function getColumnLabel(column: Column<any, unknown>): string {
-  const { meta, header } = column.columnDef
-  if (meta?.label) return meta.label
-  return typeof header === "string" ? header : column.id
-}
-
-/* ==========================================================================
-   Root and card parts
-   ========================================================================== */
-
-export type DataTableProps<TData> = Omit<React.ComponentProps<typeof Card>, "children"> & {
-  table: TanStackTable<TData>
-  loading?: boolean
-  children?: React.ReactNode
-}
-
-function DataTable<TData>({ table, loading = false, className, children, ...props }: DataTableProps<TData>) {
-  const value = React.useMemo(() => ({ table, loading }), [table, loading])
-
-  return (
-    <DataTableContext.Provider value={value}>
-      <Card
-        data-slot="data-table"
-        className={cn("gap-0 overflow-hidden border border-border-subtle", className)}
-        {...props}
-      >
-        {children ?? <DataTableContent />}
-      </Card>
-    </DataTableContext.Provider>
-  )
-}
-
-function DataTableHeader({ className, ...props }: React.ComponentProps<typeof CardHeader>) {
-  return (
-    <CardHeader
-      data-slot="data-table-header"
-      className={cn(
-        "flex flex-col gap-3 border-b border-border-subtle bg-surface px-3 sm:flex-row sm:items-center sm:justify-between",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function DataTableTitle({ className, ...props }: React.ComponentProps<typeof CardTitle>) {
-  return <CardTitle data-slot="data-table-title" className={cn("truncate text-sm", className)} {...props} />
-}
-
-function DataTableDescription({ className, ...props }: React.ComponentProps<"p">) {
-  return (
-    <p
-      data-slot="data-table-description"
-      className={cn("m-0 mt-1 truncate text-xs text-text-muted", className)}
-      {...props}
-    />
-  )
-}
-
-function DataTableActions({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div data-slot="data-table-actions" className={cn("flex shrink-0 items-center gap-2", className)} {...props} />
-  )
-}
-
-function DataTableToolbar({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="data-table-toolbar"
-      className={cn("flex flex-wrap items-center gap-2 border-b border-border-subtle px-3 py-2", className)}
-      {...props}
-    />
-  )
-}
-
-function DataTableFooter({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div data-slot="data-table-footer" className={cn("border-t border-border-subtle px-3 py-2", className)} {...props} />
-  )
-}
-
-/* ==========================================================================
-   Content
-   ========================================================================== */
-
-type DataTableContentProps = React.ComponentProps<"div"> & { tableClassName?: string }
-
-/** Scroll container + <table>. Without children it renders the default head and body. */
-function DataTableContent({ className, tableClassName, children, ...props }: DataTableContentProps) {
-  return (
-    <div data-slot="data-table-content" className={cn("relative overflow-x-auto", className)} {...props}>
-      <Table className={cn("min-w-full border-separate border-spacing-0", tableClassName)}>
-        {children ?? (
-          <>
-            <DataTableHead />
-            <DataTableBody />
-          </>
-        )}
-      </Table>
-    </div>
-  )
-}
-
-/* ---- head --------------------------------------------------------------- */
-
-function SortButton({ column, children }: { column: Column<any, unknown>; children: React.ReactNode }) {
-  const sorted = column.getIsSorted()
-  const Icon = sorted === "asc" ? ArrowUpIcon : sorted === "desc" ? ArrowDownIcon : ArrowUpDownIcon
-
-  return (
-    <Button
-      type="button"
-      variant="ghost"
-      size="sm"
-      onClick={column.getToggleSortingHandler()} // TanStack cycles: none -> asc -> desc -> none
-      className="-ms-2 gap-1.5 px-2 text-start font-medium text-text"
-    >
-      {children}
-      <Icon className="size-3 text-text-muted" aria-hidden="true" />
-    </Button>
-  )
-}
-
-const selectCellClassName = "w-10 min-w-10 max-w-10 px-0"
-
-function DataTableHeadCell({ header }: { header: Header<any, unknown> }) {
-  const { column } = header
-  const sorted = column.getIsSorted()
-  const canSort = column.getCanSort()
-  const content = header.isPlaceholder ? null : flexRender(column.columnDef.header, header.getContext())
-
-  return (
-    <TableHead
-      colSpan={header.colSpan}
-      aria-sort={canSort ? (sorted === "asc" ? "ascending" : sorted === "desc" ? "descending" : "none") : undefined}
-      style={{ width: header.getSize() }}
-      className={cn(
-        // Borders live on the cells: `border-separate` ignores borders set on <tr>.
-        "sticky top-0 z-10 h-8 border-b border-border-subtle bg-neutral-50 px-4 text-start text-[11px] font-semibold text-text",
-        column.id === SELECT_COLUMN_ID && selectCellClassName
-      )}
-    >
-      {canSort && content ? <SortButton column={column}>{content}</SortButton> : content}
-    </TableHead>
-  )
-}
-
-function DataTableHead({ className, ...props }: React.ComponentProps<typeof TableHeader>) {
-  const { table } = useDataTableContext()
-
-  return (
-    <TableHeader className={className} {...props}>
-      {table.getHeaderGroups().map((headerGroup) => (
-        <TableRow key={headerGroup.id} className="border-b-0 hover:bg-transparent">
-          {headerGroup.headers.map((header) => (
-            <DataTableHeadCell key={header.id} header={header} />
-          ))}
-        </TableRow>
-      ))}
-    </TableHeader>
-  )
-}
-
-/* ---- rows --------------------------------------------------------------- */
-
-const cellClassName = "border-b border-border-subtle px-4 py-3 text-start text-xs"
-
-function DataTableRow<TData>({
-  row,
-  onClick,
-  className,
-}: {
-  row: Row<TData>
-  onClick?: (row: Row<TData>) => void
+// ── existing types unchanged ──────────────────────────────────────
+export interface DataTableColumn<T> {
+  id?: string // مُعرف فريد للعمود (مهم إذا كنت ستستخدم خاصية إخفاء الأعمدة أو الفرز)
+  header: string
+  accessor?: keyof T
+  render?: (item: T) => React.ReactNode
   className?: string
-}) {
+  headerClassName?: string
+  cellClassName?: string
+  pinned?: 'start' | 'end'
+  width?: number | string
+
+  // ---- Sorting ----
+  sortable?: boolean
+  // إن لم يتم تمريرها، سيتم الفرز على أساس accessor مباشرة
+  sortAccessor?: (item: T) => string | number | Date | null | undefined
+}
+export type SortDirection = 'asc' | 'desc'
+export interface SortState {
+  columnId: string
+  direction: SortDirection
+}
+
+export interface DataTableGroupConfig<T> {
+  accessor: keyof T | ((item: T) => string)
+  renderGroupHeader?: (groupKey: string, items: T[]) => React.ReactNode
+  collapsible?: boolean
+  defaultCollapsed?: boolean
+  groupHeaderClassName?: string
+}
+
+// ── NEW: selectable grouping option ───────────────────────────────
+export interface DataTableGroupingOption<T> {
+  /** Stable id for this option. Falls back to accessor/label if omitted
+   *  — same pattern as getColumnId, so most callers never need to set it. */
+  id?: string
+  /** Human-readable label shown in the dropdown and in the trigger button. */
+  label: string
+  /** Optional icon shown beside the selected grouping label. */
+  icon?: React.ReactNode
+  accessor: keyof T | ((item: T) => string)
+  renderGroupHeader?: (groupKey: string, items: T[]) => React.ReactNode
+  collapsible?: boolean
+  defaultCollapsed?: boolean
+  groupHeaderClassName?: string
+}
+
+export interface SelectionToolbarContext {
+  selectedIds: string[]
+  clearSelection: () => void
+  count: number
+}
+
+export interface DataTableProps<T> {
+  title?: React.ReactNode
+  description?: React.ReactNode
+  tableActions?: React.ReactNode
+  persistedKey?: string
+
+  data: T[]
+  columns: DataTableColumn<T>[]
+  getRowId: (item: T) => string
+  striped?: boolean
+
+  selectable?: boolean
+  selectedIds?: string[]
+  onSelectionChange?: (ids: string[]) => void
+  selectionToolbar?: (ctx: SelectionToolbarContext) => React.ReactNode
+
+  sortState?: SortState | null
+  defaultSortState?: SortState | null
+  onSortChange?: (sort: SortState | null) => void
+
+  /** Fixed, single grouping config — unchanged legacy behavior. Ignored
+   *  if `groupingOptions` is provided. */
+  grouping?: DataTableGroupConfig<T>
+
+  /** NEW: a list of grouping methods the admin can pick between via a
+   *  compact dropdown in the table header. Pass this instead of
+   *  `grouping` to let the admin choose "no grouping" or any option. */
+  groupingOptions?: DataTableGroupingOption<T>[]
+  /** Controlled selected grouping id. `null` = no grouping. */
+  groupBy?: string | null
+  defaultGroupBy?: string | null
+  onGroupByChange?: (id: string | null) => void
+
+  pagination?: React.ReactNode
+  loading?: boolean
+  skeletonRows?: number
+  emptyMessage?: React.ReactNode
+  dir?: 'rtl' | 'ltr'
+  className?: string
+  rowClassName?: (item: T) => string
+  onRowClick?: (item: T) => void
+}
+
+function getColumnId<T>(col: DataTableColumn<T>, index: number): string {
+  return col.id || (typeof col.accessor === 'string' ? col.accessor : col.header) || `col-${index}`
+}
+
+function getGroupOptionId<T>(option: DataTableGroupingOption<T>, index: number): string {
   return (
-    <TableRow
-      data-state={row.getIsSelected() ? "selected" : undefined}
-      onClick={onClick ? () => onClick(row) : undefined}
-      className={cn(
-        "hover:bg-neutral-100/50 data-[state=selected]:bg-primary-subtle/40",
-        onClick && "cursor-pointer",
-        className
-      )}
-    >
-      {row.getVisibleCells().map((cell) => (
-        <TableCell
-          key={cell.id}
-          className={cn(cellClassName, cell.column.id === SELECT_COLUMN_ID && selectCellClassName)}
-        >
-          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-        </TableCell>
-      ))}
-    </TableRow>
+    option.id ||
+    (typeof option.accessor === 'string' ? option.accessor : option.label) ||
+    `group-option-${index}`
   )
 }
 
-/* ---- group row ---------------------------------------------------------- */
-
-const leafRowsOf = (row: Row<any>) => row.getLeafRows().filter((leaf) => !leaf.getIsGrouped())
-
-function DefaultGroupLabel({ row, count }: { row: Row<any>; count: number }) {
-  const { table } = useDataTableContext()
-  const column = row.groupingColumnId ? table.getColumn(row.groupingColumnId) : undefined
-  const value = row.groupingValue
-  const formatted =
-    column?.columnDef.meta?.formatGroupValue?.(value, row) ??
-    (value === null || value === undefined || value === "" ? "غير محدد" : String(value))
-
-  return (
-    <>
-      {column && <span className="text-text-muted">{getColumnLabel(column)}:</span>}
-      <span className="font-semibold text-text">{formatted}</span>
-      <span className="rounded-full bg-neutral-200/70 px-1.5 py-px text-[10px] font-medium tabular-nums text-text-muted">
-        {count}
-      </span>
-    </>
-  )
+function getGroupKey<T>(item: T, accessor: DataTableGroupConfig<T>['accessor']): string {
+  const value = typeof accessor === 'function' ? accessor(item) : (item[accessor] as unknown)
+  return value === null || value === undefined ? '' : String(value)
 }
 
-/**
- * One row per group: chevron, "column: value", item count, and (when the table
- * is selectable) a checkbox that selects the whole group. Columns that define
- * `aggregatedCell` show their aggregate in their own cell.
- */
-function DataTableGroupRow<TData>({
-  row,
-  renderLabel,
-}: {
-  row: Row<TData>
-  renderLabel?: (row: Row<TData>) => React.ReactNode
-}) {
-  const { table } = useDataTableContext<TData>()
-  const cells = row.getVisibleCells()
-  const selectCell = cells.find((cell) => cell.column.id === SELECT_COLUMN_ID)
-  const dataCells = cells.filter((cell) => cell.column.id !== SELECT_COLUMN_ID)
-  const hasAggregates = dataCells.some((cell) => cell.column.columnDef.aggregatedCell)
+function SortIcon({ direction }: { direction: SortDirection | null }) {
+  const baseStyle = 'text-text-muted group-hover:text-text'
+  if (direction === 'asc') return <ArrowDownNarrowWideIcon className={cn(baseStyle, 'w-3 h-3')} />
+  if (direction === 'desc') return <ArrowUpNarrowWide className={cn(baseStyle, 'w-3 h-3')} />
+  return <ArrowUpDownIcon className={cn(baseStyle, 'w-2.5 h-2.5')} />
+}
 
-  const leaves = leafRowsOf(row)
-  const selectedCount = leaves.filter((leaf) => leaf.getIsSelected()).length
-  const expanded = row.getIsExpanded()
+export function DataTable<T>({
+  title,
+  description,
+  tableActions,
+  persistedKey,
+  data,
+  columns,
+  getRowId,
+  striped = false,
+  selectable = false,
+  selectedIds,
+  onSelectionChange,
+  selectionToolbar,
+  sortState: controlledSortState,
+  defaultSortState = null,
+  onSortChange,
+  grouping: fixedGrouping,
+  groupingOptions,
+  groupBy: controlledGroupBy,
+  defaultGroupBy = null,
+  onGroupByChange,
+  pagination,
+  loading = false,
+  skeletonRows = 6,
+  emptyMessage = 'لا توجد بيانات للعرض.',
+  dir = 'rtl',
+  className,
+  rowClassName,
+  onRowClick,
+}: DataTableProps<T>) {
+  const { hiddenColumns: allHiddenColumns } = useTableStore()
+  const hiddenColumns = persistedKey ? allHiddenColumns[persistedKey] || [] : []
 
-  const toggleSelection = (value: boolean) =>
-    table.setRowSelection((old) => {
-      const next = { ...old }
-      for (const leaf of leaves) {
-        if (!leaf.getCanSelect()) continue
-        if (value) next[leaf.id] = true
-        else delete next[leaf.id]
-      }
+  const visibleColumns = useMemo(
+    () => columns.filter((col, i) => !hiddenColumns.includes(getColumnId(col, i))),
+    [columns, hiddenColumns]
+  )
+
+  // ── NEW: selectable grouping state ────────────────────────────
+  const hasGroupingOptions = !!groupingOptions && groupingOptions.length > 0
+  const [internalGroupBy, setInternalGroupBy] = useState<string | null>(defaultGroupBy)
+  const groupBy = controlledGroupBy !== undefined ? controlledGroupBy : internalGroupBy
+
+  const setGroupBy = (id: string | null) => {
+    onGroupByChange?.(id)
+    if (controlledGroupBy === undefined) setInternalGroupBy(id)
+  }
+
+  const activeGroupOption = useMemo(() => {
+    if (!hasGroupingOptions || groupBy === null) return undefined
+    return groupingOptions!.find((opt, i) => getGroupOptionId(opt, i) === groupBy)
+  }, [groupingOptions, hasGroupingOptions, groupBy])
+
+  // Resolves to whichever grouping is actually active this render:
+  // the picked option (if groupingOptions is used) or the legacy fixed
+  // `grouping` prop (if not) — the rest of the component below doesn't
+  // need to know which mode produced it.
+  const grouping: DataTableGroupConfig<T> | undefined = hasGroupingOptions
+    ? activeGroupOption
+    : fixedGrouping
+
+  // Collapsed/expanded state is per grouping-key, so switching grouping
+  // method with stale toggles would show meaningless expand states —
+  // reset on every method change.
+  const [toggledGroups, setToggledGroups] = useState<Set<string>>(new Set())
+  useEffect(() => {
+    setToggledGroups(new Set())
+  }, [groupBy])
+
+  // ── Selection (unchanged) ─────────────────────────────────────
+  const [internalSelected, setInternalSelected] = useState<Set<string>>(new Set())
+  const selected = selectedIds ? new Set(selectedIds) : internalSelected
+  const setSelected = (next: Set<string>) => {
+    onSelectionChange?.(Array.from(next))
+    if (!selectedIds) setInternalSelected(next)
+  }
+  const clearSelection = () => setSelected(new Set())
+  const currentPageIds = useMemo(() => data.map(getRowId), [data, getRowId])
+  const selectedOnPageCount = currentPageIds.filter((id) => selected.has(id)).length
+  const allOnPageSelected = data.length > 0 && selectedOnPageCount === data.length
+  const someOnPageSelected = selectedOnPageCount > 0 && !allOnPageSelected
+  const toggleSelectAll = () => {
+    const next = new Set(selected)
+    if (allOnPageSelected) currentPageIds.forEach((id) => next.delete(id))
+    else currentPageIds.forEach((id) => next.add(id))
+    setSelected(next)
+  }
+  const toggleRow = (id: string) => {
+    const next = new Set(selected)
+    if (next.has(id)) next.delete(id)
+    else next.add(id)
+    setSelected(next)
+  }
+
+  // ── Sorting (unchanged) ────────────────────────────────────────
+  const [internalSortState, setInternalSortState] = useState<SortState | null>(defaultSortState)
+  const sortState = controlledSortState !== undefined ? controlledSortState : internalSortState
+  const updateSort = (updater: (prev: SortState | null) => SortState | null) => {
+    const next = updater(sortState)
+    onSortChange?.(next)
+    if (controlledSortState === undefined) setInternalSortState(next)
+  }
+  const handleSortClick = (col: DataTableColumn<T>, index: number) => {
+    if (!col.sortable) return
+    const id = getColumnId(col, index)
+    updateSort((prev) => {
+      if (!prev || prev.columnId !== id) return { columnId: id, direction: 'asc' }
+      if (prev.direction === 'asc') return { columnId: id, direction: 'desc' }
+      return null
+    })
+  }
+  const sortedData = useMemo(() => {
+    if (!sortState) return data
+    const colIndex = visibleColumns.findIndex((c, i) => getColumnId(c, i) === sortState.columnId)
+    if (colIndex === -1) return data
+    const col = visibleColumns[colIndex]
+    const getValue =
+      col?.sortAccessor ?? ((item: T) => (col?.accessor ? (item[col.accessor] as any) : undefined))
+    return [...data].sort((a, b) => {
+      const va = getValue(a)
+      const vb = getValue(b)
+      if (va == null && vb == null) return 0
+      if (va == null) return sortState.direction === 'asc' ? -1 : 1
+      if (vb == null) return sortState.direction === 'asc' ? 1 : -1
+      if (va < vb) return sortState.direction === 'asc' ? -1 : 1
+      if (va > vb) return sortState.direction === 'asc' ? 1 : -1
+      return 0
+    })
+  }, [data, sortState, visibleColumns])
+
+  // ── Grouping (unchanged logic, now fed by resolved `grouping` above) ──
+  const groupedData = useMemo(() => {
+    if (!grouping) return null
+    const map = new Map<string, T[]>()
+    sortedData.forEach((item) => {
+      const key = getGroupKey(item, grouping.accessor)
+      if (!map.has(key)) map.set(key, [])
+      map.get(key)!.push(item)
+    })
+    return map
+  }, [sortedData, grouping])
+
+  const isGroupCollapsed = (key: string) => {
+    const flipped = toggledGroups.has(key)
+    return grouping?.defaultCollapsed ? !flipped : flipped
+  }
+  const toggleGroup = (key: string) => {
+    setToggledGroups((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
       return next
     })
+  }
 
-  return (
-    <TableRow
-      data-slot="data-table-group-row"
-      data-state={expanded ? "open" : "closed"}
-      onClick={row.getToggleExpandedHandler()}
-      className="cursor-pointer bg-neutral-100/40 hover:bg-neutral-100/70"
-    >
-      {selectCell && (
-        <TableCell className={cn(cellClassName, selectCellClassName)} onClick={(event) => event.stopPropagation()}>
-          <div className="flex items-center justify-center">
-            <Checkbox
-              aria-label="تحديد المجموعة"
-              className="after:inset-0"
-              checked={leaves.length > 0 && selectedCount === leaves.length}
-              indeterminate={selectedCount > 0 && selectedCount < leaves.length}
-              onCheckedChange={(checked) => toggleSelection(Boolean(checked))}
-            />
-          </div>
-        </TableCell>
-      )}
+  // ── Column layout/pinning (unchanged) ───────────────────────────
+  const checkboxIndex = selectable ? 0 : -1
+  const columnStartIndex = selectable ? 1 : 0
+  const colCount = (selectable ? 1 : 0) + visibleColumns.length
 
-      <TableCell colSpan={hasAggregates ? 1 : Math.max(dataCells.length, 1)} className={cn(cellClassName, "py-2")}>
-        {/* The row handles the click; the button gives keyboard users the same toggle. */}
-        <button
-          type="button"
-          aria-expanded={expanded}
-          style={{ paddingInlineStart: row.depth * 20 }}
-          className="flex w-full items-center gap-2 rounded-sm text-start outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-        >
-          <ChevronDownIcon
-            aria-hidden="true"
-            className={cn(
-              "size-4 shrink-0 text-text-muted transition-transform",
-              !expanded && "-rotate-90 rtl:rotate-90"
-            )}
-          />
-          {renderLabel ? renderLabel(row) : <DefaultGroupLabel row={row} count={leaves.length} />}
-        </button>
-      </TableCell>
+  const pinnedMap = useMemo(() => {
+    const map: Record<number, 'start' | 'end'> = {}
+    if (selectable) map[checkboxIndex] = 'start'
+    visibleColumns.forEach((col, i) => {
+      if (col.pinned) map[columnStartIndex + i] = col.pinned
+    })
+    return map
+  }, [visibleColumns, selectable, checkboxIndex, columnStartIndex])
 
-      {hasAggregates &&
-        dataCells.slice(1).map((cell) => (
-          <TableCell key={cell.id} className={cn(cellClassName, "py-2")}>
-            {cell.column.columnDef.aggregatedCell
-              ? flexRender(cell.column.columnDef.aggregatedCell, cell.getContext())
-              : null}
-          </TableCell>
-        ))}
-    </TableRow>
-  )
-}
+  const hasPinnedColumns = Object.keys(pinnedMap).length > 0
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const headerCellRefs = useRef<(HTMLTableCellElement | null)[]>([])
+  const [pinOffsets, setPinOffsets] = useState<Record<number, number>>({})
 
-/* ---- body --------------------------------------------------------------- */
+  useLayoutEffect(() => {
+    if (!hasPinnedColumns) return
+    const computeOffsets = () => {
+      const offsets: Record<number, number> = {}
+      let runningStart = 0
+      for (let i = 0; i < colCount; i++) {
+        if (pinnedMap[i] === 'start') {
+          offsets[i] = runningStart
+          runningStart += headerCellRefs.current[i]?.offsetWidth ?? 0
+        }
+      }
+      let runningEnd = 0
+      for (let i = colCount - 1; i >= 0; i--) {
+        if (pinnedMap[i] === 'end') {
+          offsets[i] = runningEnd
+          runningEnd += headerCellRefs.current[i]?.offsetWidth ?? 0
+        }
+      }
+      setPinOffsets((prev) => {
+        const prevKeys = Object.keys(prev)
+        const newKeys = Object.keys(offsets)
+        if (prevKeys.length !== newKeys.length) return offsets
+        for (const key of newKeys) {
+          if (prev[Number(key)] !== offsets[Number(key)]) return offsets
+        }
+        return prev
+      })
+    }
+    computeOffsets()
+    const ro = new ResizeObserver(computeOffsets)
+    if (wrapperRef.current) ro.observe(wrapperRef.current)
+    window.addEventListener('resize', computeOffsets)
+    return () => {
+      ro.disconnect()
+      window.removeEventListener('resize', computeOffsets)
+    }
+  }, [pinnedMap, colCount, hasPinnedColumns, data.length, visibleColumns.length])
 
-type DataTableBodyProps<TData> = React.ComponentProps<typeof TableBody> & {
-  emptyMessage?: React.ReactNode
-  loadingMessage?: React.ReactNode
-  onRowClick?: (row: Row<TData>) => void
-  /** Replaces the default "column: value (count)" label of group rows. */
-  renderGroupLabel?: (row: Row<TData>) => React.ReactNode
-}
+  const pinnedStyle = (index: number): React.CSSProperties | undefined => {
+    const side = pinnedMap[index]
+    if (!side) return undefined
+    return {
+      position: 'sticky',
+      [side === 'start' ? 'insetInlineStart' : 'insetInlineEnd']: pinOffsets[index] ?? 0,
+      zIndex: 1,
+    }
+  }
 
-function StatusRow({ colSpan, children }: { colSpan: number; children: React.ReactNode }) {
-  return (
-    <TableRow className="hover:bg-transparent">
-      <TableCell colSpan={colSpan} className="h-32 px-4 text-center text-xs text-text-muted">
-        {children}
-      </TableCell>
-    </TableRow>
-  )
-}
+  const renderRow = (item: T, rowIndex: number) => {
+    const id = getRowId(item)
+    const isSelected = selected.has(id)
+    const rowBg = isSelected
+      ? 'bg-neutral-100'
+      : striped && rowIndex % 2 !== 0
+        ? 'bg-surface-secondary'
+        : 'bg-surface'
 
-function DataTableBody<TData = any>({
-  emptyMessage = "لا توجد بيانات للعرض.",
-  loadingMessage = "جاري التحميل...",
-  onRowClick,
-  renderGroupLabel,
-  className,
-  ...props
-}: DataTableBodyProps<TData>) {
-  const { table, loading } = useDataTableContext<TData>()
-  const rows = table.getRowModel().rows
-  const colSpan = Math.max(table.getVisibleLeafColumns().length, 1)
-
-  return (
-    <TableBody className={cn("[&_tr:last-child>td]:border-b-0", className)} {...props}>
-      {loading ? (
-        <StatusRow colSpan={colSpan}>
-          <span className="inline-flex items-center gap-2">
-            <Loader2Icon className="size-4 animate-spin" /> {loadingMessage}
-          </span>
-        </StatusRow>
-      ) : rows.length > 0 ? (
-        rows.map((row) =>
-          row.getIsGrouped() ? (
-            <DataTableGroupRow key={row.id} row={row} renderLabel={renderGroupLabel} />
-          ) : (
-            <DataTableRow key={row.id} row={row} onClick={onRowClick} />
+    return (
+      <tr
+        key={id}
+        className={cn(
+          'transition-colors border-t border-border',
+          !selectable && 'hover:bg-surface-secondary',
+          onRowClick && 'cursor-pointer',
+          rowBg,
+          rowClassName?.(item)
+        )}
+        onClick={() => onRowClick?.(item)}
+      >
+        {selectable && (
+          <td style={pinnedStyle(checkboxIndex)} className={cn('w-8 bg-neutral-100 px-1.5 py-2', rowBg)}>
+            <Checkbox checked={isSelected} onCheckedChange={() => toggleRow(id)} />
+          </td>
+        )}
+        {visibleColumns.map((col, i) => {
+          const index = columnStartIndex + i
+          return (
+            <td
+              key={index}
+              style={pinnedStyle(index)}
+              className={cn(
+                'whitespace-nowrap px-2 py-2',
+                pinnedMap[index] && rowBg,
+                col.cellClassName
+              )}
+            >
+              {col.render
+                ? col.render(item)
+                : col.accessor
+                  ? (item[col.accessor] as React.ReactNode)
+                  : null}
+            </td>
           )
-        )
-      ) : (
-        <StatusRow colSpan={colSpan}>{emptyMessage}</StatusRow>
-      )}
-    </TableBody>
-  )
-}
+        })}
+      </tr>
+    )
+  }
 
-export {
-  DataTable,
-  DataTableHeader,
-  DataTableTitle,
-  DataTableDescription,
-  DataTableActions,
-  DataTableToolbar,
-  DataTableContent,
-  DataTableHead,
-  DataTableBody,
-  DataTableRow,
-  DataTableGroupRow,
-  DataTableFooter,
+  return (
+    <Card className={cn('flex flex-col overflow-hidden border-none rounded-lg', className)}>
+      {(title || description || tableActions || persistedKey || hasGroupingOptions) && (
+        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+          <div className="flex min-w-0 flex-col">
+            {title && <h3 className="truncate text-[13px] font-bold text-text">{title}</h3>}
+            {description && <p className="truncate text-[11px] text-text-muted">{description}</p>}
+          </div>
+
+          <div className="flex justify-between items-center gap-2">
+            {/* ── NEW: grouping method selector ──────────────────
+                A single compact dropdown, not a row of toggle buttons —
+                stays out of the way at any number of options, and its
+                own label already communicates the current state, so no
+                separate "grouped by: X" indicator is needed elsewhere. */}
+            {hasGroupingOptions && (
+              <Select
+                value={groupBy ?? 'no_grouping'}
+                onValueChange={(value) => setGroupBy(value === 'no_grouping' ? null : value)}
+              >
+                <SelectTrigger
+                  size="sm"
+                  aria-label="التجميع حسب"
+                >
+                  <SelectValue placeholder="تجميع حسب" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="no_grouping">
+                    <span className="flex items-center gap-2">
+                      <ListFilter size={14} />
+                      بدون تجميع
+                    </span>
+                  </SelectItem>
+                  {groupingOptions!.map((option, index) => (
+                    <SelectItem key={getGroupOptionId(option, index)} value={getGroupOptionId(option, index)}>
+                      <span className="flex items-center gap-2">
+                        {option.icon ?? <Layers size={14} />}
+                        {option.label}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+
+            {tableActions}
+          </div>
+        </div>
+      )}
+
+      <div ref={wrapperRef} className="overflow-x-auto">
+        <table dir={dir} className="w-full text-[11px]/normal">
+          <thead className='bg-muted text-text'>
+            <tr>
+              {selectable && (
+                <th
+                  ref={(el) => {
+                    headerCellRefs.current[checkboxIndex] = el
+                  }}
+                  style={pinnedStyle(checkboxIndex)}
+                  className="w-8 bg-muted px-1.5 py-1.5"
+                >
+                  <Checkbox
+                    checked={allOnPageSelected}
+                    indeterminate={someOnPageSelected}
+                    onCheckedChange={toggleSelectAll}
+                  />
+                </th>
+              )}
+              {visibleColumns.map((col, i) => {
+                const index = columnStartIndex + i
+                const id = getColumnId(col, i)
+                const isSorted = sortState?.columnId === id
+                return (
+                  <th
+                    key={index}
+                    ref={(el) => {
+                      headerCellRefs.current[index] = el
+                    }}
+                    style={{ width: col.width, ...pinnedStyle(index) }}
+                    aria-sort={
+                      isSorted
+                        ? sortState!.direction === 'asc'
+                          ? 'ascending'
+                          : 'descending'
+                        : undefined
+                    }
+                    className={cn(
+                      'whitespace-nowrap px-2.5 py-1.5 text-start text-text/65 text-[12px] font-bold uppercase tracking-wider',
+                      col.headerClassName
+                    )}
+                  >
+                    {col.sortable ? (
+                      <button
+                        type="button"
+                        onClick={() => handleSortClick(col, i)}
+                        className="inline-flex items-center gap-1 transition-colors hover:text-text group"
+                      >
+                        <span>{col.header}</span>
+                        <SortIcon direction={isSorted ? sortState!.direction : null} />
+                      </button>
+                    ) : (
+                      col.header
+                    )}
+                  </th>
+                )
+              })}
+            </tr>
+          </thead>
+
+          <tbody>
+            {loading ? (
+              Array.from({ length: skeletonRows }).map((_, index) => (
+                <tr key={`skeleton-${index}`}>
+                  {Array.from({ length: colCount }).map((__, cellIndex) => (
+                    <td key={cellIndex} className="bg-surface px-2 py-3">
+                      <div className="h-4 animate-pulse rounded bg-neutral-100" />
+                    </td>
+                  ))}
+                </tr>
+              ))
+            ) : data.length === 0 ? (
+              <tr className=''>
+                <td
+                  colSpan={colCount || 1}
+                  className="py-8 text-center text-[12px] text-text-muted"
+                >
+                  {emptyMessage}
+                </td>
+              </tr>
+            ) : grouping && groupedData ? (
+              Array.from(groupedData.entries()).flatMap(([key, items], groupIndex) => {
+                const collapsed = grouping.collapsible !== false && isGroupCollapsed(key)
+                const rows = [
+                  <tr
+                    key={`group-${key}`}
+                    className={cn(
+                      'bg-neutral-100',
+                      grouping.collapsible !== false && 'cursor-pointer select-none',
+                      grouping.groupHeaderClassName
+                    )}
+                    onClick={() => grouping.collapsible !== false && toggleGroup(key)}
+                  >
+                    <td
+                      colSpan={colCount || 1}
+                      className="px-2.5 py-2 text-[12px] font-semibold text-text"
+                    >
+                      <div className="flex items-center gap-1.5">
+                        {grouping.collapsible !== false && (
+                          <span
+                            className={cn(
+                              'inline-block transition-transform',
+                              !collapsed && 'rotate-90'
+                            )}
+                          >
+                            <ChevronRight className="h-3.5 w-3.5 text-text-muted" />
+                          </span>
+                        )}
+                        <div>
+                          {grouping.renderGroupHeader
+                            ? grouping.renderGroupHeader(key, items)
+                            : `${key || '—'} (${items.length})`}
+                        </div>
+                      </div>
+                    </td>
+                  </tr>,
+                ]
+                if (!collapsed)
+                  items.forEach((item, i) => rows.push(renderRow(item, groupIndex + i)))
+                return rows
+              })
+            ) : (
+              sortedData.map((item, rowIndex) => renderRow(item, rowIndex))
+            )}
+          </tbody>
+        </table>
+
+      </div>
+
+      {pagination && data.length > 0 && !loading && (
+        <div className="w-full min-w-0 overflow-hidden bg-surface ">
+          <div className="w-full min-w-0 overflow-x-auto">{pagination}</div>
+        </div>
+      )}
+
+      {selectable &&
+        selectionToolbar?.({
+          selectedIds: Array.from(selected),
+          clearSelection,
+          count: selected.size,
+        })}
+    </Card>
+  )
 }

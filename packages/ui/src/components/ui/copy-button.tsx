@@ -34,7 +34,7 @@ function CopyButton({
       {...props}
       type="button"
       variant="ghost"
-      size="icon-sm"
+      size="icon-md"
       className={cn("text-text-muted hover:text-primary", className)}
       aria-label={copied ? copiedLabel : `${label} ${value}`}
       title={copied ? copiedLabel : label}

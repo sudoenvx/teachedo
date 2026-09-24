@@ -4,14 +4,12 @@ import { useNavigate } from 'react-router-dom'
 import {
   Badge,
   Button,
-  DataTable,
   IconButton,
   Input,
   Modal,
   Popover,
   PageHeader,
   Breadcrumb,
-  type DataTableColumn,
 } from '@teachedo/ui/legacy'
 import { useNotification } from '@/core/hooks/use_notification'
 import {
@@ -23,6 +21,7 @@ import {
   type AssistantInput,
 } from '../api/assistants'
 import { PermissionPicker } from '../components/permission-picker'
+import { DataTable, type DataTableColumn } from '@teachedo/ui/components'
 
 const emptyForm: AssistantInput = {
   fullName: '',

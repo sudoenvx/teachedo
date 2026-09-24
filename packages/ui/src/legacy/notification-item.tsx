@@ -59,7 +59,7 @@ export function NotificationItem({
         'group relative flex w-full items-start gap-2.5 rounded-md  border-transparent p-2.5 text-start transition-colors',
         'hover:bg-neutral-100',
         isInteractive && 'cursor-pointer',
-        !read && 'border-s-primary bg-neutral-100',
+        !read && 'bg-neutral-100',
         className,
       )}
     >

@@ -4,6 +4,7 @@ import { verifyPassword, hashPassword } from '../../core/utils/auth/password';
 import { generateToken } from '../../core/utils/auth/jwt';
 import {
     TeacherLoginInput,
+    ChangeTeacherPasswordInput,
     CreateTeacherInput,
     UpdateTeacherInput,
     QueryTeachersInput,
@@ -53,6 +54,7 @@ export class TeacherService {
                 subjectSpecialization: teacher.subjectSpecialization,
                 accountStatus: teacher.accountStatus,
                 profilePictureUrl: teacher.profilePictureUrl,
+                mustChangePassword: teacher.mustChangePassword,
                 onboardingRequired: !teacher.onboardingCompletedAt,
                 createdAt: teacher.createdAt,
             },
@@ -84,6 +86,11 @@ export class TeacherService {
             }
         }
 
+        const customSubdomain = input.customSubdomain?.toLowerCase().trim() || null;
+        if (customSubdomain && await prisma.teacher.findFirst({ where: { customSubdomain } })) {
+            throw new DuplicationError('A teacher with this subdomain already exists.');
+        }
+
         const hashedPassword = await hashPassword(input.password);
 
         const teacher = await prisma.teacher.create({
@@ -96,6 +103,8 @@ export class TeacherService {
                 subjectSpecialization: input.subjectSpecialization ? input.subjectSpecialization.trim() : null,
                 accountStatus: input.accountStatus || 'active',
                 profilePictureUrl: input.profilePictureUrl || null,
+                pricePerStudent: input.pricePerStudent ?? null,
+                customSubdomain,
             },
             select: {
                 id: true,
@@ -106,6 +115,11 @@ export class TeacherService {
                 subjectSpecialization: true,
                 accountStatus: true,
                 profilePictureUrl: true,
+                mustChangePassword: true,
+                famousName: true,
+                teachingMode: true,
+                pricePerStudent: true,
+                customSubdomain: true,
                 onboardingCompletedAt: true,
                 createdAt: true,
             },
@@ -125,6 +139,101 @@ export class TeacherService {
         }
 
         return teacher;
+    }
+
+    public async changePassword(id: number, input: ChangeTeacherPasswordInput) {
+        const teacher = await prisma.teacher.findUnique({ where: { id } });
+        if (!teacher) throw new NotFoundError('Teacher not found.');
+        if (!(await verifyPassword(input.currentPassword, teacher.password))) {
+            throw new AuthError('The temporary password is incorrect.');
+        }
+
+        await prisma.teacher.update({
+            where: { id },
+            data: { password: await hashPassword(input.newPassword), mustChangePassword: false },
+        });
+    }
+
+    public async isSubdomainAvailable(subdomain: string, teacherId?: number) {
+        const normalized = subdomain.toLowerCase().trim();
+        const existing = await prisma.teacher.findFirst({
+            where: { customSubdomain: normalized, ...(teacherId ? { id: { not: teacherId } } : {}) },
+            select: { id: true },
+        });
+        return { subdomain: normalized, available: !existing };
+    }
+
+    public async completeOnboardingV2(id: number, input: CompleteTeacherOnboardingInput, profileImage?: Express.Multer.File) {
+        const policy = await policyService.getPublishedByKey(input.policyKey);
+        if (policy.version !== input.policyVersion) throw new AuthError('The onboarding policy has changed. Please review it again.');
+        const existing = await prisma.teacher.findUnique({ where: { id } });
+        if (!existing) throw new NotFoundError('Teacher not found.');
+
+        const username = input.username.toLowerCase().trim();
+        if (username !== existing.username && await prisma.teacher.findUnique({ where: { username } })) {
+            throw new DuplicationError('Username is already taken.');
+        }
+        const email = input.email?.toLowerCase().trim() || null;
+        if (email && email !== existing.email && await prisma.teacher.findUnique({ where: { email } })) {
+            throw new DuplicationError('Email is already taken.');
+        }
+        const customSubdomain = input.customSubdomain?.toLowerCase().trim() || null;
+        if (customSubdomain !== existing.customSubdomain && customSubdomain && !(await this.isSubdomainAvailable(customSubdomain, id)).available) {
+            throw new DuplicationError('Subdomain is already taken.');
+        }
+
+        let savedProfilePictureUrl: string | undefined;
+        if (profileImage) savedProfilePictureUrl = await storageService.save(profileImage, 'teachers');
+
+        try {
+            return await prisma.$transaction(async (transaction) => {
+                const customSubjectNames = [...new Set(input.customSubjects.map((name) => name.trim()).filter(Boolean))];
+                const customSubjects = await Promise.all(customSubjectNames.map((name) => transaction.subject.upsert({
+                    where: { name },
+                    update: { isActive: true },
+                    create: { name, icon: 'book-open', isActive: true },
+                    select: { id: true },
+                })));
+                const subjectIds = [...new Set([...input.subjectIds, ...customSubjects.map((subject) => subject.id)])];
+                const subjectCount = await transaction.subject.count({ where: { id: { in: subjectIds }, isActive: true } });
+                if (subjectCount !== subjectIds.length) throw new NotFoundError('One or more selected subjects were not found.');
+
+                const teacher = await transaction.teacher.update({
+                    where: { id },
+                    data: {
+                        fullName: input.fullName.trim(),
+                        username,
+                        email,
+                        phoneNumber: input.phoneNumber?.trim() || null,
+                        subjectSpecialization: input.subjectSpecialization?.trim() || null,
+                        famousName: input.famousName?.trim() || null,
+                        teachingMode: input.teachingMode,
+                          customSubdomain,
+                        ...(savedProfilePictureUrl ? { profilePictureUrl: savedProfilePictureUrl } : {}),
+                        onboardingCompletedAt: new Date(),
+                        onboardingPolicyKey: policy.key,
+                        onboardingPolicyVersion: policy.version,
+                    },
+                    select: { id: true, fullName: true, username: true, email: true, phoneNumber: true, subjectSpecialization: true, accountStatus: true, profilePictureUrl: true, famousName: true, teachingMode: true, customSubdomain: true, onboardingCompletedAt: true },
+                });
+
+                await transaction.studyStage.deleteMany({ where: { teacherId: id } });
+                await transaction.studyStage.createMany({ data: input.stages.map((stage, index) => ({
+                    teacherId: id,
+                    stageGroup: stage.stageGroup,
+                    gradeNumber: stage.gradeNumber,
+                    stageName: `${stage.stageGroup === 'primary' ? 'الابتدائي' : stage.stageGroup === 'preparatory' ? 'الإعدادي' : 'الثانوي'} - الصف ${stage.gradeNumber}`,
+                    orderingIndex: index + 1,
+                })) });
+                await transaction.teacherSubject.deleteMany({ where: { teacherId: id } });
+                await transaction.teacherSubject.createMany({ data: subjectIds.map((subjectId) => ({ teacherId: id, subjectId })) });
+
+                return teacher;
+            });
+        } catch (error) {
+            await storageService.delete(savedProfilePictureUrl);
+            throw error;
+        }
     }
 
     public async completeOnboarding(id: number, input: CompleteTeacherOnboardingInput) {
@@ -203,11 +312,13 @@ export class TeacherService {
                     subjectSpecialization: true,
                     accountStatus: true,
                     profilePictureUrl: true,
+                    pricePerStudent: true,
+                    customSubdomain: true,
                     createdAt: true,
                     _count: {
                         select: {
                             students: { where: { deletedAt: null } },
-                            studentGroups: { where: { deletedAt: null } },
+                            studentClasses: { where: { deletedAt: null } },
                             assistants: true,
                         },
                     },
@@ -227,8 +338,10 @@ export class TeacherService {
             status: (t.accountStatus || 'active').toUpperCase(),
             accountStatus: t.accountStatus || 'active',
             profilePictureUrl: t.profilePictureUrl,
+            pricePerStudent: t.pricePerStudent === null ? null : Number(t.pricePerStudent),
+            customSubdomain: t.customSubdomain,
             studentsCount: t._count.students,
-            groupsCount: t._count.studentGroups,
+            classesCount: t._count.studentClasses,
             assistantsCount: t._count.assistants,
             joinDate: t.createdAt.toISOString().split('T')[0],
             createdAt: t.createdAt,
@@ -261,22 +374,27 @@ export class TeacherService {
                 subjectSpecialization: true,
                 accountStatus: true,
                 profilePictureUrl: true,
+                mustChangePassword: true,
+                famousName: true,
+                teachingMode: true,
+                pricePerStudent: true,
+                customSubdomain: true,
                 onboardingCompletedAt: true,
                 createdAt: true,
                 _count: {
                     select: {
                         students: { where: { deletedAt: null } },
-                        studentGroups: { where: { deletedAt: null } },
+                        studentClasses: { where: { deletedAt: null } },
                         assistants: true,
                         classSessions: true,
                     },
                 },
-                studentGroups: {
+                studentClasses: {
                     where: { deletedAt: null },
                     select: {
                         id: true,
-                        groupName: true,
-                        standardMonthlyFee: true,
+                        className: true,
+                        monthlyPrice: true,
                         maxCapacity: true,
                         _count: { select: { enrollments: true } },
                     },
@@ -327,17 +445,22 @@ export class TeacherService {
             status: (teacher.accountStatus || 'active').toUpperCase(),
             accountStatus: teacher.accountStatus || 'active',
             profilePictureUrl: teacher.profilePictureUrl,
+            mustChangePassword: teacher.mustChangePassword,
+            famousName: teacher.famousName,
+            teachingMode: teacher.teachingMode,
+            pricePerStudent: teacher.pricePerStudent === null ? null : Number(teacher.pricePerStudent),
+            customSubdomain: teacher.customSubdomain,
             onboardingRequired: !teacher.onboardingCompletedAt,
             joinDate: teacher.createdAt.toISOString().split('T')[0],
             createdAt: teacher.createdAt,
             stats: {
                 totalStudents: teacher._count.students,
-                activeGroups: teacher._count.studentGroups,
+                activeClasses: teacher._count.studentClasses,
                 totalAssistants: teacher._count.assistants,
                 totalSessions: teacher._count.classSessions,
             },
             studyStages: await prisma.studyStage.findMany({ where: { teacherId: id }, orderBy: { orderingIndex: 'asc' }, select: { id: true, stageName: true } }),
-            groups: teacher.studentGroups,
+            classes: teacher.studentClasses,
             recentInvoices: teacher.billingCycles.map((b) => ({
                 id: `inv-${b.id}`,
                 month: b.billingMonth,
@@ -379,6 +502,15 @@ export class TeacherService {
             }
         }
 
+        const customSubdomain = input.customSubdomain === undefined
+            ? undefined
+            : input.customSubdomain?.toLowerCase().trim() || null;
+        const existingSubdomain = (existing as { customSubdomain?: string | null }).customSubdomain;
+        if (customSubdomain && customSubdomain !== existingSubdomain) {
+            const subdomainInUse = await prisma.teacher.findFirst({ where: { customSubdomain } });
+            if (subdomainInUse) throw new DuplicationError('Subdomain is already taken by another teacher.');
+        }
+
         const data: Record<string, unknown> = {};
         if (input.fullName !== undefined) data.fullName = input.fullName.trim();
         if (input.username !== undefined) data.username = input.username.toLowerCase().trim();
@@ -387,6 +519,8 @@ export class TeacherService {
         if (input.subjectSpecialization !== undefined) data.subjectSpecialization = input.subjectSpecialization ? input.subjectSpecialization.trim() : null;
         if (input.accountStatus !== undefined) data.accountStatus = input.accountStatus;
         if (input.profilePictureUrl !== undefined) data.profilePictureUrl = input.profilePictureUrl;
+        if (input.pricePerStudent !== undefined) data.pricePerStudent = input.pricePerStudent;
+        if (customSubdomain !== undefined) data.customSubdomain = customSubdomain;
         if (input.password) {
             data.password = await hashPassword(input.password);
         }
@@ -402,6 +536,8 @@ export class TeacherService {
                 subjectSpecialization: true,
                 accountStatus: true,
                 profilePictureUrl: true,
+                pricePerStudent: true,
+                customSubdomain: true,
                 createdAt: true,
             },
         });

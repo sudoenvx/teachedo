@@ -9,7 +9,7 @@ export function useCreateStudent() {
     body: ({ profileImage, parent, ...values }) => {
       const formData = new FormData()
       Object.entries(values).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) formData.append(key, String(value))
+        if (value !== undefined && value !== null) formData.append(key, key === 'classIds' ? JSON.stringify(value) : String(value))
       })
       if (parent) formData.append('parent', JSON.stringify(parent))
       if (profileImage) formData.append('profileImage', profileImage)
@@ -25,7 +25,7 @@ export function useUpdateStudent(studentId: number) {
     key: ['teacher-students'],
     body: ({ profileImage, ...values }) => {
       const formData = new FormData()
-      Object.entries(values).forEach(([key, value]) => { if (value !== undefined && value !== null) formData.append(key, String(value)) })
+      Object.entries(values).forEach(([key, value]) => { if (value !== undefined && value !== null) formData.append(key, key === 'classIds' ? JSON.stringify(value) : String(value)) })
       if (profileImage) formData.append('profileImage', profileImage)
       return formData
     },

@@ -1,8 +1,7 @@
 import { Calendar, Clock, DollarSign, ShieldAlert } from 'lucide-react'
 import { Controller, useFormContext } from 'react-hook-form'
 
-import { Card, CardContent, CardHeader, CardTitle, Field, FieldContent, FieldDescription, FieldTitle } from '@teachedo/ui/components'
-import { Switch } from '@teachedo/ui/legacy'
+import { Card, CardContent, CardHeader, CardTitle, Field, FieldContent, FieldDescription, FieldTitle, Switch } from '@teachedo/ui/components'
 
 import type { SettingsFormValues } from '../schemas/settings.schema'
 import { SettingsField } from './settings-field'

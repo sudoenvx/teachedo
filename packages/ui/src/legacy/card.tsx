@@ -1,177 +1,129 @@
-// card.tsx
-import { type KeyboardEvent, type ReactNode } from 'react'
-import { Title } from './typography'
-import { cn } from 'cn'
+import * as React from "react"
+import { cn } from "cn"
 
-type CardVariant = 'flat' | 'framed'
-
-export interface CardProps {
-  title?: ReactNode
-  description?: string
-  headerActions?: ReactNode
-  headerClassName?: string
-  footer?: ReactNode
-  footerClassName?: string
-  children: ReactNode
-  className?: string
-  bodyClassName?: string
-  onClick?: () => void
-  /** Adds shadow-card elevation. Off by default — flat sits directly on
-   *  the page, matching the borderless/shadowless look used elsewhere. */
-  elevated?: boolean
-  /** 'flat' = plain surface card (previous `Card`).
-   *  'framed' = padded outer frame around the content, like a window
-   *  chrome (previous `WindowCard`). */
-  variant?: CardVariant
-}
-
-function CardHeader({
-  title,
-  description,
-  headerActions,
-  headerClassName,
-  variant,
-}: Pick<CardProps, 'title' | 'description' | 'headerActions' | 'headerClassName'> & {
-  variant: CardVariant
-}) {
-  if (!title && !description && !headerActions) return null
-  return (
-    <header
-      className={cn(
-        'flex items-center justify-between gap-4 ',
-        variant === 'flat' ? ' px-2 py-1.5 border-b border-border text-primary-hover mb-1' : 'mb-2.5',
-        headerClassName
-      )}
-    >
-      {(title || description) && (
-        <div className="min-w-0 flex-1">
-          {title && (
-            <Title
-              className={cn(
-                'm-0 truncate font-medium leading-snug',
-                variant === 'flat'
-                  ? 'text-[12px] '
-                  : 'text-[12px] text-secondary-foreground'
-              )}
-            >
-              {title}
-            </Title>
-          )}
-          {description && (
-            <p className="m-0 mt-0.5 truncate text-[11px] leading-tight text-surface/70">
-              {description}
-            </p>
-          )}
-        </div>
-      )}
-      {headerActions && <div className="flex shrink-0 items-center gap-1.5">{headerActions}</div>}
-    </header>
-  )
-}
-
-function CardFooter({ footer, footerClassName }: Pick<CardProps, 'footer' | 'footerClassName'>) {
-  if (!footer) return null
-  return (
-    <footer
-      className={cn(
-        'flex items-center justify-end gap-2 bg-surface-secondary p-2.5',
-        footerClassName
-      )}
-    >
-      {footer}
-    </footer>
-  )
-}
-
-export function Card({
-  title,
-  description,
-  headerActions,
-  headerClassName,
-  footer,
-  footerClassName,
-  children,
+function Card({
   className,
-  bodyClassName,
-  onClick,
-  elevated = true,
-  variant = 'flat',
-}: CardProps) {
-  const isInteractive = !!onClick
-
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (!isInteractive) return
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault()
-      onClick!()
-    }
-  }
-
-  const interactiveProps = isInteractive
-    ? {
-      role: 'button' as const,
-      tabIndex: 0,
-      onClick,
-      onKeyDown: handleKeyDown,
-      className: cn(
-        'cursor-pointer transition-colors',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1'
-      ),
-    }
-    : {}
-
-  const content = (
-    <div
-      {...(variant === 'flat' ? interactiveProps : {})}
-      className={cn(
-        'w-full overflow-hidden rounded-lg! border border-border bg-surface',
-        // 'border border-border',
-        variant === 'flat' && elevated && 'shadow-none',
-        variant === 'flat' && interactiveProps.className,
-        variant === 'flat' && className
-      )}
-    >
-      <CardHeader
-        title={title}
-        description={description}
-        headerActions={headerActions}
-        headerClassName={headerClassName}
-        variant={variant}
-      />
-      <section className={cn('text-sm leading-relaxed text-text p-5!', bodyClassName)}>
-        {children}
-      </section>
-      {variant === 'flat' && <CardFooter footer={footer} footerClassName={footerClassName} />}
-    </div>
-  )
-
-  if (variant === 'flat') return content
-
-  // 'framed': the whole frame (header + content pane) is one click/focus
-  // target — no dead zone between header and body.
+  size = "default",
+  variant = "default",
+  ...props
+}: React.ComponentProps<"div"> & {
+  size?: "default" | "sm" | "md" | "xs"
+  variant?: "default" | "transparent" | "window"
+}) {
   return (
     <div
-      {...interactiveProps}
+      data-slot="card"
+      data-size={size}
+      data-variant={variant}
       className={cn(
-        'rounded-sm bg-secondary p-1.5',
-        elevated && 'shadow-card',
-        interactiveProps.className,
+        "group/card flex flex-col overflow-hidden rounded-lg bg-surface text-sm text-text",
+        "[--card-spacing:--spacing(3)] data-[size=xs]:[--card-spacing:--spacing(1.5)] data-[size=sm]:[--card-spacing:--spacing(2)] data-[size=md]:[--card-spacing:--spacing(4)]",
+        "data-[variant=transparent]:border-transparent data-[variant=transparent]:bg-transparent",
+        // Added: Extra inner container spacing for the window layout so the nested elements don't hit the outer border
+        "p-(--card-spacing)", 
+        "gap-(--card-spacing)", 
+        "data-[variant=window]:p-(--card-spacing)", 
+        "*:[img:first-child]:rounded-t-lg *:[img:last-child]:rounded-b-lg",
         className
       )}
-    >
-      <CardHeader
-        title={title}
-        description={description}
-        headerActions={headerActions}
-        headerClassName={headerClassName}
-        variant={variant}
-      />
-      <div className="overflow-hidden rounded-sm bg-surface">
-        <section className={cn('text-sm leading-relaxed text-text', bodyClassName ?? 'p-3')}>
-          {children}
-        </section>
-        <CardFooter footer={footer} footerClassName={footerClassName} />
-      </div>
-    </div>
+      {...props}
+    />
   )
+}
+
+function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-header"
+      className={cn(
+        "group/card-header @container/card-header grid auto-rows-min items-start gap-0.5 rounded-t-lg  has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto]",
+        // "[.border-b]:pb-(--card-spacing)",
+        // "border-b border-border",
+        // Added: Override top corner rounding if nested inside a window layout padding
+        "group-data-[variant=window]/card:bg-surface group-data-[variant=window]/card:rounded-lg",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-title"
+      className={cn(
+        "text-text-secondary text-base font-bold group-data-[size=sm]/card:text-sm group-data-[size=xs]/card:text-sm group-[&:not(:has([data-slot=card-description]))]/card-header:text-xs",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-description"
+      className={cn(
+        "text-sm group-data-[size=xs]/card:text-2xs text-muted-foreground",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function CardAction({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-action"
+      className={cn(
+        "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function CardContent({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-content"
+      className={cn(
+        "",
+        // Updated: Added rounded corners and removed the top-padding killer for the window variant
+        "group-data-[variant=window]/card:bg-muted/50 group-data-[variant=window]/card:rounded-md",
+        // "group-has-data-[slot=card-header]/card:group-data-[variant=default]/card:pt-0", 
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-footer"
+      className={cn(
+        "flex items-center rounded-b-lg ",
+        // Added: Override bottom corners rounding for window layouts
+        "group-data-[variant=window]/card:bg-surface group-data-[variant=window]/card:rounded-lg group-data-[variant=window]/card:border-t-0",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardAction,
+  CardDescription,
+  CardContent,
 }

@@ -65,10 +65,10 @@ export type LayoutIcon = ComponentType<{ className?: string; strokeWidth?: numbe
 const popoverSurface = 'border border-border-subtle bg-surface text-text shadow-elevated'
 
 const itemBase =
-  'flex items-center rounded-md text-[13px] font-medium transition-colors ' +
+  'flex items-center rounded-[calc(var(--radius-lg)-3px)] text-[13px] font-medium transition-colors ' +
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary'
 const itemActive = 'bg-surface text-text'
-const itemIdle = 'text-neutral-300 hover:bg-white/15 hover:text-neutral-300'
+const itemIdle = 'text-neutral-300 hover:bg-neutral-700 hover:text-neutral-300'
 
 function useFlyoutSide(): 'left' | 'right' {
   // The sidebar sits at the inline start, so its flyouts open toward the inline end.
@@ -107,7 +107,7 @@ export function Layout({
           <div
             data-slot="layout"
             dir={direction}
-            className={cn('flex h-dvh flex-col gap-4 overflow-hidden bg-canvas p-4 text-text', className)}
+            className={cn('flex h-dvh flex-col gap-4 overflow-hidden bg-canvas text-text', className)}
             style={
               {
                 '--layout-sidebar-width': '16rem',
@@ -470,8 +470,8 @@ export function LayoutIconButton({ className, type = 'button', ...props }: Compo
       type={type}
       data-slot="layout-icon-button"
       className={cn(
-        'relative inline-flex size-7 shrink-0 items-center justify-center rounded-sm  text-neutral-800',
-        'transition-colors duration-200 hover:bg-neutral-300 ',
+        'relative inline-flex size-7 shrink-0 items-center justify-center rounded-sm  text-text-muted',
+        'transition-colors duration-200 hover:bg-neutral-200 hover:text-text',
         'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
         className
       )}
@@ -526,7 +526,7 @@ export function LayoutHeader({ className, ...props }: ComponentProps<'header'>) 
     <header
       data-slot="layout-header"
       className={cn(
-        'flex shrink-0 items-center gap-2 rounded-md bg-neutral-800 p-2',
+        'flex shrink-0 items-center gap-2 bg-surface shadow-card p-2',
         className
       )}
       {...props}
@@ -548,7 +548,7 @@ export function LayoutContent({ className, ...props }: ComponentProps<'main'>) {
   return (
     <main
       data-slot="layout-content"
-      className={cn('min-h-0 flex-1 overflow-y-auto', className)}
+      className={cn('min-h-0 flex-1 overflow-y-auto scrollbar-none ', className)}
       {...props}
     />
   )
@@ -557,7 +557,7 @@ export function LayoutBody({ className, ...props }: ComponentProps<'div'>) {
   return (
     <div
       data-slot="layout-body"
-      className={cn('flex min-h-0 flex-1 gap-4', className)}
+      className={cn('flex min-h-0 px-3 pb-3 flex-1 gap-4', className)}
       {...props}
     />
   )

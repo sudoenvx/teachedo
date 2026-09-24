@@ -4,6 +4,7 @@ export interface TeacherUser {
   username: string
   email?: string | null
   accountStatus: string
+  mustChangePassword?: boolean
   onboardingRequired?: boolean
 }
 

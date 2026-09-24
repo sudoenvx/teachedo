@@ -12,6 +12,7 @@ import {
   CommandList,
   CommandSeparator,
   CommandShortcut,
+  Kbd,
 } from '@teachedo/ui/components'
 
 const SHORTCUT = 'Mod+K'
@@ -94,13 +95,13 @@ export function CommandMenuTrigger({
     <button
       type="button"
       onClick={onClick}
-      className="flex h-7 w-full max-w-64 items-center gap-2 rounded-sm border border-white/10 bg-white/5 px-2.5 text-[12px] text-neutral-400 transition-colors hover:bg-white/10 hover:text-neutral-300"
+      className="flex h-7 w-full max-w-64 items-center gap-2 rounded-sm bg-neutral-200/60 px-1 text-[12px] transition-colors hover:border-neutral-300 "
     >
       <Search className="size-3.5 shrink-0" strokeWidth={1.8} />
-      <span className="flex-1 truncate text-start">بحث سريع...</span>
-      <kbd className="rounded-xs border border-white/10 bg-white/5 px-1 font-mono text-[10px]">
+      <span className="flex-1 text-start text-xs/relaxed">بحث سريع</span>
+      <Kbd className="rounded-xs px-2 py-0.5 font-mono text-[10px]">
         {shortcutLabel}
-      </kbd>
+      </Kbd>
     </button>
   )
 }

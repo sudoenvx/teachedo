@@ -20,7 +20,7 @@
         "db:reset": "prisma migrate reset",
         "db:seed": "prisma db seed",
         "db:studio": "prisma studio",
-        "build": "npx db:generate && tsup"
+        "build": "prisma generate && tsup"
     },
     "devDependencies": {
         "@teachedo/tsconfig": "workspace:*",

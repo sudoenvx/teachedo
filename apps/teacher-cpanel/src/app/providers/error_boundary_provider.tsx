@@ -25,7 +25,7 @@ type ErrorBoundaryState = {
 };
 
 class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  state: ErrorBoundaryState = {
+  override state: ErrorBoundaryState = {
     hasError: false,
     error: null,
   };
@@ -34,7 +34,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error("Unhandled error in dashboard UI:", error, errorInfo);
   }
 
@@ -43,7 +43,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
     this.props.onReset();
   };
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       return (
         <div

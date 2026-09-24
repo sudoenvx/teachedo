@@ -13,8 +13,8 @@ import {
   Wallet,
 } from 'lucide-react'
 
-import { Body, Breadcrumb, PageHeader, Text, Title } from '@teachedo/ui/legacy'
-import { Button, Card, CardContent } from '@teachedo/ui/components'
+import { Body, Breadcrumb, Text, Title } from '@teachedo/ui/legacy'
+import { Button, Card, CardContent, PageHeader } from '@teachedo/ui/components'
 
 import { useGetSettings } from '../api/settings.queries'
 import { useUpdateSettings } from '../api/settings.mutations'
@@ -22,7 +22,7 @@ import { settingsSchema, type SettingsFormValues } from '../schemas/settings.sch
 import { BillingTab } from '../tabs/billing-tab'
 import { GeneralTab } from '../tabs/general-tab'
 import { NotificationsTab } from '../tabs/notifications-tab'
-import { cn } from '@/core/utils'
+import { cn } from 'cn'
 
 type SettingsTab = 'billing' | 'general' | 'notifications'
 
@@ -90,7 +90,7 @@ export default function SettingsPage() {
           description="إدارة قواعد التسعير، دورات الفوترة للمستأجرين، وبيانات هويتكم التجارية."
           actions={(
             <>
-              <Button type="button" variant="outline" onClick={() => navigate(-1)} disabled={isSaving}>
+              <Button type="button" variant="neutral-muted" onClick={() => navigate(-1)} disabled={isSaving}>
                 إلغاء ورجوع
               </Button>
               <Button type="submit" disabled={isSaving}>
@@ -111,9 +111,9 @@ export default function SettingsPage() {
         )}
 
         <div className="flex flex-col items-start gap-6 md:flex-row">
-          <Card className="">
+          <Card size='sm'>
             <CardContent
-              className='shrink-0 flex-col gap-1 overflow-auto max-md:flex-row md:w-64 w-full flex p-2'
+              className='shrink-0 flex-col gap-1 overflow-auto max-md:flex-row md:w-64 w-full flex'
             >
               {tabItems.map((tab) => {
               const Icon = tab.icon
@@ -124,13 +124,13 @@ export default function SettingsPage() {
                   type="button"
                   onClick={() => setActiveTab(tab.key)}
                   className={cn(
-                    'flex min-w-fit flex-col items-start rounded-sm px-2.5 py-1.5 text-right transition-colors duration-200',
-                    isActive ? 'bg-muted text-muted-foreground' : 'hover:bg-neutral-100',
+                    'flex min-w-fit flex-col items-start rounded-[calc(var(--radius-md)-2px)] px-2.5 py-2 text-right transition-colors duration-200',
+                    isActive ? 'bg-secondary text-secondary-foreground' : 'hover:bg-neutral-100',
                   )}
                 >
                   <span className="flex items-center gap-2">
-                    <Icon size={18} strokeWidth={2} className={isActive ? 'text-primary-subtle-foreground' : 'text-text'} />
-                    <Body size="small" className={cn('m-0 font-medium', isActive ? 'text-primary-subtle-foreground' : 'text-text')}>
+                    <Icon size={18} strokeWidth={2} className={isActive ? 'text-secondary-foreground' : 'text-text'} />
+                    <Body size="small" className={cn('m-0 font-medium', isActive ? 'text-secondary-foreground' : 'text-text')}>
                       {tab.label}
                     </Body>
                   </span>

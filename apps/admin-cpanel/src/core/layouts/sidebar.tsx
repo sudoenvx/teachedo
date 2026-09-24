@@ -9,7 +9,7 @@ import {
   LayoutSidebarTrigger
 } from '@teachedo/ui/components'
 import { Avatar, AvatarImage } from '@teachedo/ui/components'
-import { UserMenu } from './user-menu'
+import { AdminMenu } from '@/core/layouts/admin-menu'
 
 export function Sidebar() {
   return (
@@ -53,7 +53,7 @@ export function Sidebar() {
       </LayoutSidebarContent>
 
       <LayoutSidebarFooter>
-        <UserMenu />
+        <AdminMenu />
       </LayoutSidebarFooter>
     </LayoutSidebar>
   )

@@ -1,59 +1,81 @@
-model StudentGroup {
+enum SessionType {
+  regular
+  extra_revision
+  final_revision
+  quiz_only
+  mock_exam
+  assessment
+  other
+}
+
+enum GroupTier {
+  normal
+  vip
+}
+
+enum DeliveryMode {
+  offline
+  online
+  hybrid
+}
+
+enum StudentAttendanceType {
+  in_person
+  online_streaming
+  hybrid_both
+}
+
+model StudentClass {
   id                 Int       @id @default(autoincrement())
   teacherId          Int       @map("teacher_id")
   teacher            Teacher   @relation(fields: [teacherId], references: [id])
-  groupName          String    @map("group_name") @db.VarChar(100)
-  studyStageId       Int?      @map("study_stage_id")
-  studyStage         StudyStage? @relation(fields: [studyStageId], references: [id])
-  standardMonthlyFee Decimal?  @map("standard_monthly_fee") @db.Decimal(10, 2)
-  scheduleDescription String?   @map("schedule_description") @db.VarChar(255)
-  maxCapacity        Int?      @map("max_capacity")
-  deletedAt          DateTime? @map("deleted_at") // soft delete
-  createdAt          DateTime  @default(now()) @map("created_at")
+  className       String    @map("class_name") @db.VarChar(100)
+  gradeLevel      String    @map("grade_level") @db.VarChar(100)
+  centerId        Int?      @map("center_id")
+  center          Center?   @relation(fields: [centerId], references: [id])
+  sessionPrice    Decimal?  @map("session_price") @db.Decimal(10, 2)
+  monthlyPrice    Decimal?  @map("monthly_price") @db.Decimal(10, 2)
+  maxCapacity     Int?      @map("max_capacity")
+  groupTier       GroupTier @default(normal) @map("group_tier")
+  deliveryMode    DeliveryMode @default(offline) @map("delivery_mode")
+  deletedAt       DateTime? @map("deleted_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
 
-  enrollments     GroupEnrollment[]
-  schedules       GroupSchedule[]
+  enrollments     ClassEnrollment[]
   classSessions   ClassSession[]
   lessons         Lesson[]
 //   quizzes         Quiz[]
   studentInvoices StudentInvoice[]
 
-  @@map("student_groups")
+  @@map("student_classes")
 }
 
-model GroupEnrollment {
-  groupId        Int          @map("group_id")
-  group          StudentGroup @relation(fields: [groupId], references: [id])
+model ClassEnrollment {
+  classId        Int          @map("class_id")
+  studentClass   StudentClass @relation(fields: [classId], references: [id])
   studentId      Int          @map("student_id")
   student        Student      @relation(fields: [studentId], references: [id])
   enrollmentDate DateTime?    @map("enrollment_date") @db.Date
   status         String       @default("active") @db.VarChar(20) // active, left, paused
   leftAt         DateTime?    @map("left_at") @db.Date
-  customPrice    Decimal?     @map("custom_price") @db.Decimal(10, 2) // NULL => pays group.standardMonthlyFee
+  customPrice    Decimal?     @map("custom_price") @db.Decimal(10, 2)
+  studentAttendanceType StudentAttendanceType @default(in_person) @map("student_attendance_type")
 
-  @@id([groupId, studentId])
-  @@map("group_enrollments")
-}
-
-model GroupSchedule {
-  id              Int          @id @default(autoincrement())
-  groupId         Int          @map("group_id")
-  group           StudentGroup @relation(fields: [groupId], references: [id])
-  dayOfWeek       DayOfWeek    @map("day_of_week")
-  startTime       DateTime     @map("start_time") @db.Time()
-  durationMinutes Int          @default(60) @map("duration_minutes")
-
-  @@map("group_schedules")
+  @@id([classId, studentId])
+  @@map("class_enrollments")
 }
 
 model ClassSession {
   id                 Int          @id @default(autoincrement())
-  groupId            Int          @map("group_id")
-  group              StudentGroup @relation(fields: [groupId], references: [id])
+  classId            Int          @map("class_id")
+  studentClass       StudentClass @relation(fields: [classId], references: [id])
   teacherId          Int          @map("teacher_id")
   teacher            Teacher      @relation(fields: [teacherId], references: [id])
   sessionDate        DateTime     @map("session_date") @db.Date
-  startTime          DateTime?    @map("start_time") @db.Time()
+  sessionType        SessionType  @default(regular) @map("session_type")
+  scheduledStartTime DateTime?    @map("scheduled_start_time") @db.Time()
+  durationMinutes    Int          @default(60) @map("duration_minutes")
+  isMandatory        Boolean      @default(true) @map("is_mandatory")
   topic              String?      @db.VarChar(255)
   status             String?      @db.VarChar(20) // scheduled, completed, cancelled, postponed...
   cancellationReason String?      @map("cancellation_reason") @db.VarChar(255)

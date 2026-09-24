@@ -37,7 +37,7 @@
 
 // // The resolved, concrete list of who actually got it — computed once at
 // // send time by expanding audienceScope/audienceFilter (e.g. looking up
-// // GroupEnrollment for the 'groups' scope). Also tracks per-recipient
+// // ClassEnrollment for the 'classes' scope). Also tracks per-recipient
 // // delivery/read state.
 // model NotificationRecipient {
 //   id             Int           @id @default(autoincrement())

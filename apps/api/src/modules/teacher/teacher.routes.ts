@@ -11,6 +11,8 @@ import {
     getLatestTeachersHandler,
     updateTeacherStatusHandler,
     completeTeacherOnboardingHandler,
+    changeTeacherPasswordHandler,
+    checkTeacherSubdomainHandler,
 } from './teacher.controller';
 import { validate } from '../../core/middlewares/validate.mw';
 import { requireAuth, requireRole } from '../../core/middlewares/require-auth';
@@ -22,6 +24,8 @@ import {
     queryTeachersSchema,
     teacherIdParamSchema,
     completeTeacherOnboardingSchema,
+    changeTeacherPasswordSchema,
+    teacherSubdomainAvailabilitySchema,
 } from './teacher.schema';
 import multer from 'multer';
 
@@ -38,10 +42,12 @@ TeacherRouter.post('/login', validate(teacherLoginSchema), loginTeacherHandler);
 TeacherRouter.post('/auth/login', validate(teacherLoginSchema), loginTeacherHandler);
 TeacherRouter.post('/logout', logoutTeacherHandler);
 TeacherRouter.post('/auth/logout', logoutTeacherHandler);
+TeacherRouter.patch('/password', requireAuth, requireRole('teacher'), validate(changeTeacherPasswordSchema), changeTeacherPasswordHandler);
 
 // Teacher self-management
 TeacherRouter.get('/me', requireAuth, requireRole('teacher'), getTeacherMeHandler);
-TeacherRouter.patch('/onboarding', requireAuth, requireRole('teacher'), validate(completeTeacherOnboardingSchema), completeTeacherOnboardingHandler);
+TeacherRouter.patch('/onboarding', requireAuth, requireRole('teacher'), teacherImageUpload.single('profileImage'), validate(completeTeacherOnboardingSchema), completeTeacherOnboardingHandler);
+TeacherRouter.get('/subdomain/availability', requireAuth, requireRole('teacher'), validate(teacherSubdomainAvailabilitySchema), checkTeacherSubdomainHandler);
 
 // Public / Admin management routes
 TeacherRouter.get('/latest', getLatestTeachersHandler);

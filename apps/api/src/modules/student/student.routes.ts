@@ -50,6 +50,6 @@ StudentRouter.put('/:id', requireAuth, requireRole('teacher', 'assistant'), requ
 StudentRouter.delete('/:id', requireAuth, requireRole('teacher', 'assistant'), requirePermission('students_manage'), validate(studentIdParamSchema), deleteStudentHandler);
 StudentRouter.post('/:id/regenerate-card', requireAuth, requireRole('teacher', 'assistant'), requirePermission('students_manage'), validate(studentIdParamSchema), regenerateCredentialsHandler);
 StudentRouter.post('/:id/enroll', requireAuth, requireRole('teacher', 'assistant'), requirePermission('students_manage'), validate(enrollStudentSchema), enrollStudentHandler);
-StudentRouter.delete('/:id/enroll/:groupId', requireAuth, requireRole('teacher', 'assistant'), requirePermission('students_manage'), validate(unenrollStudentParamSchema), unenrollStudentHandler);
+StudentRouter.delete('/:id/enroll/:classId', requireAuth, requireRole('teacher', 'assistant'), requirePermission('students_manage'), validate(unenrollStudentParamSchema), unenrollStudentHandler);
 
 export { StudentRouter };

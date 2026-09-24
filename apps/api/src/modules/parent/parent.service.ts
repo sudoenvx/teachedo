@@ -251,10 +251,10 @@ export class ParentService {
                                 stageName: true,
                             },
                         },
-                        groupEnrollments: {
+                        classEnrollments: {
                             where: { status: 'active' },
                             include: {
-                                group: true,
+                                studentClass: true,
                             },
                         },
                         invoices: {

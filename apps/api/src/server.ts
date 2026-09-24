@@ -1,6 +1,7 @@
-import { app } from './app';
+import { httpServer } from './app';
 import { AppConfig } from './core/config/server.config';
 import { prisma } from './core/database/prisma.client'; // Import prisma
+import { initializeSocket } from './core/services/socket.service';
 import logger from './core/utils/logger';
 import { Server } from 'http';
 
@@ -35,7 +36,8 @@ async function main() {
     await prisma.$connect();
     logger.info("✅ Connected to Database");
 
-    const server = app.listen(AppConfig.port, () => {
+    initializeSocket(httpServer)
+    const server = httpServer.listen(AppConfig.port, () => {
       logger.info(`🚀 Server running on http://localhost:${AppConfig.port}`);
     });
 
