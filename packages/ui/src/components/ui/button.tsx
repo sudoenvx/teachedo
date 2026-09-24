@@ -28,7 +28,7 @@ const buttonVariants = cva(
         xs: "py-0.5 px-1 rounded-sm text-[0.625rem]/none gap-1 has-data-[icon=inline-end]:pr-1 has-data-[icon=inline-start]:pl-1 [&_svg:not([class*='size-'])]:size-2.5",
         
         // py-1 (4px) | px-2 (8px)
-        sm: "py-1.5 px-2 rounded-sm text-[11px]/none gap-1 has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
+        sm: "py-1.5 px-2 rounded-[calc(var(--radius-md)-0.1rem)] text-[11px]/none gap-1 has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
         
         // py-2 (8px) | px-4 (16px)
         lg: "py-3 px-4 text-sm/none gap-1 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 [&_svg:not([class*='size-'])]:size-4",

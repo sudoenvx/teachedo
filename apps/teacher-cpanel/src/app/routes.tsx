@@ -1,4 +1,4 @@
-import { LayoutDashboard, Settings } from "lucide-react"
+import { CalendarClock, LayoutDashboard, Settings } from "lucide-react"
 import { type IconType } from "react-icons"
 import { useLocation } from "react-router-dom"
 
@@ -24,7 +24,13 @@ export const Routes: Record<string, AppRoute> = {
         label: "الاعدادات",
         description: "تحكم في اعدادات النظام",
         icon: Settings,
-    }
+    },
+    "/schedules": {
+        path: "/schedules",
+        label: "المواعيد الأسبوعية",
+        description: "إدارة جدول الحصص وإعادة جدولة حصة واحدة",
+        icon: CalendarClock,
+    },
 }
 
 export const useRouteContext = () => {

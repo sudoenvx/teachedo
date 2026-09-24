@@ -31,3 +31,48 @@ export const createClassSessionHandler = async (req: Request, res: Response) => 
         'Class session created successfully.',
     );
 };
+
+export const getClassSessionsHandler = async (req: Request, res: Response) => {
+    ApiResponse.success(res, await classService.listSessions(teacherIdFromRequest(req), req.query as never));
+};
+
+export const rescheduleClassSessionHandler = async (req: Request, res: Response) => {
+    ApiResponse.success(
+        res,
+        await classService.rescheduleSession(
+            Number(req.params.id),
+            Number(req.params.sessionId),
+            teacherIdFromRequest(req),
+            req.body,
+        ),
+        'Class session rescheduled successfully.',
+    );
+};
+
+export const startClassSessionHandler = async (req: Request, res: Response) => {
+    ApiResponse.success(
+        res,
+        await classService.startSession(Number(req.params.id), Number(req.params.sessionId), teacherIdFromRequest(req)),
+        'Class session started successfully.',
+    );
+};
+
+export const getLiveClassSessionHandler = async (req: Request, res: Response) => {
+    ApiResponse.success(
+        res,
+        await classService.getLiveSession(Number(req.params.id), Number(req.params.sessionId), teacherIdFromRequest(req)),
+    );
+};
+
+export const recordClassSessionAttendanceHandler = async (req: Request, res: Response) => {
+    ApiResponse.success(
+        res,
+        await classService.recordAttendance(
+            Number(req.params.id),
+            Number(req.params.sessionId),
+            teacherIdFromRequest(req),
+            req.body,
+        ),
+        'Attendance recorded successfully.',
+    );
+};

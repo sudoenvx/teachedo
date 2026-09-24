@@ -18,6 +18,8 @@ import AssistantEditPage from '@/modules/assistants/pages/assistant-edit-page'
 import CentersPage from '@/modules/centers/pages/centers-page'
 import CenterFormPage from '@/modules/centers/pages/center-form-page'
 import CenterProfilePage from '@/modules/centers/pages/center-profile-page'
+import SchedulesPage from '@/modules/schedules/pages/schedules-page'
+import LiveDeskPage from '@/modules/sessions/pages/live-desk-page'
 
 
 const router = createBrowserRouter([
@@ -61,6 +63,8 @@ const router = createBrowserRouter([
       { path: 'centers/:id/edit', element: <CenterFormPage /> },
       { path: 'assistants', element: <AssistantsPage /> },
       { path: 'assistants/:id/edit', element: <AssistantEditPage /> },
+      { path: 'schedules', element: <SchedulesPage /> },
+      { path: 'classes/:classId/sessions/:sessionId/live', element: <LiveDeskPage /> },
       ] },
     ],
   },

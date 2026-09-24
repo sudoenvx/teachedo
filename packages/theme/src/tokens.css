@@ -91,7 +91,9 @@
   --primary-subtle: oklch(from var(--primary) calc(l + 0.35) calc(c * 0.22) h);
   --primary-subtle-foreground: oklch(18.1% 0.014 284.9);
 
-  --accent-subtle: oklch(from var(--accent) calc(l + 0.35) calc(c * 0.22) h);
+  /* --accent-subtle: oklch(from var(--accent) calc(l + 0.35) calc(c * 0.22) h); */
+  --accent-subtle: oklch(89.455% 0.02458 288.383);
+  --accent-subtle-light: oklch(91.023% 0.01632 285.985);
   --accent-subtle-foreground: oklch(18.1% 0.014 284.9);
 
   --destructive-subtle: oklch(from var(--destructive) calc(l + 0.30) calc(c * 0.17) h);

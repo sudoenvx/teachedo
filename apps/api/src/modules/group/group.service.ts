@@ -1,6 +1,13 @@
 import { prisma } from '../../core/database/prisma.client';
 import { NotFoundError } from '../../shared/contracts/api-error';
-import type { CreateClassInput, CreateClassSessionInput, UpdateClassInput } from './group.schema';
+import type {
+    ClassSessionsQueryInput,
+    CreateClassInput,
+    CreateClassSessionInput,
+    RecordSessionAttendanceInput,
+    RescheduleClassSessionInput,
+    UpdateClassInput,
+} from './group.schema';
 
 function toDateOnly(value: string) {
     return new Date(`${value}T00:00:00.000Z`);
@@ -12,6 +19,13 @@ function toTime(value?: string | null) {
     const result = new Date(0);
     result.setUTCHours(hours, minutes, 0, 0);
     return result;
+}
+
+function dateRange(query: ClassSessionsQueryInput) {
+    return {
+        ...(query.from ? { gte: toDateOnly(query.from) } : {}),
+        ...(query.to ? { lte: toDateOnly(query.to) } : {}),
+    };
 }
 
 export class ClassService {
@@ -56,7 +70,6 @@ export class ClassService {
                 },
                 classSessions: {
                     orderBy: { sessionDate: 'desc' },
-                    take: 30,
                     select: {
                         id: true,
                         sessionDate: true,
@@ -149,6 +162,184 @@ export class ClassService {
         await this.findById(id, teacherId);
         await prisma.studentClass.update({ where: { id }, data: { deletedAt: new Date() } });
         return { message: 'Class deleted successfully.' };
+    }
+
+    public async listSessions(teacherId: number, query: ClassSessionsQueryInput) {
+        const sessions = await prisma.classSession.findMany({
+            where: {
+                teacherId,
+                status: { not: 'cancelled' },
+                ...(query.from || query.to ? { sessionDate: dateRange(query) } : {}),
+            },
+            orderBy: [{ sessionDate: 'asc' }, { scheduledStartTime: 'asc' }],
+            select: {
+                id: true,
+                classId: true,
+                sessionDate: true,
+                sessionType: true,
+                scheduledStartTime: true,
+                durationMinutes: true,
+                isMandatory: true,
+                topic: true,
+                status: true,
+                isCompleted: true,
+                attendance: {
+                    where: { status: { in: ['present', 'late'] } },
+                    select: { studentId: true },
+                },
+                studentClass: {
+                    select: {
+                        className: true,
+                        gradeLevel: true,
+                        groupTier: true,
+                        deliveryMode: true,
+                        center: { select: { name: true } },
+                        _count: {
+                            select: {
+                                enrollments: {
+                                    where: { status: 'active', student: { deletedAt: null } },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        return sessions.map(({ attendance, studentClass, ...session }) => {
+            const { _count, ...group } = studentClass;
+            return {
+                ...session,
+                checkedInCount: attendance.length,
+                totalExpected: _count.enrollments,
+                studentClass: group,
+            };
+        });
+    }
+
+    private async findSession(classId: number, sessionId: number, teacherId: number) {
+        const session = await prisma.classSession.findFirst({
+            where: { id: sessionId, classId, teacherId },
+            select: { id: true, classId: true, teacherId: true },
+        });
+        if (!session) throw new NotFoundError('Class session not found.');
+        return session;
+    }
+
+    public async rescheduleSession(
+        classId: number,
+        sessionId: number,
+        teacherId: number,
+        input: RescheduleClassSessionInput,
+    ) {
+        await this.findSession(classId, sessionId, teacherId);
+        return prisma.classSession.update({
+            where: { id: sessionId },
+            data: {
+                sessionDate: toDateOnly(input.sessionDate),
+                ...(input.scheduledStartTime !== undefined
+                    ? { scheduledStartTime: toTime(input.scheduledStartTime) }
+                    : {}),
+            },
+        });
+    }
+
+    public async startSession(classId: number, sessionId: number, teacherId: number) {
+        await this.findSession(classId, sessionId, teacherId);
+        return prisma.classSession.update({
+            where: { id: sessionId },
+            data: { status: 'live', isCompleted: false },
+        });
+    }
+
+    public async getLiveSession(classId: number, sessionId: number, teacherId: number) {
+        await this.findSession(classId, sessionId, teacherId);
+        return prisma.classSession.findUniqueOrThrow({
+            where: { id: sessionId },
+            select: {
+                id: true,
+                classId: true,
+                sessionDate: true,
+                sessionType: true,
+                scheduledStartTime: true,
+                durationMinutes: true,
+                isMandatory: true,
+                topic: true,
+                status: true,
+                isCompleted: true,
+                studentClass: {
+                    select: {
+                        className: true,
+                        gradeLevel: true,
+                        groupTier: true,
+                        deliveryMode: true,
+                        center: { select: { name: true } },
+                        enrollments: {
+                            where: { status: 'active', student: { deletedAt: null } },
+                            select: {
+                                student: {
+                                    select: { id: true, fullName: true, studentCode: true, profilePictureUrl: true },
+                                },
+                                studentAttendanceType: true,
+                            },
+                            orderBy: { student: { fullName: 'asc' } },
+                        },
+                    },
+                },
+                attendance: {
+                    orderBy: { recordedAt: 'desc' },
+                    select: {
+                        id: true,
+                        studentId: true,
+                        status: true,
+                        excuseReason: true,
+                        recordedAt: true,
+                        student: { select: { fullName: true, studentCode: true } },
+                    },
+                },
+            },
+        });
+    }
+
+    public async recordAttendance(
+        classId: number,
+        sessionId: number,
+        teacherId: number,
+        input: RecordSessionAttendanceInput,
+    ) {
+        await this.findSession(classId, sessionId, teacherId);
+        const student = await prisma.student.findFirst({
+            where: {
+                teacherId,
+                deletedAt: null,
+                ...(input.studentId
+                    ? { id: input.studentId }
+                    : input.studentCode
+                        ? { studentCode: input.studentCode }
+                        : {}),
+                classEnrollments: { some: { classId, status: 'active' } },
+            },
+            select: { id: true },
+        });
+        if (!student) throw new NotFoundError('Active enrolled student not found.');
+
+        await prisma.attendance.upsert({
+            where: { sessionId_studentId: { sessionId, studentId: student.id } },
+            update: {
+                status: input.status,
+                excuseReason: input.status === 'excused' ? input.excuseReason ?? null : null,
+                recordedAt: new Date(),
+            },
+            create: {
+                sessionId,
+                studentId: student.id,
+                teacherId,
+                status: input.status,
+                excuseReason: input.status === 'excused' ? input.excuseReason ?? null : null,
+            },
+        });
+
+        return this.getLiveSession(classId, sessionId, teacherId);
     }
 
     public async createSession(classId: number, teacherId: number, input: CreateClassSessionInput) {

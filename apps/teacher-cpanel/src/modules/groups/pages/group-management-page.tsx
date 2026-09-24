@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   Clock3,
   Edit3,
+  UserCheck,
   Users,
   GraduationCap,
   DollarSign,
@@ -14,6 +15,10 @@ import {
   AlertTriangle,
   MapPin,
   Plus,
+  ClipboardList,
+  FileText,
+  ReceiptText,
+  Video,
 } from "lucide-react";
 import {
   Badge,
@@ -25,6 +30,10 @@ import {
   Button,
   Card,
   Checkbox,
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
   Dialog,
   DialogClose,
   DialogContent,
@@ -359,7 +368,7 @@ export default function GroupManagementPage() {
               <StudentsTab enrollments={enrollments} />
             </TabsContent>
             <TabsContent value="sessions" className="mt-5">
-              <SessionsTab sessions={sessions} />
+              <SessionsTab classId={group.id} sessions={sessions} />
             </TabsContent>
             <TabsContent value="attendance" className="mt-5">
               <AttendanceTab enrollments={enrollments} sessions={sessions} />
@@ -521,7 +530,12 @@ function StudentsTab({ enrollments }: { enrollments: GroupEnrollment[] }) {
   );
 }
 
-function SessionsTab({ sessions }: { sessions: GroupSession[] }) {
+function SessionsTab({ classId, sessions }: { classId: number; sessions: GroupSession[] }) {
+  return <SessionHistoryAccordion classId={classId} sessions={sessions} />;
+  /*
+   * Keep this table implementation available while the accordion becomes the
+   * default group-hub view. It remains useful as a compact fallback when the
+   * data table is reused elsewhere.
   const columns: DataTableColumn<GroupSession>[] = [
     {
       header: "تاريخ الحصة",
@@ -584,6 +598,57 @@ function SessionsTab({ sessions }: { sessions: GroupSession[] }) {
       }
     />
   );
+}
+
+  */
+}
+
+function SessionHistoryAccordion({ classId, sessions }: { classId: number; sessions: GroupSession[] }) {
+  return (
+    <div className="flex flex-col gap-3">
+      <div>
+        <h2 className="text-sm font-bold text-text">السجل الكامل للحصص</h2>
+        <p className="mt-1 text-xs text-text-muted">الحصص السابقة والحالية والقادمة مع إجراءات المحتوى والتقارير.</p>
+      </div>
+      {sessions.length ? (
+        <Accordion className="rounded-lg border border-border-subtle bg-surface">
+          {sessions.map((session, index) => {
+            const present = session.attendance.filter((entry) => entry.status === 'present' || entry.status === 'late').length
+            const title = session.topic || `حصة بدون عنوان${index + 1}`
+            return (
+              <AccordionItem key={session.id} value={String(session.id)} className="px-4">
+                <AccordionTrigger className="gap-3 no-underline hover:no-underline">
+                  <div className="flex min-w-0 flex-1 items-center gap-3 text-start">
+                    <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary-subtle text-primary"><CalendarDays className="size-4" /></span>
+                    <span className="min-w-0"><span className="block truncate text-xs font-bold text-text">{title}</span><span className="mt-1 block text-[10px] text-text-muted">{formatDate(session.sessionDate)} · {formatTime(session.scheduledStartTime)}</span></span>
+                  </div>
+                  <Badge variant={session.isCompleted ? 'secondary' : 'outline'}>{session.isCompleted ? 'مكتملة' : session.status === 'live' ? 'مباشرة' : 'مجدولة'}</Badge>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="flex flex-col gap-3 rounded-md bg-surface-secondary p-3">
+                    <div className="grid gap-2 text-xs sm:grid-cols-3"><InfoItem label="نوع الحصة" value={sessionTypeLabels[session.sessionType] || session.sessionType} /><InfoItem label="الحضور" value={`${present} / ${session.attendance.length}`} /><InfoItem label="المدة" value={`${session.durationMinutes} دقيقة${session.isMandatory ? ' · إلزامية' : ''}`} /></div>
+                    <div className="flex flex-wrap gap-2 border-t border-border-subtle pt-3">
+                      <Button type="button" size="xs" variant="neutral" disabled title="سيتم ربط الاختبارات عند تفعيل وحدة الاختبارات"><ClipboardList />ربط اختبار</Button>
+                      <Button type="button" size="xs" variant="neutral" disabled title="سيتم تفعيل الواجبات مع وحدة المحتوى"><FileText />إرفاق واجب PDF</Button>
+                      <Button type="button" size="xs" variant="neutral" disabled title="سيتم تفعيل الفيديوهات مع وحدة المحتوى"><Video />إضافة فيديو آمن</Button>
+                      <span className="mx-1 hidden h-5 w-px bg-border-subtle sm:block" />
+                      <Button type="button" size="xs" variant="neutral" disabled title="لا توجد وحدة درجات مرتبطة بالحصة حالياً"><ClipboardList />تقرير الدرجات</Button>
+                      <Button type="button" size="xs" variant="neutral" disabled title="لا توجد وحدة تحصيل يومي مرتبطة بالحصة حالياً"><ReceiptText />التحصيل المالي</Button>
+                      <Button type="button" size="xs" render={<Link to={`/classes/${classId}/sessions/${session.id}/live`} />}><UserCheck />مكتب الحضور</Button>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            )
+          })}
+        </Accordion>
+      ) : <EmptyState icon={<CalendarDays size={24} />} title="سجل الحصص فارغ" description="ابدأ بإضافة حصة من تبويب الجدول الزمني." />}
+    </div>
+  )
+}
+
+function InfoItem({ label, value }: { label: string; value: string }) {
+  return <div className="rounded-md bg-surface p-2"><p className="text-[10px] text-text-muted">{label}</p><p className="mt-1 font-semibold text-text">{value}</p></div>
 }
 
 function AttendanceTab({

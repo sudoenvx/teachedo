@@ -1,45 +1,67 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
+  Building2,
   CalendarDays,
-  ChevronLeft,
   ClipboardCheck,
-  FileVideo,
+  Globe2,
   GraduationCap,
   MessageSquareText,
   Plus,
   Users,
   Wallet,
-  type LucideIcon,
 } from "lucide-react";
 import {
+  Badge,
   Button,
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@teachedo/ui/components";
-import { useGroups } from "@/modules/groups/api/groups.queries";
+import {
+  useClassSessions,
+  useGroups,
+} from "@/modules/groups/api/groups.queries";
 import { useTeacherDashboardStats } from "../api/dashboard.queries";
 import { StatisticCard } from "@teachedo/ui/legacy";
+import { MiniCalendar } from "@teachedo/ui/legacy";
+import { TodayLiveDeskFeed } from "@/modules/dashboard/pages/today-livefeed";
 
 const formatNumber = (value = 0) => value.toLocaleString("en");
+
+const dateKey = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
 
 export default function TeacherDashboardPage() {
   const navigate = useNavigate();
   const { data: stats, isLoading, isError } = useTeacherDashboardStats();
   const { data: groups = [], isLoading: groupsLoading } = useGroups();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const weekEnd = new Date(today);
+  weekEnd.setDate(weekEnd.getDate() + 6);
+  const { data: weekSessions = [], isLoading: weekSessionsLoading } =
+    useClassSessions(dateKey(today), dateKey(weekEnd), {
+      refetchInterval: 10_000,
+    });
   const value = (number: number | undefined) =>
     isLoading ? "..." : formatNumber(number);
 
   return (
     <div className="animate-in fade-in pb-10 duration-300">
-      <div className="flex flex-col items-start gap-6 lg:grid lg:grid-cols-12">
-        <div className="flex w-full flex-col gap-6 lg:col-span-8">
+      <div className="flex flex-col items-start gap-6 lg:grid lg:grid-cols-15">
+        <div className="flex w-full flex-col gap-6 lg:col-span-11">
           <Card className="overflow-hidden">
             <CardContent>
-              <h1 className="font-semibold text-lg">أهلاً بك مجدداً، محمد صلاح 👋</h1>
+              <h1 className="font-semibold text-lg">
+                أهلاً بك مجدداً، محمد صلاح 👋
+              </h1>
               <p className="text-text-muted text-sm">
                 راجع بيانات طلابك ومجموعاتك التعليمية، وابدأ بتنظيم يومك من
                 الاختصارات السريعة.
@@ -61,6 +83,7 @@ export default function TeacherDashboardPage() {
               <Button
                 type="button"
                 variant="neutral"
+                disabled
                 onClick={() => navigate("/students")}
               >
                 <ClipboardCheck />
@@ -77,6 +100,34 @@ export default function TeacherDashboardPage() {
               </Button>
             </CardFooter>
           </Card>
+          <TodayLiveDeskFeed
+            sessions={weekSessions}
+            isLoading={weekSessionsLoading}
+          />
+          {/*
+                  {
+                    id: 1,
+                    sessionDate: "2026-09-25T09:00:00Z",
+                    scheduledStartTime: "09:00",
+                    studentClass: {
+                      className: "الصف الأول",
+                      deliveryMode: "offline",
+                      gradeLevel: "Third Prep",
+                      groupTier: "normal",
+                      center: {
+                        name: "الحرمين"
+                      }
+                    },
+                    sessionType: "regular",
+                    checkedInCount: 5,
+                    totalExpected: 10,
+                    classId: 1,
+                    durationMinutes: 60,
+                    isCompleted: false,
+                    isMandatory: true,
+                    attendance: []
+                  }
+                */}
 
           {isError && (
             <div className="rounded-md bg-destructive-subtle p-2 text-[13px] font-medium text-destructive">
@@ -117,7 +168,10 @@ export default function TeacherDashboardPage() {
         </div>
 
         <aside className="flex w-full flex-col gap-5 lg:col-span-4">
-          <Card>
+          <DashboardMiniCalendar
+            onSelect={(date) => navigate(`/schedules?date=${dateKey(date)}`)}
+          />
+          <Card className="overflow-hidden">
             <CardHeader>
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
@@ -135,7 +189,7 @@ export default function TeacherDashboardPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-2">
                 {groupsLoading ? (
                   <GroupsCardSkeleton />
                 ) : groups.length === 0 ? (
@@ -147,15 +201,37 @@ export default function TeacherDashboardPage() {
                     <Link
                       key={group.id}
                       to={`/groups/${group.id}`}
-                      className="group flex items-center justify-between gap-3 rounded-md bg-neutral-200 px-2 py-1.5 transition-colors hover:bg-neutral-300"
+                      className="group rounded-md bg-neutral-200 p-2 transition-all hover:bg-neutral-300"
                     >
-                      <span className="min-w-0 truncate text-[13px] font-medium text-text transition-colors group-hover:text-text">
-                        {group.className}
-                      </span>
-                      <ChevronLeft
-                        size={16}
-                        className="shrink-0 text-text-muted group-hover:text-text"
-                      />
+                      <div className="flex flex-wrap justify-between items-center gap-1.5">
+                        <span className="min-w-0 truncate text-sm font-medium text-text transition-colors group-hover:text-text">
+                          {group.className}
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <Badge
+                            variant={
+                              group.groupTier === "vip" ? "accent" : "default"
+                            }
+                          >
+                            {group.groupTier === "vip" ? "VIP" : "عادية"}
+                          </Badge>
+                          <Badge variant="secondary">
+                            {group.deliveryMode === "online" ? (
+                              <>
+                                <Globe2 />
+                                أونلاين
+                              </>
+                            ) : group.deliveryMode === "hybrid" ? (
+                              "حضوري + أونلاين"
+                            ) : (
+                              <>
+                                <Building2 />
+                                حضوري
+                              </>
+                            )}
+                          </Badge>
+                        </div>
+                      </div>
                     </Link>
                   ))
                 )}
@@ -165,6 +241,32 @@ export default function TeacherDashboardPage() {
         </aside>
       </div>
     </div>
+  );
+}
+
+function DashboardMiniCalendar({
+  onSelect,
+}: {
+  onSelect: (date: Date) => void;
+}) {
+  const [selectedDate, setSelectedDate] = useState(() => new Date());
+
+  const selectDate = (date: Date) => {
+    setSelectedDate(date);
+    onSelect(date);
+  };
+
+  return (
+    <Card className="overflow-hidden">
+      <CardContent>
+        <MiniCalendar
+          value={selectedDate}
+          onChange={selectDate}
+          weekStartsOn={6}
+          className="max-w-none"
+        />
+      </CardContent>
+    </Card>
   );
 }
 

@@ -1,5 +1,5 @@
 // mini-calendar.tsx
-import { useMemo, useState, type CSSProperties } from 'react'
+import { useEffect, useMemo, useState, type CSSProperties } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from 'cn'
 
@@ -61,6 +61,10 @@ export function MiniCalendar({
   const [view, setView] = useState<CalendarView>('days')
   const [decadeStart, setDecadeStart] = useState(() => Math.floor((value ?? today).getFullYear() / 12) * 12)
 
+  useEffect(() => {
+    if (value) setCursor(value)
+  }, [value])
+
   const year = cursor.getFullYear()
   const month = cursor.getMonth()
   const grid = useMemo(() => buildMonthGrid(year, month, weekStartsOn), [year, month, weekStartsOn])
@@ -105,7 +109,7 @@ export function MiniCalendar({
           type="button"
           onClick={goBack}
           aria-label="السابق"
-          className="flex h-7 w-7 items-center justify-center rounded-sm text-text-muted transition-colors hover:bg-neutral-100 hover:text-text"
+          className="flex h-7 w-7 items-center justify-center rounded-sm text-text-muted transition-colors hover:bg-neutral-200 hover:text-text"
         >
           <ChevronRight className="h-4 w-4" />
         </button>
@@ -114,7 +118,7 @@ export function MiniCalendar({
           type="button"
           onClick={drillUp}
           disabled={view === 'years'}
-          className="rounded-sm px-2 py-1 text-[15px] font-bold text-text transition-colors hover:bg-neutral-100 disabled:cursor-default disabled:hover:bg-transparent"
+          className="rounded-sm px-2 py-1 text-sm font-bold text-text transition-colors hover:bg-neutral-200 disabled:cursor-default disabled:hover:bg-transparent"
         >
           {headerLabel}
         </button>
@@ -123,7 +127,7 @@ export function MiniCalendar({
           type="button"
           onClick={goForward}
           aria-label="التالي"
-          className="flex h-7 w-7 items-center justify-center rounded-sm text-text-muted transition-colors hover:bg-neutral-100 hover:text-text"
+          className="flex h-7 w-7 items-center justify-center rounded-sm text-text-muted transition-colors hover:bg-neutral-200 hover:text-text"
         >
           <ChevronLeft className="h-4 w-4" />
         </button>
@@ -156,13 +160,13 @@ export function MiniCalendar({
                   onClick={() => selectDay(date, disabled)}
                   style={weekendDisabled && !selected ? hatchStyle : undefined}
                   className={cn(
-                    'relative  mx-auto flex h-8 w-8 items-center justify-center rounded-sm text-[13px] transition-colors',
+                    'relative font-inter mx-auto flex h-8 w-8 items-center justify-center rounded-sm text-[13px] transition-colors',
                     'disabled:cursor-not-allowed disabled:hover:bg-transparent',
                     outside || outOfRange ? 'text-text-faint' : 'text-text',
                     weekendDisabled && !selected && 'text-text-faint ',
                     selected
                       ? 'bg-text font-semibold text-canvas'
-                      : !disabled && 'hover:bg-neutral-100',
+                      : !disabled && 'hover:bg-neutral-200',
                   )}
                 >
                   {date.getDate()}
@@ -183,7 +187,7 @@ export function MiniCalendar({
               onClick={() => selectMonth(i)}
               className={cn(
                 'rounded-sm py-2 text-[12px] font-medium transition-colors',
-                i === month ? 'bg-text text-canvas' : 'text-text hover:bg-neutral-100',
+                i === month ? 'bg-text text-canvas' : 'text-text hover:bg-neutral-200',
               )}
             >
               {name}
@@ -201,7 +205,7 @@ export function MiniCalendar({
               onClick={() => selectYear(y)}
               className={cn(
                 'rounded-sm py-2 text-[12px] font-medium transition-colors',
-                y === year ? 'bg-text text-canvas' : 'text-text hover:bg-neutral-100',
+                y === year ? 'bg-text text-canvas' : 'text-text hover:bg-neutral-200',
               )}
             >
               {y}

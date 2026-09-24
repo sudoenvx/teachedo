@@ -59,6 +59,43 @@ export const createClassSessionSchema = z.object({
     }),
 });
 
+const sessionParams = z.object({
+    id: z.coerce.number().positive('Invalid class ID'),
+    sessionId: z.coerce.number().positive('Invalid session ID'),
+});
+
+export const classSessionsQuerySchema = z.object({
+    query: z.object({
+        from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'From date must use YYYY-MM-DD format').optional(),
+        to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'To date must use YYYY-MM-DD format').optional(),
+    }),
+});
+
+export const classSessionParamsSchema = z.object({ params: sessionParams });
+
+export const rescheduleClassSessionSchema = z.object({
+    params: sessionParams,
+    body: z.object({
+        sessionDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Session date must use YYYY-MM-DD format'),
+        scheduledStartTime: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Start time must use HH:mm format').optional().nullable(),
+    }),
+});
+
+export const recordSessionAttendanceSchema = z.object({
+    params: sessionParams,
+    body: z.object({
+        studentId: z.number().int().positive().optional(),
+        studentCode: z.string().trim().min(1).optional(),
+        status: z.enum(['present', 'absent', 'late', 'excused']).default('present'),
+        excuseReason: z.string().trim().max(255).optional().nullable(),
+    }).refine((value) => value.studentId !== undefined || value.studentCode !== undefined, {
+        message: 'Student ID or student code is required',
+    }),
+});
+
 export type CreateClassInput = z.infer<typeof createClassSchema>['body'];
 export type UpdateClassInput = z.infer<typeof updateClassSchema>['body'];
 export type CreateClassSessionInput = z.infer<typeof createClassSessionSchema>['body'];
+export type ClassSessionsQueryInput = z.infer<typeof classSessionsQuerySchema>['query'];
+export type RescheduleClassSessionInput = z.infer<typeof rescheduleClassSessionSchema>['body'];
+export type RecordSessionAttendanceInput = z.infer<typeof recordSessionAttendanceSchema>['body'];

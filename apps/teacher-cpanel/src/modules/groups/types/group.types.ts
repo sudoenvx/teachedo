@@ -48,6 +48,7 @@ export interface ClassEnrollment {
 
 export interface ClassSession {
   id: number
+  classId?: number
   sessionDate: string
   sessionType: SessionType
   scheduledStartTime?: string | null
@@ -57,6 +58,56 @@ export interface ClassSession {
   status?: string | null
   isCompleted: boolean
   attendance: Array<{ studentId: number; status?: string | null }>
+}
+
+export interface ScheduledSession extends ClassSession {
+  classId: number
+  checkedInCount: number
+  totalExpected: number
+  studentClass: {
+    className: string
+    gradeLevel: string
+    groupTier: GroupTier
+    deliveryMode: DeliveryMode
+    center?: { name: string } | null
+  }
+}
+
+export interface LiveSession {
+  id: number
+  classId: number
+  sessionDate: string
+  sessionType: SessionType
+  scheduledStartTime?: string | null
+  durationMinutes: number
+  isMandatory: boolean
+  topic?: string | null
+  status?: string | null
+  isCompleted: boolean
+  studentClass: {
+    className: string
+    gradeLevel: string
+    groupTier: GroupTier
+    deliveryMode: DeliveryMode
+    center?: { name: string } | null
+    enrollments: Array<{
+      student: {
+        id: number
+        fullName: string
+        studentCode?: string | null
+        profilePictureUrl?: string | null
+      }
+      studentAttendanceType: StudentAttendanceType
+    }>
+  }
+  attendance: Array<{
+    id: number
+    studentId: number
+    status?: string | null
+    excuseReason?: string | null
+    recordedAt: string
+    student: { fullName: string; studentCode?: string | null }
+  }>
 }
 
 export interface ClassSessionInput {

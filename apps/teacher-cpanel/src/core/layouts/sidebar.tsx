@@ -1,8 +1,8 @@
 import {
   Building2,
+  CalendarClock,
   GraduationCap,
   LayoutDashboard,
-  Sparkles,
   UserCheck,
   Users,
   X,
@@ -64,6 +64,9 @@ export function Sidebar() {
           </LayoutSidebarItem>
           <LayoutSidebarItem href="/groups" icon={Users}>
             المجموعات
+          </LayoutSidebarItem>
+          <LayoutSidebarItem href="/schedules" icon={CalendarClock}>
+            المواعيد الأسبوعية
           </LayoutSidebarItem>
           <LayoutSidebarItem href="/centers" icon={Building2}>
             السناتر

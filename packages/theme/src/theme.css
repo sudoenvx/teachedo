@@ -19,6 +19,7 @@
   --color-accent-active: var(--accent-active);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent-subtle: var(--accent-subtle);
+  --color-accent-subtle-light: var(--accent-subtle-light);
   --color-accent-subtle-foreground: var(--accent-subtle-foreground);
 
   --color-destructive: var(--destructive);
